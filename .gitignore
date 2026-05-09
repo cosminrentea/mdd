@@ -1,0 +1,5 @@
+/target
+.mdd/
+*.swp
+*.swo
+.DS_Store
