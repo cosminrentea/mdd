@@ -4,6 +4,7 @@ mod error;
 mod cache;
 mod commands;
 mod output;
+#[allow(dead_code)]
 mod parse;
 mod query;
 
