@@ -13,9 +13,8 @@ categories = ["command-line-utilities", "text-processing"]
 # CLI framework (derive macros for zero-boilerplate argument parsing)
 clap = { version = "4", features = ["derive"] }
 
-# Markdown parsing -- both included for Task 0 evaluation; one will be removed
+# Markdown parsing (pulldown-cmark: fastest, byte offsets, multi-part support)
 pulldown-cmark = { version = "0.13", features = ["serde"] }
-comrak = "0.36"
 
 # YAML frontmatter
 serde = { version = "1", features = ["derive"] }
@@ -57,3 +56,7 @@ predicates = "3"
 
 # Temporary directories for tests
 tempfile = "3"
+
+# Parser evaluation examples only (not used in production code)
+comrak = "0.36"
+markdown = "1.0"
