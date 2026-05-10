@@ -289,3 +289,438 @@ fn stats_shows_counts() {
         .stdout(predicate::str::contains("Frontmatter:"))
         .stdout(predicate::str::contains("Content:"));
 }
+
+// ─── toc: vault-realistic fixtures ──────────────────────────────────────────
+
+#[test]
+fn toc_service_doc_shows_nested_headings() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "toc", "tests/fixtures/vault-service.md"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("# Storefront Persistence Service"))
+        .stdout(predicate::str::contains("## Architecture"))
+        .stdout(predicate::str::contains("### Queue Configuration"))
+        .stdout(predicate::str::contains("## Troubleshooting"));
+}
+
+#[test]
+fn toc_pattern_filters_nested() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "toc", "tests/fixtures/vault-service.md", "MongoDB"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("### MongoDB Collections"))
+        .stdout(predicate::str::contains("### MongoDB Timeout"))
+        .stdout(predicate::str::contains("Queue Configuration").not());
+}
+
+#[test]
+fn toc_json_has_all_fields() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "json", "toc", "tests/fixtures/vault-service.md"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("\"level\""))
+        .stdout(predicate::str::contains("\"title\""))
+        .stdout(predicate::str::contains("\"offset\""))
+        .stdout(predicate::str::contains("\"limit\""));
+}
+
+// ─── sec: vault-realistic fixtures ──────────────────────────────────────────
+
+#[test]
+fn sec_extracts_nested_section_with_code() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "human", "sec", "tests/fixtures/vault-service.md", "Environment Variables"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("### Environment Variables"))
+        .stdout(predicate::str::contains("MONGO_URI"))
+        .stdout(predicate::str::contains("```yaml"));
+}
+
+#[test]
+fn sec_extracts_section_with_table() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "sec", "tests/fixtures/vault-service.md", "Queue Configuration"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("product-attributes-t1"))
+        .stdout(predicate::str::contains("[tests/fixtures/vault-service.md:"));
+}
+
+#[test]
+fn sec_case_insensitive_match() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["sec", "tests/fixtures/vault-service.md", "mongodb timeout"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("MongoDB Timeout"));
+}
+
+// ─── at: vault-realistic fixtures ───────────────────────────────────────────
+
+#[test]
+fn at_finds_section_in_service_doc() {
+    // Line 7 is inside the "# Storefront Persistence Service" section (after frontmatter)
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "at", "tests/fixtures/vault-service.md", "7"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("# Storefront Persistence Service"));
+}
+
+#[test]
+fn at_json_format() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "json", "at", "tests/fixtures/vault-service.md", "15"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("\"title\""))
+        .stdout(predicate::str::contains("\"offset\""));
+}
+
+// ─── find: vault-realistic fixtures ─────────────────────────────────────────
+
+#[test]
+fn find_filters_by_topic() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "find", "tests/fixtures/", "--topic", "persistence"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("vault-service.md"))
+        .stdout(predicate::str::contains("vault-feedback.md").not());
+}
+
+#[test]
+fn find_filters_by_code_language() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "find", "tests/fixtures/", "--has-code", "java"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("vault-feedback.md"));
+}
+
+#[test]
+fn find_type_feedback() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "find", "tests/fixtures/", "-t", "feedback"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("vault-feedback.md"))
+        .stdout(predicate::str::contains("vault-service.md").not());
+}
+
+#[test]
+fn find_json_output() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "json", "find", "tests/fixtures/", "-t", "reference"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("\"path\""))
+        .stdout(predicate::str::contains("\"total_lines\""))
+        .stdout(predicate::str::contains("\"byte_size\""));
+}
+
+#[test]
+fn find_nonexistent_dir_fails() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["find", "tests/fixtures/nonexistent-dir/"])
+        .assert()
+        .failure();
+}
+
+// ─── map: vault-realistic fixtures ──────────────────────────────────────────
+
+#[test]
+fn map_lists_vault_files() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["map", "tests/fixtures/"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("vault-service.md"))
+        .stdout(predicate::str::contains("vault-feedback.md"))
+        .stdout(predicate::str::contains("TOTAL:"));
+}
+
+// ─── agg: vault-realistic fixtures ──────────────────────────────────────────
+
+#[test]
+fn agg_type_filter() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "agg", "tests/fixtures/", "-t", "feedback", "-H", "Good"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("### Good"))
+        .stdout(predicate::str::contains("@SpringBootTest"));
+}
+
+#[test]
+fn agg_emits_content_with_provenance() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "agg", "tests/fixtures/", "-H", "Architecture"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("[vault-service.md:"))
+        .stdout(predicate::str::contains("## Architecture"))
+        .stdout(predicate::str::contains("SQS"));
+}
+
+#[test]
+fn agg_json_includes_content() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "json", "agg", "tests/fixtures/", "-H", "Troubleshooting"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("\"content\""))
+        .stdout(predicate::str::contains("\"path\""))
+        .stdout(predicate::str::contains("actuator/health"));
+}
+
+#[test]
+fn agg_budget_zero_emits_at_least_one() {
+    // Budget 0 should still emit at least one section (budget check is "if over AND emitted > 0")
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "agg", "tests/fixtures/", "-H", "Architecture", "--budget", "1"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("##"))
+        .stderr(predicate::str::contains("1 sections emitted"));
+}
+
+// ─── links: vault-realistic fixtures ────────────────────────────────────────
+
+#[test]
+fn links_resolves_relative_paths() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["links", "tests/fixtures/vault-links.md", "--check"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("./vault-service.md (Markdown, OK)"))
+        .stdout(predicate::str::contains("./vault-feedback.md (Markdown, OK)"))
+        .stdout(predicate::str::contains("./removed-service.md (Markdown, BROKEN)"));
+}
+
+#[test]
+fn links_wiki_resolution() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["links", "tests/fixtures/vault-links.md", "--check"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("vault-service (WikiLink, OK)"))
+        .stdout(predicate::str::contains("vault-feedback (WikiLink, OK)"))
+        .stdout(predicate::str::contains("nonexistent-runbook (WikiLink, BROKEN)"));
+}
+
+#[test]
+fn links_external_not_checked() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["links", "tests/fixtures/vault-links.md", "--check"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("https://wiki.corp.adobe.com"))
+        .stdout(predicate::str::contains("External"));
+}
+
+#[test]
+fn links_broken_only_shows_broken() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["links", "tests/fixtures/vault-links.md", "--broken"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("BROKEN"))
+        // Verify no OK or External lines (check for ", OK)" and ", External)" to avoid
+        // matching "BROKEN" which contains "OK" as substring)
+        .stdout(predicate::str::contains(", OK)").not())
+        .stdout(predicate::str::contains("External)").not());
+}
+
+#[test]
+fn links_directory_mode() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["links", "tests/fixtures/", "--check"])
+        .assert()
+        .success()
+        .stderr(predicate::str::contains("links total"));
+}
+
+#[test]
+fn links_json_format() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "json", "links", "tests/fixtures/vault-links.md"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("\"kind\""))
+        .stdout(predicate::str::contains("\"target\""))
+        .stdout(predicate::str::contains("\"line\""));
+}
+
+// ─── parts: vault-realistic (multi-entry lrn) ───────────────────────────────
+
+#[test]
+fn parts_three_entries_lrn() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "parts", "tests/fixtures/vault-lrn.md"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Entry 1"))
+        .stdout(predicate::str::contains("Entry 2"))
+        .stdout(predicate::str::contains("Entry 3"))
+        .stderr(predicate::str::contains("3 entries shown"));
+}
+
+#[test]
+fn parts_filter_topic() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "parts", "tests/fixtures/vault-lrn.md", "--filter", "topic=kafka configuration"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("ParallelConsumer"))
+        .stdout(predicate::str::contains("WebClient").not());
+}
+
+#[test]
+fn parts_filter_level() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "parts", "tests/fixtures/vault-lrn.md", "--filter", "level=team"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Entry 3"))
+        .stdout(predicate::str::contains("Entry 1").not());
+}
+
+#[test]
+fn parts_json_format() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "json", "parts", "tests/fixtures/vault-lrn.md"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("\"index\""))
+        .stdout(predicate::str::contains("\"offset\""))
+        .stdout(predicate::str::contains("\"headings\""));
+}
+
+#[test]
+fn parts_no_filter_match() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "parts", "tests/fixtures/vault-lrn.md", "--filter", "type=nonexistent"])
+        .assert()
+        .success()
+        .stderr(predicate::str::contains("0 entries shown"));
+}
+
+// ─── stats: vault-realistic fixtures ────────────────────────────────────────
+
+#[test]
+fn stats_type_distribution() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["stats", "tests/fixtures/"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("reference("))
+        .stdout(predicate::str::contains("feedback("));
+}
+
+#[test]
+fn stats_content_features() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["stats", "tests/fixtures/"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("with tables"))
+        .stdout(predicate::str::contains("with code"))
+        .stdout(predicate::str::contains("with lists"));
+}
+
+#[test]
+fn stats_heading_metrics() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["stats", "tests/fixtures/"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("avg"))
+        .stdout(predicate::str::contains("max depth"));
+}
+
+#[test]
+fn stats_nonexistent_dir_fails() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["stats", "tests/fixtures/nonexistent-dir/"])
+        .assert()
+        .failure();
+}
+
+// ─── edge cases ─────────────────────────────────────────────────────────────
+
+#[test]
+fn toc_file_without_frontmatter() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "toc", "tests/fixtures/no-frontmatter.md"])
+        .assert()
+        .success();
+}
+
+#[test]
+fn sec_partial_match_finds_section() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["sec", "tests/fixtures/vault-service.md", "SQS"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("High SQS Backlog"));
+}
+
+#[test]
+fn find_has_table_finds_service_doc() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "find", "tests/fixtures/", "--has-table"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("vault-service.md"));
+}
+
+#[test]
+fn find_has_code_yaml() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "find", "tests/fixtures/", "--has-code", "yaml"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("vault-service.md"));
+}
