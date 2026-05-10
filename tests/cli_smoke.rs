@@ -1,7 +1,6 @@
 use assert_cmd::Command;
 use predicates::prelude::*;
 
-/// Smoke test: `mdd --help` outputs usage information and exits 0.
 #[test]
 fn help_flag_works() {
     Command::cargo_bin("mdd")
@@ -12,7 +11,6 @@ fn help_flag_works() {
         .stdout(predicate::str::contains("Markdown-Driven Development"));
 }
 
-/// Smoke test: `mdd --version` outputs the version string.
 #[test]
 fn version_flag_works() {
     Command::cargo_bin("mdd")
@@ -23,12 +21,11 @@ fn version_flag_works() {
         .stdout(predicate::str::contains("mdd 0.1.0"));
 }
 
-/// toc command produces offset/limit annotations on fixture file.
 #[test]
-fn toc_produces_offset_limit() {
+fn toc_human_produces_offset_limit() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["toc", "tests/fixtures/simple.md"])
+        .args(["-f", "human", "toc", "tests/fixtures/simple.md"])
         .assert()
         .success()
         .stdout(predicate::str::contains("(offset="))
@@ -37,31 +34,52 @@ fn toc_produces_offset_limit() {
         .stdout(predicate::str::contains("Section Two"));
 }
 
-/// toc with a pattern filters results.
+#[test]
+fn toc_agent_format() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "toc", "tests/fixtures/simple.md"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("[tests/fixtures/simple.md:"))
+        .stdout(predicate::str::contains("# Simple Test Document"))
+        .stdout(predicate::str::contains("## Section One"));
+}
+
+#[test]
+fn toc_json_format() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "json", "toc", "tests/fixtures/simple.md"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("\"sections\""))
+        .stdout(predicate::str::contains("\"offset\""))
+        .stdout(predicate::str::contains("\"limit\""));
+}
+
 #[test]
 fn toc_with_pattern_filters() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["toc", "tests/fixtures/simple.md", "Three"])
+        .args(["-f", "human", "toc", "tests/fixtures/simple.md", "Three"])
         .assert()
         .success()
         .stdout(predicate::str::contains("Section Three"))
         .stdout(predicate::str::contains("Section One").not());
 }
 
-/// sec command extracts section content.
 #[test]
 fn sec_extracts_content() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["sec", "tests/fixtures/simple.md", "Section Two"])
+        .args(["-f", "human", "sec", "tests/fixtures/simple.md", "Section Two"])
         .assert()
         .success()
         .stdout(predicate::str::contains("## Section Two"))
         .stdout(predicate::str::contains("code block"));
 }
 
-/// sec with no match exits with error.
 #[test]
 fn sec_no_match_fails() {
     Command::cargo_bin("mdd")
@@ -71,50 +89,88 @@ fn sec_no_match_fails() {
         .failure();
 }
 
-/// at command finds section containing a line.
 #[test]
 fn at_finds_section() {
-    // Line 20 is inside "Section Two" (the code block)
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["at", "tests/fixtures/simple.md", "20"])
+        .args(["-f", "human", "at", "tests/fixtures/simple.md", "20"])
         .assert()
         .success()
         .stdout(predicate::str::contains("## Section Two"));
 }
 
-/// at with breadcrumb on stderr (climbing one level shows parent > child).
 #[test]
-fn at_shows_breadcrumb() {
-    // Line 35 is inside "Nested Subsection" under "Section Three".
-    // With level=1 we climb to Section Three, breadcrumb shows ancestry.
+fn at_shows_breadcrumb_human() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["at", "tests/fixtures/simple.md", "35", "1"])
+        .args(["-f", "human", "at", "tests/fixtures/simple.md", "35", "1"])
         .assert()
         .success()
         .stdout(predicate::str::contains("## Section Three"))
         .stderr(predicate::str::contains("Section Three"));
 }
 
-/// find subcommand still works (stub).
 #[test]
-fn find_subcommand_responds() {
+fn at_agent_format() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["find", "tests/fixtures/"])
+        .args(["-f", "agent", "at", "tests/fixtures/simple.md", "20"])
         .assert()
         .success()
-        .stderr(predicate::str::contains("not yet implemented"));
+        .stdout(predicate::str::contains("[tests/fixtures/simple.md:"))
+        .stdout(predicate::str::contains("## Section Two"));
 }
 
-/// map subcommand still works (stub).
 #[test]
-fn map_subcommand_responds() {
+fn sec_agent_format() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "sec", "tests/fixtures/simple.md", "Section Two"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("[tests/fixtures/simple.md:"))
+        .stdout(predicate::str::contains("## Section Two"));
+}
+
+#[test]
+fn find_lists_files() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "find", "tests/fixtures/"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("simple.md"))
+        .stderr(predicate::str::contains("files matched"));
+}
+
+#[test]
+fn find_filters_by_table() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "find", "tests/fixtures/", "--has-table"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Section Three"))
+        .stdout(predicate::str::contains("no-frontmatter").not());
+}
+
+#[test]
+fn find_filters_by_type() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "find", "tests/fixtures/", "-t", "reference"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("simple.md"));
+}
+
+#[test]
+fn map_shows_overview() {
     Command::cargo_bin("mdd")
         .unwrap()
         .args(["map", "tests/fixtures/"])
         .assert()
         .success()
-        .stderr(predicate::str::contains("not yet implemented"));
+        .stdout(predicate::str::contains("=== fixtures/"))
+        .stdout(predicate::str::contains("TOTAL:"));
 }
