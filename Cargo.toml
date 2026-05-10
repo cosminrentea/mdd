@@ -48,6 +48,9 @@ predicates = "3"
 # Temporary directories for tests
 tempfile = "3"
 
+# Property-based / fuzz testing
+proptest = "1"
+
 # Parser evaluation examples only (not used in production code)
 comrak = "0.36"
 markdown = "1.0"
