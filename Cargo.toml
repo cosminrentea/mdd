@@ -17,18 +17,11 @@ clap = { version = "4", features = ["derive"] }
 pulldown-cmark = { version = "0.13", features = ["serde"] }
 
 # YAML frontmatter
-serde = { version = "1", features = ["derive"] }
 serde_yaml = "0.9"
 serde_json = "1"
 
 # Directory walking (.gitignore-aware, parallel)
 ignore = "0.4"
-
-# Persistent file cache (ACID, pure Rust key-value store)
-redb = "2"
-
-# Binary serialization for cache values
-postcard = { version = "1", features = ["alloc"] }
 
 # Date parsing and comparison
 chrono = { version = "0.4", features = ["serde"] }
@@ -40,8 +33,6 @@ regex = "1"
 miette = { version = "7", features = ["fancy"] }
 thiserror = "2"
 
-# TTY detection for output format auto-selection
-is-terminal = "0.4"
 
 # Terminal coloring
 owo-colors = "4"

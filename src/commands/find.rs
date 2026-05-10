@@ -1,14 +1,12 @@
 use std::path::PathBuf;
-use std::time::SystemTime;
-
-use chrono::NaiveDate;
 
 use crate::cli::Cli;
 use crate::error::{MddError, Result};
 use crate::output::{self, format_signature, fmt_size};
-use crate::parse::frontmatter::field_as_string;
-use crate::parse::markdown::parse_file;
-use crate::parse::{DocEntry, MdFile, Section};
+use crate::parse::Section;
+use crate::query;
+use crate::query::filter::entry_matches_frontmatter;
+use crate::query::predicates::section_matches;
 
 #[allow(clippy::too_many_arguments)]
 pub fn run(
@@ -27,36 +25,14 @@ pub fn run(
 
     let newer_cutoff = newer_than
         .as_deref()
-        .map(parse_date_to_system_time)
-        .transpose()
-        .map_err(|e| MddError::InvalidDate { value: e })?;
+        .map(query::parse_date_to_system_time)
+        .transpose()?;
 
-    let walker = ignore::WalkBuilder::new(&dir).follow_links(true).build();
-
-    let mut files: Vec<PathBuf> = walker
-        .filter_map(|e| e.ok())
-        .filter(|e| e.path().extension().is_some_and(|ext| ext == "md"))
-        .filter(|e| {
-            let name = e.file_name().to_string_lossy();
-            !matches!(
-                name.as_ref(),
-                "AGENTS.md" | "CLAUDE.local.md" | "CLAUDE.md" | "README.md"
-            )
-        })
-        .map(|e| e.into_path())
-        .collect();
-
-    files.sort();
-
+    let parsed = query::walk_and_parse(&dir);
     let format = output::resolve_format(&cli.format);
     let mut match_count = 0;
 
-    for file_path in &files {
-        let md = match parse_file(file_path) {
-            Ok(m) => m,
-            Err(_) => continue,
-        };
-
+    for (file_path, md) in &parsed {
         if let Some(ref cutoff) = newer_cutoff {
             if md.mtime < *cutoff {
                 continue;
@@ -64,7 +40,7 @@ pub fn run(
         }
 
         let matching_sections = find_matching_sections(
-            &md,
+            md,
             type_filter.as_deref(),
             topic.as_deref(),
             heading.as_deref(),
@@ -126,7 +102,8 @@ pub fn run(
                 println!(
                     "{} {}",
                     rel_path.display().to_string().bold(),
-                    format!("({} lines, {})", md.total_lines, fmt_size(md.byte_size as usize)).dimmed(),
+                    format!("({} lines, {})", md.total_lines, fmt_size(md.byte_size as usize))
+                        .dimmed(),
                 );
                 for s in &matching_sections {
                     let indent = "  ".repeat((s.level.saturating_sub(1)) as usize);
@@ -151,7 +128,7 @@ pub fn run(
 }
 
 fn find_matching_sections<'a>(
-    md: &'a MdFile,
+    md: &'a crate::parse::MdFile,
     type_filter: Option<&str>,
     topic: Option<&str>,
     heading: Option<&str>,
@@ -174,70 +151,4 @@ fn find_matching_sections<'a>(
     }
 
     results
-}
-
-fn entry_matches_frontmatter(entry: &DocEntry, type_filter: Option<&str>, topic: Option<&str>) -> bool {
-    if type_filter.is_none() && topic.is_none() {
-        return true;
-    }
-
-    let fm = match &entry.frontmatter {
-        Some(fm) => fm,
-        None => return false,
-    };
-
-    if let Some(t) = type_filter {
-        match field_as_string(fm, "type") {
-            Some(val) => {
-                if !val.eq_ignore_ascii_case(t) {
-                    return false;
-                }
-            }
-            None => return false,
-        }
-    }
-
-    if let Some(t) = topic {
-        match field_as_string(fm, "topic") {
-            Some(val) => {
-                if !val.to_lowercase().contains(&t.to_lowercase()) {
-                    return false;
-                }
-            }
-            None => return false,
-        }
-    }
-
-    true
-}
-
-fn section_matches(section: &Section, heading: Option<&str>, has_table: bool, has_code: Option<&str>) -> bool {
-    if let Some(h) = heading {
-        if !section.title.to_lowercase().contains(&h.to_lowercase()) {
-            return false;
-        }
-    }
-
-    if has_table && !section.features.has_table {
-        return false;
-    }
-
-    if let Some(lang) = has_code {
-        if !section.features.has_code_block {
-            return false;
-        }
-        if !lang.is_empty() && !section.features.code_languages.iter().any(|l| l.eq_ignore_ascii_case(lang)) {
-            return false;
-        }
-    }
-
-    true
-}
-
-fn parse_date_to_system_time(date_str: &str) -> std::result::Result<SystemTime, String> {
-    let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
-        .map_err(|e| format!("invalid date '{}': {}", date_str, e))?;
-    let datetime = date.and_hms_opt(0, 0, 0).unwrap();
-    let timestamp = datetime.and_utc().timestamp();
-    Ok(SystemTime::UNIX_EPOCH + std::time::Duration::from_secs(timestamp as u64))
 }

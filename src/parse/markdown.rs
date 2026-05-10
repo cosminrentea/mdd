@@ -55,6 +55,10 @@ pub fn parse_file(path: &Path) -> Result<MdFile> {
     md_file.byte_size = byte_size;
     md_file.mtime = mtime;
 
+    // Re-extract links with the actual file directory for proper path resolution
+    let file_dir = path.parent().unwrap_or(Path::new("."));
+    md_file.links = super::links::extract_links(&content, file_dir);
+
     Ok(md_file)
 }
 
@@ -247,7 +251,7 @@ pub fn parse_content(content: &str) -> MdFile {
         path: std::path::PathBuf::new(),
         preamble,
         entries,
-        links: Vec::new(), // link extraction is separate (parse/links.rs)
+        links: super::links::extract_links(content, std::path::Path::new("")),
         total_lines,
         byte_size: content.len() as u64,
         mtime: SystemTime::UNIX_EPOCH,

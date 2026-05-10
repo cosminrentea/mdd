@@ -31,6 +31,7 @@ pub struct MdFile {
     pub path: PathBuf,
     /// Content before the first MetadataBlock (e.g., a title line or intro text).
     /// In single-frontmatter files, this is None (frontmatter is inside the entry).
+    #[allow(dead_code)]
     pub preamble: Option<String>,
     /// Each logical entry: single-part files have one entry; multi-part (lrn) have many.
     pub entries: Vec<DocEntry>,
@@ -80,6 +81,7 @@ pub struct Section {
     /// Number of lines in this section (heading through end of content).
     pub limit: usize,
     /// Index of the parent section in the same entry's `sections` vec, or None for top-level.
+    #[allow(dead_code)]
     pub parent_idx: Option<usize>,
     /// Summary of what this section contains.
     pub features: ContentFeatures,
@@ -119,5 +121,6 @@ pub enum LinkKind {
     /// Obsidian-style `[[target]]` or `[[target|alias]]` link.
     WikiLink,
     /// Bare URL auto-detected by the parser.
+    #[allow(dead_code)]
     AutoLink,
 }
