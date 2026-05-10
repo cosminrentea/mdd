@@ -56,7 +56,7 @@ pub fn extract_links(content: &str, file_dir: &Path) -> Vec<Link> {
         let full_match = cap.get(0).unwrap();
         let target = cap.get(2).unwrap().as_str().to_owned();
 
-        if target.is_empty() {
+        if target.is_empty() || target.starts_with('#') {
             continue;
         }
 
@@ -170,10 +170,9 @@ mod tests {
     fn handles_anchors() {
         let content = "[jump](#section) and [file](./doc.md#heading).\n";
         let links = extract_links(content, Path::new("/vault"));
-        assert_eq!(links.len(), 2);
-        // Pure anchor: no resolvable path
-        assert!(links[0].resolved_path.is_none());
+        // Pure anchors (#section) are skipped entirely per spec
+        assert_eq!(links.len(), 1);
         // File with anchor: resolves to file path (without fragment)
-        assert_eq!(links[1].resolved_path, Some(PathBuf::from("/vault/./doc.md")));
+        assert_eq!(links[0].resolved_path, Some(PathBuf::from("/vault/./doc.md")));
     }
 }

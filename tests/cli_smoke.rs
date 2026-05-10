@@ -231,6 +231,16 @@ fn links_check_finds_broken() {
         .stdout(predicate::str::contains("BROKEN"));
 }
 
+#[test]
+fn links_skips_pure_anchors() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["links", "tests/fixtures/links-test.md", "--check"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("#standard-links").not());
+}
+
 // ─── parts tests ─────────────────────────────────────────────────────────────
 
 #[test]
@@ -242,6 +252,17 @@ fn parts_lists_entries() {
         .success()
         .stdout(predicate::str::contains("Entry 1"))
         .stdout(predicate::str::contains("Entry 2"));
+}
+
+#[test]
+fn parts_shows_correct_heading_level() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "parts", "tests/fixtures/lrn-two-entries.md"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("{### First Entry}"))
+        .stdout(predicate::str::contains("{### Second Entry}"));
 }
 
 #[test]

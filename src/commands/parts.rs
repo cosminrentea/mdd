@@ -69,20 +69,22 @@ pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
             .unwrap_or_default();
 
         // Collect heading names from this entry's sections
-        let headings: Vec<&str> = entry
+        let headings_str = entry
             .sections
             .iter()
             .take(3)
-            .map(|s| s.title.as_str())
-            .collect();
-        let headings_str = headings
-            .iter()
-            .map(|h| format!("{} {}", "#".repeat(entry.sections[0].level as usize), h))
+            .map(|s| format!("{} {}", "#".repeat(s.level as usize), s.title))
             .collect::<Vec<_>>()
             .join(", ");
 
         match &format {
             crate::cli::OutputFormat::Json => {
+                let headings: Vec<&str> = entry
+                    .sections
+                    .iter()
+                    .take(3)
+                    .map(|s| s.title.as_str())
+                    .collect();
                 println!(
                     "{}",
                     serde_json::json!({
