@@ -1,0 +1,14 @@
+---
+source: tests/snapshots_json.rs
+expression: "run(&[\"-f\", \"agent\", \"toc\", \"tests/fixtures/service-doc.md\"])"
+---
+[tests/fixtures/service-doc.md:7,55] # Nexus Ingestion Pipeline
+  [tests/fixtures/service-doc.md:9,7] ## Overview {words:30}
+  [tests/fixtures/service-doc.md:16,22] ## Architecture {code:1, words:10}
+    [tests/fixtures/service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+    [tests/fixtures/service-doc.md:32,6] ### Document Collections {lists:3, words:14}
+  [tests/fixtures/service-doc.md:38,12] ## Deployment {words:9}
+    [tests/fixtures/service-doc.md:42,8] ### Environment Variables {code:yaml, words:6}
+  [tests/fixtures/service-doc.md:50,12] ## Troubleshooting
+    [tests/fixtures/service-doc.md:52,5] ### High Queue Backlog {words:12}
+    [tests/fixtures/service-doc.md:57,5] ### Store Timeout {lists:2, words:11}

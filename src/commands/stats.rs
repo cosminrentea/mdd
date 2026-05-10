@@ -83,10 +83,7 @@ pub fn run(dir: PathBuf, _cli: &Cli) -> Result<()> {
         0.0
     };
 
-    let dir_display = dir
-        .file_name()
-        .unwrap_or(dir.as_os_str())
-        .to_string_lossy();
+    let dir_display = dir.file_name().unwrap_or(dir.as_os_str()).to_string_lossy();
 
     println!("=== stats for {}/ ===", dir_display);
     println!(

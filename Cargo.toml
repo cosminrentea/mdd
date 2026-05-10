@@ -6,8 +6,16 @@ authors = ["Cosmin Rentea <cosminrentea@gmail.com>"]
 description = "Markdown-Driven Development -- structural queries for coding agents"
 license = "MIT"
 repository = "https://github.com/cosminrentea/mdd"
-keywords = ["markdown", "cli", "agent", "obsidian", "documentation"]
+keywords = ["markdown", "cli", "agent", "documentation"]
 categories = ["command-line-utilities", "text-processing"]
+
+[lib]
+name = "mdd"
+path = "src/lib.rs"
+
+[[bin]]
+name = "mdd"
+path = "src/main.rs"
 
 [dependencies]
 # CLI framework (derive macros for zero-boilerplate argument parsing)

@@ -140,4 +140,3 @@ pub fn fmt_size(nbytes: usize) -> String {
         format!("{}B", nbytes)
     }
 }
-

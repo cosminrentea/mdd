@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use crate::cli::Cli;
 use crate::error::{MddError, Result};
-use crate::output::{self, format_signature, fmt_size};
+use crate::output::{self, fmt_size, format_signature};
 use crate::parse::Section;
 use crate::query;
 use crate::query::filter::entry_matches_frontmatter;
@@ -102,8 +102,12 @@ pub fn run(
                 println!(
                     "{} {}",
                     rel_path.display().to_string().bold(),
-                    format!("({} lines, {})", md.total_lines, fmt_size(md.byte_size as usize))
-                        .dimmed(),
+                    format!(
+                        "({} lines, {})",
+                        md.total_lines,
+                        fmt_size(md.byte_size as usize)
+                    )
+                    .dimmed(),
                 );
                 for s in &matching_sections {
                     let indent = "  ".repeat((s.level.saturating_sub(1)) as usize);

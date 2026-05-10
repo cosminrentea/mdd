@@ -1,5 +1,4 @@
 pub mod filter;
-pub mod heading;
 pub mod predicates;
 
 use std::path::{Path, PathBuf};
@@ -45,8 +44,8 @@ pub fn walk_and_parse(dir: &Path) -> Vec<(PathBuf, MdFile)> {
 
 /// Parse a date string (YYYY-MM-DD) into a SystemTime for mtime comparisons.
 pub fn parse_date_to_system_time(date_str: &str) -> Result<SystemTime> {
-    let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d")
-        .map_err(|e| MddError::InvalidDate {
+    let date =
+        NaiveDate::parse_from_str(date_str, "%Y-%m-%d").map_err(|e| MddError::InvalidDate {
             value: format!("'{}': {}", date_str, e),
         })?;
     let datetime = date.and_hms_opt(0, 0, 0).unwrap();

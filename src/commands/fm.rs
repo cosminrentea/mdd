@@ -163,7 +163,13 @@ fn set_field(path: &std::path::Path, assignment: &str, apply: bool) -> Result<()
     Ok(())
 }
 
-fn apply_frontmatter_set(content: &str, _raw_fm: &str, _fm_offset: usize, key: &str, value: &str) -> String {
+fn apply_frontmatter_set(
+    content: &str,
+    _raw_fm: &str,
+    _fm_offset: usize,
+    key: &str,
+    value: &str,
+) -> String {
     let mut result: Vec<String> = Vec::new();
     let mut found = false;
     let mut in_fm = false;
@@ -213,8 +219,9 @@ fn format_yaml_value(val: &serde_yaml::Value) -> String {
             let items: Vec<String> = seq.iter().map(format_yaml_value).collect();
             format!("[{}]", items.join(", "))
         }
-        serde_yaml::Value::Mapping(_) | serde_yaml::Value::Tagged(_) => {
-            serde_yaml::to_string(val).unwrap_or_default().trim().to_owned()
-        }
+        serde_yaml::Value::Mapping(_) | serde_yaml::Value::Tagged(_) => serde_yaml::to_string(val)
+            .unwrap_or_default()
+            .trim()
+            .to_owned(),
     }
 }

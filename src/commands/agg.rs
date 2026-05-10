@@ -81,11 +81,7 @@ pub fn run(
     }
 
     // Sort: freshest files first, then shorter sections first (more focused)
-    matches.sort_by(|a, b| {
-        b.mtime
-            .cmp(&a.mtime)
-            .then_with(|| a.limit.cmp(&b.limit))
-    });
+    matches.sort_by(|a, b| b.mtime.cmp(&a.mtime).then_with(|| a.limit.cmp(&b.limit)));
 
     // Emit sections until budget exhausted
     let mut lines_used = 0usize;
@@ -142,13 +138,7 @@ pub fn run(
                 }
                 println!(
                     "{} {}",
-                    format!(
-                        "[{}:{},{}]",
-                        m.rel_path.display(),
-                        m.offset,
-                        m.limit
-                    )
-                    .dimmed(),
+                    format!("[{}:{},{}]", m.rel_path.display(), m.offset, m.limit).dimmed(),
                     m.title.bold(),
                 );
                 println!("{}\n", m.content);

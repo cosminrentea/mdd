@@ -49,12 +49,7 @@ pub fn render_sec(output: &SecOutput) {
             println!("\n---\n");
         }
         first = false;
-        println!(
-            "[{}:{},{}]",
-            output.path.display(),
-            m.offset,
-            m.limit,
-        );
+        println!("[{}:{},{}]", output.path.display(), m.offset, m.limit,);
         print!("{}", m.content);
     }
 }

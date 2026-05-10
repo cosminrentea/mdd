@@ -1,0 +1,7 @@
+---
+source: tests/snapshots_json.rs
+expression: "run(&[\"-f\", \"json\", \"parts\", \"tests/fixtures/multipart-lrn.md\"])"
+---
+{"frontmatter":"level=project, topic=performance tuning, type=reference","headings":["HTTP Client Bulk Throughput Improvement","Thread Pool Utilization"],"index":1,"limit":25,"offset":3}
+{"frontmatter":"level=personal, topic=message broker configuration, type=note","headings":["Consumer Library Broker 3.9 Incompatibility"],"index":2,"limit":17,"offset":28}
+{"frontmatter":"level=team, topic=deployment, type=reference","headings":["Notification Service Authentication"],"index":3,"limit":18,"offset":45}

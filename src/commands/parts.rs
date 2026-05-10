@@ -20,9 +20,7 @@ pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
     }
 
     // Parse filter: "key=value"
-    let filter_kv: Option<(&str, &str)> = filter.as_deref().and_then(|f| {
-        f.split_once('=')
-    });
+    let filter_kv: Option<(&str, &str)> = filter.as_deref().and_then(|f| f.split_once('='));
 
     let rel_path = path
         .file_name()
@@ -104,7 +102,12 @@ pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
                 };
                 println!(
                     "[{}:{},{}] Entry {}: {}{}",
-                    rel_path, entry.offset, entry_limit, i + 1, fm_summary, heading_suffix,
+                    rel_path,
+                    entry.offset,
+                    entry_limit,
+                    i + 1,
+                    fm_summary,
+                    heading_suffix,
                 );
             }
             crate::cli::OutputFormat::Human => {

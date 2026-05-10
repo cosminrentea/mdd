@@ -44,9 +44,7 @@ pub fn parse_file(path: &Path) -> Result<MdFile> {
         source: e,
     })?;
 
-    let mtime = metadata
-        .modified()
-        .unwrap_or(SystemTime::UNIX_EPOCH);
+    let mtime = metadata.modified().unwrap_or(SystemTime::UNIX_EPOCH);
 
     let byte_size = metadata.len();
 
@@ -393,7 +391,10 @@ mod tests {
         assert_eq!(md.entries.len(), 1);
         assert!(md.entries[0].frontmatter.is_none());
         assert_eq!(md.entries[0].sections.len(), 3);
-        assert_eq!(md.entries[0].sections[0].title, "Document Without Frontmatter");
+        assert_eq!(
+            md.entries[0].sections[0].title,
+            "Document Without Frontmatter"
+        );
         assert_eq!(md.entries[0].sections[1].title, "First Heading");
         assert_eq!(md.entries[0].sections[2].title, "Second Heading");
     }
@@ -458,14 +459,20 @@ Content of the second entry.
         // First entry
         let e1 = &md.entries[0];
         let fm1 = e1.frontmatter.as_ref().unwrap();
-        assert_eq!(fm1.fields.get("type").and_then(|v| v.as_str()), Some("reference"));
+        assert_eq!(
+            fm1.fields.get("type").and_then(|v| v.as_str()),
+            Some("reference")
+        );
         assert_eq!(e1.sections.len(), 1);
         assert_eq!(e1.sections[0].title, "First Entry");
 
         // Second entry
         let e2 = &md.entries[1];
         let fm2 = e2.frontmatter.as_ref().unwrap();
-        assert_eq!(fm2.fields.get("type").and_then(|v| v.as_str()), Some("note"));
+        assert_eq!(
+            fm2.fields.get("type").and_then(|v| v.as_str()),
+            Some("note")
+        );
         assert_eq!(e2.sections.len(), 1);
         assert_eq!(e2.sections[0].title, "Second Entry");
     }
@@ -526,5 +533,40 @@ fn main() {}
         let content = "# The `main` Function\n\nBody.\n";
         let md = parse_content(content);
         assert_eq!(md.entries[0].sections[0].title, "The main Function");
+    }
+
+    #[test]
+    fn parent_idx_hierarchy() {
+        let content = "# H1\n\n## H2a\n\n### H3\n\n## H2b\n\nText.\n";
+        let md = parse_content(content);
+        let sections = &md.entries[0].sections;
+        assert_eq!(sections.len(), 4);
+        assert_eq!(sections[0].parent_idx, None); // H1 is root
+        assert_eq!(sections[1].parent_idx, Some(0)); // H2a -> H1
+        assert_eq!(sections[2].parent_idx, Some(1)); // H3 -> H2a
+        assert_eq!(sections[3].parent_idx, Some(0)); // H2b -> H1 (not H3)
+    }
+
+    #[test]
+    fn same_level_headings_no_parent() {
+        let content = "## A\n\nText.\n\n## B\n\nText.\n";
+        let md = parse_content(content);
+        let sections = &md.entries[0].sections;
+        assert_eq!(sections[0].parent_idx, None); // no parent for first H2
+        assert_eq!(sections[1].parent_idx, None); // H2 B has no H1 parent
+    }
+
+    #[test]
+    fn features_assigned_to_correct_section() {
+        let content = "# Title\n\nPlain text.\n\n## With Code\n\n```python\nx = 1\n```\n\n## With List\n\n- a\n- b\n";
+        let md = parse_content(content);
+        let sections = &md.entries[0].sections;
+        assert!(!sections[0].features.has_code_block);
+        assert!(!sections[0].features.has_list);
+        assert!(sections[1].features.has_code_block);
+        assert!(!sections[1].features.has_list);
+        assert!(!sections[2].features.has_code_block);
+        assert!(sections[2].features.has_list);
+        assert_eq!(sections[2].features.list_item_count, 2);
     }
 }

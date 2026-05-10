@@ -119,10 +119,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()
             }
         }
 
-        let rel_path = file_path
-            .strip_prefix(dir)
-            .unwrap_or(file_path)
-            .to_owned();
+        let rel_path = file_path.strip_prefix(dir).unwrap_or(file_path).to_owned();
         dir_entries.push(TocDirEntry {
             rel_path,
             total_lines: md.total_lines,
@@ -143,10 +140,13 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()
     }
 
     let format = output::resolve_format(&cli.format);
-    output::render_toc_dir(&format, &TocDirOutput {
-        entries: dir_entries,
-        total_files,
-    });
+    output::render_toc_dir(
+        &format,
+        &TocDirOutput {
+            entries: dir_entries,
+            total_files,
+        },
+    );
 
     Ok(())
 }

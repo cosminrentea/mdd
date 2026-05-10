@@ -1,0 +1,10 @@
+---
+source: tests/snapshots_json.rs
+expression: "run(&[\"stats\", \"tests/fixtures/\"])"
+---
+=== stats for fixtures/ ===
+Files: 11 (392 lines, 17K)
+Frontmatter: 8/11 (73% coverage)
+  type: reference(8), note(2), feedback(1)
+Content: 2 with tables, 3 with code, 7 with lists
+Headings: avg 4.5/file, max depth 3

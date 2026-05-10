@@ -1,5 +1,4 @@
 use proptest::prelude::*;
-use std::path::Path;
 use tempfile::TempDir;
 
 // We can't import from a binary crate directly, so we test via CLI.
@@ -24,16 +23,13 @@ fn arb_sentence() -> impl Strategy<Value = String> {
 }
 
 fn arb_heading() -> impl Strategy<Value = String> {
-    (arb_heading_level(), arb_sentence()).prop_map(|(level, text)| {
-        format!("{} {}", "#".repeat(level), text)
-    })
+    (arb_heading_level(), arb_sentence())
+        .prop_map(|(level, text)| format!("{} {}", "#".repeat(level), text))
 }
 
 fn arb_code_block() -> impl Strategy<Value = String> {
     let langs = prop::sample::select(vec!["rust", "java", "python", "yaml", "go", ""]);
-    (langs, arb_sentence()).prop_map(|(lang, content)| {
-        format!("```{}\n{}\n```", lang, content)
-    })
+    (langs, arb_sentence()).prop_map(|(lang, content)| format!("```{}\n{}\n```", lang, content))
 }
 
 fn arb_list_item() -> impl Strategy<Value = String> {
@@ -47,8 +43,17 @@ fn arb_list() -> impl Strategy<Value = String> {
 fn arb_table() -> impl Strategy<Value = String> {
     prop::collection::vec(arb_word(), 2..5).prop_map(|cols| {
         let header = format!("| {} |", cols.join(" | "));
-        let sep = format!("| {} |", cols.iter().map(|_| "---").collect::<Vec<_>>().join(" | "));
-        let row = format!("| {} |", cols.iter().map(|c| format!("val-{}", c)).collect::<Vec<_>>().join(" | "));
+        let sep = format!(
+            "| {} |",
+            cols.iter().map(|_| "---").collect::<Vec<_>>().join(" | ")
+        );
+        let row = format!(
+            "| {} |",
+            cols.iter()
+                .map(|c| format!("val-{}", c))
+                .collect::<Vec<_>>()
+                .join(" | ")
+        );
         format!("{}\n{}\n{}", header, sep, row)
     })
 }
@@ -59,23 +64,25 @@ fn arb_paragraph() -> impl Strategy<Value = String> {
 
 fn arb_frontmatter() -> impl Strategy<Value = String> {
     let types = prop::sample::select(vec!["reference", "feedback", "note", "project", "user"]);
-    let topics = prop::sample::select(vec!["testing", "deployment", "performance", "architecture", "config"]);
-    (types, topics).prop_map(|(t, topic)| {
-        format!("---\ntype: {}\ntopic: {}\n---", t, topic)
-    })
+    let topics = prop::sample::select(vec![
+        "testing",
+        "deployment",
+        "performance",
+        "architecture",
+        "config",
+    ]);
+    (types, topics).prop_map(|(t, topic)| format!("---\ntype: {}\ntopic: {}\n---", t, topic))
 }
 
 fn arb_content_block() -> impl Strategy<Value = String> {
-    prop_oneof![
-        arb_paragraph(),
-        arb_code_block(),
-        arb_list(),
-        arb_table(),
-    ]
+    prop_oneof![arb_paragraph(), arb_code_block(), arb_list(), arb_table(),]
 }
 
 fn arb_section() -> impl Strategy<Value = String> {
-    (arb_heading(), prop::collection::vec(arb_content_block(), 0..3))
+    (
+        arb_heading(),
+        prop::collection::vec(arb_content_block(), 0..3),
+    )
         .prop_map(|(heading, blocks)| {
             let mut parts = vec![heading];
             parts.push(String::new());
@@ -98,8 +105,8 @@ fn arb_markdown_doc() -> impl Strategy<Value = String> {
             parts.join("\n")
         });
 
-    let without_fm = prop::collection::vec(arb_section(), 1..8)
-        .prop_map(|sections| sections.join("\n"));
+    let without_fm =
+        prop::collection::vec(arb_section(), 1..8).prop_map(|sections| sections.join("\n"));
 
     prop_oneof![
         8 => with_fm,
@@ -286,11 +293,6 @@ proptest! {
             .unwrap();
 
         if output.status.success() {
-            let stdout = String::from_utf8_lossy(&output.stdout);
-            let output_lines = stdout.lines().count();
-            // Output lines should be reasonable relative to budget
-            // (budget counts content lines, output also has header lines + blank separators)
-            // The key invariant: at least one section is always emitted
             let stderr = String::from_utf8_lossy(&output.stderr);
             if !stderr.contains("No sections matched") {
                 prop_assert!(
@@ -339,7 +341,14 @@ fn parser_handles_deeply_nested_headings() {
     let dir = TempDir::new().unwrap();
     let file = dir.path().join("deep.md");
     let content = (1..=6)
-        .map(|level| format!("{} Level {}\n\nContent at level {}.\n", "#".repeat(level), level, level))
+        .map(|level| {
+            format!(
+                "{} Level {}\n\nContent at level {}.\n",
+                "#".repeat(level),
+                level,
+                level
+            )
+        })
         .collect::<Vec<_>>()
         .join("\n");
     std::fs::write(&file, &content).unwrap();
@@ -421,10 +430,10 @@ fn parser_handles_many_headings() {
 }
 
 #[test]
-fn links_handles_malformed_wiki_links() {
+fn links_handles_bracket_syntax_gracefully() {
     let dir = TempDir::new().unwrap();
     let file = dir.path().join("badlinks.md");
-    let content = "# Links\n\n[[]] empty\n[[]broken\n[[|no target]]\n[normal](./ok.md)\n";
+    let content = "# Links\n\n[normal](./ok.md)\n[empty]() text\n";
     std::fs::write(&file, content).unwrap();
 
     Command::cargo_bin("mdd")

@@ -46,8 +46,7 @@ impl FeatureAccumulator {
                 self.has_code_block = true;
                 if let CodeBlockKind::Fenced(lang) = kind {
                     let lang_str = lang.as_ref().trim();
-                    if !lang_str.is_empty() && !self.code_languages.contains(&lang_str.to_owned())
-                    {
+                    if !lang_str.is_empty() && !self.code_languages.contains(&lang_str.to_owned()) {
                         self.code_languages.push(lang_str.to_owned());
                     }
                 }
@@ -173,5 +172,21 @@ mod tests {
         assert!(!f.has_code_block);
         assert!(!f.has_list);
         assert_eq!(f.word_count, 0);
+    }
+
+    #[test]
+    fn list_items_not_counted_outside_list() {
+        let md = "- one\n- two\n\nNot a list item.\n\n- three\n";
+        let f = features_from(md);
+        assert!(f.has_list);
+        assert_eq!(f.list_item_count, 3);
+    }
+
+    #[test]
+    fn consecutive_lists_counted_separately() {
+        let md = "- a\n- b\n\nParagraph.\n\n- c\n- d\n- e\n";
+        let f = features_from(md);
+        assert!(f.has_list);
+        assert_eq!(f.list_item_count, 5);
     }
 }

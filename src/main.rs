@@ -1,14 +1,6 @@
-mod cli;
-mod error;
-
-mod cache;
-mod commands;
-mod output;
-mod parse;
-mod query;
-
 use clap::Parser;
-use cli::{Cli, Command};
+use mdd::cli::{Cli, Command};
+use mdd::commands;
 
 fn main() {
     // Parse CLI arguments. Clap handles --help, --version, and validation
@@ -23,18 +15,10 @@ fn main() {
     // We clone() where handlers need owned values -- acceptable since these
     // are small CLI argument strings, not large data.
     let result = match &cli.command {
-        Command::Toc { path, pattern } => {
-            commands::toc::run(path.clone(), pattern.clone(), &cli)
-        }
-        Command::Sec { path, pattern } => {
-            commands::sec::run(path.clone(), pattern.clone(), &cli)
-        }
-        Command::At { path, line, level } => {
-            commands::at::run(path.clone(), *line, *level, &cli)
-        }
-        Command::Map { path } => {
-            commands::map::run(path.clone(), &cli)
-        }
+        Command::Toc { path, pattern } => commands::toc::run(path.clone(), pattern.clone(), &cli),
+        Command::Sec { path, pattern } => commands::sec::run(path.clone(), pattern.clone(), &cli),
+        Command::At { path, line, level } => commands::at::run(path.clone(), *line, *level, &cli),
+        Command::Map { path } => commands::map::run(path.clone(), &cli),
         Command::Find {
             dir,
             r#type,
@@ -78,13 +62,9 @@ fn main() {
             *budget,
             &cli,
         ),
-        Command::Parts { path, filter } => {
-            commands::parts::run(path.clone(), filter.clone(), &cli)
-        }
+        Command::Parts { path, filter } => commands::parts::run(path.clone(), filter.clone(), &cli),
         Command::Stats { dir } => commands::stats::run(dir.clone(), &cli),
-        Command::Cache { dir, clear } => {
-            commands::cache::run(dir.clone(), *clear, &cli)
-        }
+        Command::Cache { dir, clear } => commands::cache::run(dir.clone(), *clear, &cli),
     };
 
     // Handle errors with miette's fancy reporting.

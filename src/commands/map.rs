@@ -99,7 +99,10 @@ pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
     }
 
     // Print output
-    let dir_display = path.file_name().unwrap_or(path.as_os_str()).to_string_lossy();
+    let dir_display = path
+        .file_name()
+        .unwrap_or(path.as_os_str())
+        .to_string_lossy();
     println!(
         "=== {}/ ({} files, {}K lines) ===",
         dir_display,
@@ -134,7 +137,11 @@ pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
             if !headings.is_empty() {
                 desc.push_str(&format!(
                     " {}",
-                    headings.iter().map(|h| format!("## {}", h)).collect::<Vec<_>>().join(", ")
+                    headings
+                        .iter()
+                        .map(|h| format!("## {}", h))
+                        .collect::<Vec<_>>()
+                        .join(", ")
                 ));
             }
             println!("  {} {}", rel.display(), desc);

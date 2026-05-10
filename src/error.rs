@@ -13,15 +13,10 @@ use thiserror::Error;
 /// from thiserror auto-generates the `Display` impl, and `#[diagnostic]`
 /// from miette adds structured error metadata (codes, help text).
 #[derive(Error, Diagnostic, Debug)]
-#[allow(dead_code)]
 pub enum MddError {
     #[error("file not found: {path}")]
     #[diagnostic(code(mdd::file_not_found))]
     FileNotFound { path: PathBuf },
-
-    #[error("not a markdown file: {path}")]
-    #[diagnostic(code(mdd::not_markdown))]
-    NotMarkdown { path: PathBuf },
 
     #[error("failed to read file: {path}")]
     #[diagnostic(code(mdd::io_error))]
@@ -30,13 +25,6 @@ pub enum MddError {
         #[source]
         source: std::io::Error,
     },
-
-    #[error("malformed frontmatter in {path} at line {line}")]
-    #[diagnostic(
-        code(mdd::malformed_frontmatter),
-        help("check YAML syntax between --- delimiters")
-    )]
-    MalformedFrontmatter { path: PathBuf, line: usize },
 
     #[error("line {line} is out of range (file has {total_lines} lines)")]
     #[diagnostic(code(mdd::line_out_of_range))]
@@ -49,10 +37,6 @@ pub enum MddError {
     #[error("no matching sections for pattern: {pattern}")]
     #[diagnostic(code(mdd::no_match))]
     NoMatch { pattern: String },
-
-    #[error("cache error: {message}")]
-    #[diagnostic(code(mdd::cache_error))]
-    CacheError { message: String },
 
     #[error("invalid date format: {value} (expected YYYY-MM-DD)")]
     #[diagnostic(code(mdd::invalid_date))]

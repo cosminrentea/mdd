@@ -158,7 +158,7 @@ pub enum Command {
         filter: Option<String>,
     },
 
-    /// Vault/directory statistics: file counts, frontmatter coverage, types.
+    /// Directory statistics: file counts, frontmatter coverage, types.
     Stats {
         /// Directory path
         dir: PathBuf,

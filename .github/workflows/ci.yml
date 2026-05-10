@@ -29,3 +29,5 @@ jobs:
         run: cargo build
       - name: Test
         run: cargo test
+      - name: Property tests (extended)
+        run: PROPTEST_CASES=200 cargo test --test proptest_parser

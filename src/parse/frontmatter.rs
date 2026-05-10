@@ -29,8 +29,7 @@ pub fn parse_frontmatter(raw_yaml: &str, offset: usize) -> Option<Frontmatter> {
     //
     // Rust concept: turbofish syntax `::<Type>` tells the compiler what type
     // we want serde_yaml to deserialize into.
-    let fields: BTreeMap<String, serde_yaml::Value> =
-        serde_yaml::from_str(trimmed).ok()?;
+    let fields: BTreeMap<String, serde_yaml::Value> = serde_yaml::from_str(trimmed).ok()?;
 
     Some(Frontmatter {
         fields,
@@ -66,18 +65,9 @@ mod tests {
 
         assert_eq!(fm.offset, 1);
         assert_eq!(fm.raw, yaml);
-        assert_eq!(
-            field_as_string(&fm, "type"),
-            Some("reference".to_owned())
-        );
-        assert_eq!(
-            field_as_string(&fm, "topic"),
-            Some("testing".to_owned())
-        );
-        assert_eq!(
-            field_as_string(&fm, "weight"),
-            Some("0.8".to_owned())
-        );
+        assert_eq!(field_as_string(&fm, "type"), Some("reference".to_owned()));
+        assert_eq!(field_as_string(&fm, "topic"), Some("testing".to_owned()));
+        assert_eq!(field_as_string(&fm, "weight"), Some("0.8".to_owned()));
     }
 
     #[test]

@@ -1,0 +1,21 @@
+---
+source: tests/snapshots_json.rs
+expression: "run(&[\"-f\", \"json\", \"sec\", \"tests/fixtures/service-doc.md\", \"Queue\"])"
+---
+{
+  "matches": [
+    {
+      "content": "### Queue Bindings\n\n| Queue | Entity Type | Priority |\n|-------|------------|----------|\n| entity-alpha-p1 | alpha | 1 |\n| entity-alpha-p2 | alpha | 2 |\n| entity-beta-p1 | beta | 1 |\n| entity-beta-p2 | beta | 2 |\n",
+      "limit": 9,
+      "offset": 23,
+      "title": "Queue Bindings"
+    },
+    {
+      "content": "### High Queue Backlog\n\nCheck consumer health via `/health/ready` endpoint.\nMonitor `queue.messages.consumed` counter in the dashboard.\n",
+      "limit": 5,
+      "offset": 52,
+      "title": "High Queue Backlog"
+    }
+  ],
+  "path": "tests/fixtures/service-doc.md"
+}

@@ -1,0 +1,161 @@
+---
+source: tests/snapshots_json.rs
+expression: "run(&[\"-f\", \"json\", \"toc\", \"tests/fixtures/service-doc.md\"])"
+---
+{
+  "path": "tests/fixtures/service-doc.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 0
+      },
+      "level": 1,
+      "limit": 55,
+      "offset": 7,
+      "title": "Nexus Ingestion Pipeline"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 30
+      },
+      "level": 2,
+      "limit": 7,
+      "offset": 9,
+      "title": "Overview"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": true,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 10
+      },
+      "level": 2,
+      "limit": 22,
+      "offset": 16,
+      "title": "Architecture"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": true,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 16
+      },
+      "level": 3,
+      "limit": 9,
+      "offset": 23,
+      "title": "Queue Bindings"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 3,
+        "word_count": 14
+      },
+      "level": 3,
+      "limit": 6,
+      "offset": 32,
+      "title": "Document Collections"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 9
+      },
+      "level": 2,
+      "limit": 12,
+      "offset": 38,
+      "title": "Deployment"
+    },
+    {
+      "features": {
+        "code_languages": [
+          "yaml"
+        ],
+        "has_code_block": true,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 6
+      },
+      "level": 3,
+      "limit": 8,
+      "offset": 42,
+      "title": "Environment Variables"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 0
+      },
+      "level": 2,
+      "limit": 12,
+      "offset": 50,
+      "title": "Troubleshooting"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 12
+      },
+      "level": 3,
+      "limit": 5,
+      "offset": 52,
+      "title": "High Queue Backlog"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 2,
+        "word_count": 11
+      },
+      "level": 3,
+      "limit": 5,
+      "offset": 57,
+      "title": "Store Timeout"
+    }
+  ]
+}

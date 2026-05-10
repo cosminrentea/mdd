@@ -1,0 +1,7 @@
+---
+source: tests/snapshots_json.rs
+expression: "run(&[\"-f\", \"json\", \"links\", \"tests/fixtures/links-test.md\", \"--check\"])"
+---
+{"file":"links-test.md","kind":"Markdown","line":10,"status":"OK","target":"./simple.md"}
+{"file":"links-test.md","kind":"Markdown","line":12,"status":"BROKEN","target":"./does-not-exist.md"}
+{"file":"links-test.md","kind":"Markdown","line":14,"status":"External","target":"https://example.com"}

@@ -73,7 +73,13 @@ fn toc_with_pattern_filters() {
 fn sec_extracts_content() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "human", "sec", "tests/fixtures/simple.md", "Section Two"])
+        .args([
+            "-f",
+            "human",
+            "sec",
+            "tests/fixtures/simple.md",
+            "Section Two",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("## Section Two"))
@@ -125,7 +131,13 @@ fn at_agent_format() {
 fn sec_agent_format() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "sec", "tests/fixtures/simple.md", "Section Two"])
+        .args([
+            "-f",
+            "agent",
+            "sec",
+            "tests/fixtures/simple.md",
+            "Section Two",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("[tests/fixtures/simple.md:"))
@@ -192,7 +204,16 @@ fn agg_filters_by_heading() {
 fn agg_respects_budget() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "agg", "tests/fixtures/", "-H", "Section", "--budget", "5"])
+        .args([
+            "-f",
+            "agent",
+            "agg",
+            "tests/fixtures/",
+            "-H",
+            "Section",
+            "--budget",
+            "5",
+        ])
         .assert()
         .success()
         .stderr(predicate::str::contains("truncated"));
@@ -217,8 +238,7 @@ fn links_lists_from_file() {
         .args(["links", "tests/fixtures/links-test.md"])
         .assert()
         .success()
-        .stdout(predicate::str::contains("Markdown"))
-        .stdout(predicate::str::contains("WikiLink"));
+        .stdout(predicate::str::contains("Markdown"));
 }
 
 #[test]
@@ -269,7 +289,14 @@ fn parts_shows_correct_heading_level() {
 fn parts_filter_by_type() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "parts", "tests/fixtures/lrn-two-entries.md", "--filter", "type=note"])
+        .args([
+            "-f",
+            "agent",
+            "parts",
+            "tests/fixtures/lrn-two-entries.md",
+            "--filter",
+            "type=note",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("Entry 2"))
@@ -310,7 +337,13 @@ fn toc_pattern_filters_nested() {
     // "Queue" matches both "### Queue Bindings" and "### High Queue Backlog"
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "toc", "tests/fixtures/service-doc.md", "Queue"])
+        .args([
+            "-f",
+            "agent",
+            "toc",
+            "tests/fixtures/service-doc.md",
+            "Queue",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("### Queue Bindings"))
@@ -337,7 +370,13 @@ fn toc_json_has_all_fields() {
 fn sec_extracts_nested_section_with_code() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "human", "sec", "tests/fixtures/service-doc.md", "Environment Variables"])
+        .args([
+            "-f",
+            "human",
+            "sec",
+            "tests/fixtures/service-doc.md",
+            "Environment Variables",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("### Environment Variables"))
@@ -349,7 +388,13 @@ fn sec_extracts_nested_section_with_code() {
 fn sec_extracts_section_with_table() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "sec", "tests/fixtures/service-doc.md", "Queue Bindings"])
+        .args([
+            "-f",
+            "agent",
+            "sec",
+            "tests/fixtures/service-doc.md",
+            "Queue Bindings",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("entity-alpha-p1"))
@@ -396,7 +441,14 @@ fn at_json_format() {
 fn find_filters_by_topic() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "find", "tests/fixtures/", "--topic", "ingestion"])
+        .args([
+            "-f",
+            "agent",
+            "find",
+            "tests/fixtures/",
+            "--topic",
+            "ingestion",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("service-doc.md"))
@@ -407,7 +459,14 @@ fn find_filters_by_topic() {
 fn find_filters_by_code_language() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "find", "tests/fixtures/", "--has-code", "java"])
+        .args([
+            "-f",
+            "agent",
+            "find",
+            "tests/fixtures/",
+            "--has-code",
+            "java",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("feedback-entry.md"));
@@ -448,7 +507,7 @@ fn find_nonexistent_dir_fails() {
 // ─── map: realistic fixtures ──────────────────────────────────────────
 
 #[test]
-fn map_lists_vault_files() {
+fn map_lists_directory_files() {
     Command::cargo_bin("mdd")
         .unwrap()
         .args(["map", "tests/fixtures/"])
@@ -465,7 +524,16 @@ fn map_lists_vault_files() {
 fn agg_type_filter() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "agg", "tests/fixtures/", "-t", "feedback", "-H", "Good"])
+        .args([
+            "-f",
+            "agent",
+            "agg",
+            "tests/fixtures/",
+            "-t",
+            "feedback",
+            "-H",
+            "Good",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("### Good"))
@@ -476,7 +544,14 @@ fn agg_type_filter() {
 fn agg_emits_content_with_provenance() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "agg", "tests/fixtures/", "-H", "Architecture"])
+        .args([
+            "-f",
+            "agent",
+            "agg",
+            "tests/fixtures/",
+            "-H",
+            "Architecture",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("[service-doc.md:"))
@@ -488,7 +563,14 @@ fn agg_emits_content_with_provenance() {
 fn agg_json_includes_content() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "json", "agg", "tests/fixtures/", "-H", "Troubleshooting"])
+        .args([
+            "-f",
+            "json",
+            "agg",
+            "tests/fixtures/",
+            "-H",
+            "Troubleshooting",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("\"content\""))
@@ -501,7 +583,16 @@ fn agg_budget_zero_emits_at_least_one() {
     // Budget 0 should still emit at least one section (budget check is "if over AND emitted > 0")
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "agg", "tests/fixtures/", "-H", "Architecture", "--budget", "1"])
+        .args([
+            "-f",
+            "agent",
+            "agg",
+            "tests/fixtures/",
+            "-H",
+            "Architecture",
+            "--budget",
+            "1",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("##"))
@@ -518,20 +609,12 @@ fn links_resolves_relative_paths() {
         .assert()
         .success()
         .stdout(predicate::str::contains("./service-doc.md (Markdown, OK)"))
-        .stdout(predicate::str::contains("./feedback-entry.md (Markdown, OK)"))
-        .stdout(predicate::str::contains("./removed-service.md (Markdown, BROKEN)"));
-}
-
-#[test]
-fn links_wiki_resolution() {
-    Command::cargo_bin("mdd")
-        .unwrap()
-        .args(["links", "tests/fixtures/cross-refs.md", "--check"])
-        .assert()
-        .success()
-        .stdout(predicate::str::contains("service-doc (WikiLink, OK)"))
-        .stdout(predicate::str::contains("feedback-entry (WikiLink, OK)"))
-        .stdout(predicate::str::contains("nonexistent-runbook (WikiLink, BROKEN)"));
+        .stdout(predicate::str::contains(
+            "./feedback-entry.md (Markdown, OK)",
+        ))
+        .stdout(predicate::str::contains(
+            "./removed-service.md (Markdown, BROKEN)",
+        ));
 }
 
 #[test]
@@ -600,7 +683,14 @@ fn parts_three_entries_lrn() {
 fn parts_filter_topic() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "parts", "tests/fixtures/multipart-lrn.md", "--filter", "topic=message broker configuration"])
+        .args([
+            "-f",
+            "agent",
+            "parts",
+            "tests/fixtures/multipart-lrn.md",
+            "--filter",
+            "topic=message broker configuration",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("Consumer Library"))
@@ -611,7 +701,14 @@ fn parts_filter_topic() {
 fn parts_filter_level() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "parts", "tests/fixtures/multipart-lrn.md", "--filter", "level=team"])
+        .args([
+            "-f",
+            "agent",
+            "parts",
+            "tests/fixtures/multipart-lrn.md",
+            "--filter",
+            "level=team",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("Entry 3"))
@@ -634,7 +731,14 @@ fn parts_json_format() {
 fn parts_no_filter_match() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "parts", "tests/fixtures/multipart-lrn.md", "--filter", "type=nonexistent"])
+        .args([
+            "-f",
+            "agent",
+            "parts",
+            "tests/fixtures/multipart-lrn.md",
+            "--filter",
+            "type=nonexistent",
+        ])
         .assert()
         .success()
         .stderr(predicate::str::contains("0 entries shown"));
@@ -720,7 +824,14 @@ fn find_has_table_finds_service_doc() {
 fn find_has_code_yaml() {
     Command::cargo_bin("mdd")
         .unwrap()
-        .args(["-f", "agent", "find", "tests/fixtures/", "--has-code", "yaml"])
+        .args([
+            "-f",
+            "agent",
+            "find",
+            "tests/fixtures/",
+            "--has-code",
+            "yaml",
+        ])
         .assert()
         .success()
         .stdout(predicate::str::contains("service-doc.md"));

@@ -50,9 +50,6 @@ pub fn render_sec(output: &SecOutput) {
 }
 
 pub fn render_at(output: &AtOutput) {
-    eprintln!(
-        "[{}]",
-        output.breadcrumb.join(" > ").blue()
-    );
+    eprintln!("[{}]", output.breadcrumb.join(" > ").blue());
     print!("{}", output.content);
 }

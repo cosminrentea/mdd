@@ -1,5 +1,7 @@
 /target
 .mdd/
+mutants.out/
+mutants.out.old/
 *.swp
 *.swo
 .DS_Store

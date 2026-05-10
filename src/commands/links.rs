@@ -4,7 +4,7 @@ use crate::cli::Cli;
 use crate::error::{MddError, Result};
 use crate::output;
 use crate::parse::markdown::parse_file;
-use crate::parse::{Link, LinkKind};
+use crate::parse::Link;
 use crate::query;
 
 pub fn run(path: PathBuf, check: bool, broken: bool, cli: &Cli) -> Result<()> {
@@ -59,11 +59,7 @@ pub fn run(path: PathBuf, check: bool, broken: bool, cli: &Cli) -> Result<()> {
                 continue;
             }
 
-            let kind_str = match link.kind {
-                LinkKind::Markdown => "Markdown",
-                LinkKind::WikiLink => "WikiLink",
-                LinkKind::AutoLink => "AutoLink",
-            };
+            let kind_str = "Markdown";
 
             let status_str = match status {
                 LinkStatus::Ok => "OK",
@@ -105,10 +101,7 @@ pub fn run(path: PathBuf, check: bool, broken: bool, cli: &Cli) -> Result<()> {
     }
 
     if check {
-        eprintln!(
-            "\n{} links total, {} broken",
-            total, broken_count
-        );
+        eprintln!("\n{} links total, {} broken", total, broken_count);
     } else {
         eprintln!("\n{} links total", total);
     }
