@@ -5,3 +5,4 @@ mutants.out.old/
 *.swp
 *.swo
 .DS_Store
+*.tar.gz
