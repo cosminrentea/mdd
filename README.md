@@ -28,18 +28,10 @@ Structural queries on Markdown files for coding agents.
 brew install cosminrentea/tap/mdd
 ```
 
-### Cargo (any platform)
+### Cargo (any platform with Rust toolchain)
 
 ```bash
-cargo install mdd
-```
-
-### From source
-
-```bash
-git clone https://github.com/cosminrentea/mdd
-cd mdd
-cargo install --path .
+cargo install --git https://github.com/cosminrentea/mdd
 ```
 
 ## Quick Start
