@@ -18,7 +18,7 @@ fn version_flag_works() {
         .arg("--version")
         .assert()
         .success()
-        .stdout(predicate::str::contains("mdd 0.1.0"));
+        .stdout(predicate::str::contains("mdd 0.2.0"));
 }
 
 #[test]
@@ -513,8 +513,7 @@ fn map_lists_directory_files() {
         .args(["map", "tests/fixtures/"])
         .assert()
         .success()
-        .stdout(predicate::str::contains("service-doc.md"))
-        .stdout(predicate::str::contains("feedback-entry.md"))
+        .stdout(predicate::str::contains("11 files"))
         .stdout(predicate::str::contains("TOTAL:"));
 }
 
@@ -808,6 +807,55 @@ fn sec_partial_match_finds_section() {
         .assert()
         .success()
         .stdout(predicate::str::contains("High Queue Backlog"));
+}
+
+#[test]
+fn sec_multi_pattern_both_match() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args([
+            "-f",
+            "agent",
+            "sec",
+            "tests/fixtures/service-doc.md",
+            "Queue Bindings",
+            "Environment Variables",
+        ])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("### Queue Bindings"))
+        .stdout(predicate::str::contains("### Environment Variables"))
+        .stdout(predicate::str::contains("STORE_URI"));
+}
+
+#[test]
+fn sec_multi_pattern_partial_miss() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args([
+            "sec",
+            "tests/fixtures/service-doc.md",
+            "Queue Bindings",
+            "NONEXISTENT_HEADING_XYZ",
+        ])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("### Queue Bindings"))
+        .stderr(predicate::str::contains("warning: no match for: NONEXISTENT_HEADING_XYZ"));
+}
+
+#[test]
+fn sec_multi_pattern_all_miss() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args([
+            "sec",
+            "tests/fixtures/service-doc.md",
+            "NOPE_ONE",
+            "NOPE_TWO",
+        ])
+        .assert()
+        .failure();
 }
 
 #[test]

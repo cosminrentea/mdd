@@ -16,7 +16,7 @@ fn main() {
     // are small CLI argument strings, not large data.
     let result = match &cli.command {
         Command::Toc { path, pattern } => commands::toc::run(path.clone(), pattern.clone(), &cli),
-        Command::Sec { path, pattern } => commands::sec::run(path.clone(), pattern.clone(), &cli),
+        Command::Sec { path, patterns } => commands::sec::run(path.clone(), patterns.clone(), &cli),
         Command::At { path, line, level } => commands::at::run(path.clone(), *line, *level, &cli),
         Command::Map { path } => commands::map::run(path.clone(), &cli),
         Command::Find {

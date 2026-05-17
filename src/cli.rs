@@ -39,8 +39,9 @@ pub enum Command {
         /// File or directory path
         path: PathBuf,
 
-        /// Heading pattern to match (substring, case-insensitive)
-        pattern: String,
+        /// Heading patterns to match (substring, case-insensitive)
+        #[arg(num_args = 1..)]
+        patterns: Vec<String>,
     },
 
     /// Find the section containing a given line number.
