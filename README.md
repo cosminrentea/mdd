@@ -5,7 +5,7 @@
 
 Structural queries on Markdown files for coding agents.
 
-`mdd` gives AI coding agents (and humans) a compressed map of documentation so they can decide **what** to read before consuming context tokens. Think of it as `jq` for Markdown structure.
+`mdd` gives AI coding agents (and humans) a compressed map of documentation so they can decide **what** to read before consuming context tokens. Think of it as the Swiss Army knife for "Markdown-Driven Development" (MDD).
 
 ## Features
 
