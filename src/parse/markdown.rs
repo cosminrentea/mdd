@@ -423,6 +423,23 @@ mod tests {
     }
 
     #[test]
+    fn frontmatter_offset_is_the_one_based_line_of_the_opening_delimiter() {
+        let content = include_str!("../../tests/fixtures/multipart-lrn.md");
+        let md = parse_content(content);
+        let lines: Vec<&str> = content.lines().collect();
+
+        let offsets: Vec<usize> = md
+            .entries
+            .iter()
+            .map(|e| e.frontmatter.as_ref().unwrap().offset)
+            .collect();
+        assert_eq!(offsets, vec![3, 28, 45]);
+        for offset in offsets {
+            assert_eq!(lines[offset - 1], "---");
+        }
+    }
+
+    #[test]
     fn section_limits_stay_within_their_entry() {
         let content = include_str!("../../tests/fixtures/multipart-lrn.md");
         let md = parse_content(content);

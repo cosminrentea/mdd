@@ -39,5 +39,5 @@ Updated: 2026-10-31
 
 - `mdd links <path> [--check | --broken]` lists Markdown links. `--check` tests whether local target paths exist; `--broken` implies checking and prints only broken local targets. HTTP, HTTPS, and mail links are labeled external, not fetched. Anchor fragments are not validated, and broken targets do not make the command fail. Directory scans use the exclusions above.
 - `mdd parts <file> [--filter key=value]` lists entries in a multi-frontmatter document. The filter compares the selected frontmatter value case-insensitively.
-- `mdd fm <path>` prints frontmatter fields for a file or coverage for a directory. `--list-values <field>` lists unique values. `--set key=value` previews an edit to a single file; add `--apply` to write it. Directory `fm` scans do not use the filename exclusions above.
+- `mdd fm <path>` prints frontmatter fields for a file or coverage for a directory. `--list-values <field>` lists unique values. `--set key=value` previews an edit to a single file; add `--apply` to write it. Only the frontmatter blocks are rewritten, line endings are preserved, and a directory path is an error (exit code 1). Directory `fm` scans do not use the filename exclusions above.
 - `mdd cache <dir> [--clear]` prints a not-implemented message; it does not inspect or clear a cache.
