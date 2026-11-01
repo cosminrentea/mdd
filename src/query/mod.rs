@@ -3,8 +3,8 @@ pub mod predicates;
 
 use std::path::{Path, PathBuf};
 
-use crate::parse::markdown::parse_file;
 use crate::parse::MdFile;
+use crate::parse::markdown::parse_file;
 
 /// Walk a directory collecting all .md file paths, sorted alphabetically.
 /// Follows symlinks, respects .gitignore, excludes infrastructure files

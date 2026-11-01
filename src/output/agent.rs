@@ -1,4 +1,4 @@
-use super::{fmt_size, format_signature, AtOutput, SecOutput, TocDirOutput, TocFileOutput};
+use super::{AtOutput, SecOutput, TocDirOutput, TocFileOutput, fmt_size, format_signature};
 
 pub fn render_toc_file(output: &TocFileOutput) {
     let path_str = output.path.display();

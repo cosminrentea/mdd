@@ -2,7 +2,7 @@
 name = "mdd"
 version = "0.2.1"
 readme = "README.md"
-edition = "2021"
+edition = "2024"
 rust-version = "1.88"
 authors = ["Cosmin Rentea <cosminrentea@gmail.com>"]
 description = "Markdown-Driven Development -- structural queries for coding agents"
@@ -56,3 +56,7 @@ tempfile = "3"
 
 # Property-based / fuzz testing
 proptest = "1"
+
+[lints.clippy]
+# 2024 let-chains: collapse in PR 6
+collapsible_if = "allow"

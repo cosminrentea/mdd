@@ -1,6 +1,6 @@
 use owo_colors::OwoColorize;
 
-use super::{fmt_size, AtOutput, SecOutput, TocDirOutput, TocFileOutput};
+use super::{AtOutput, SecOutput, TocDirOutput, TocFileOutput, fmt_size};
 
 pub fn render_toc_file(output: &TocFileOutput) {
     for section in &output.sections {

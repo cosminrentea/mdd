@@ -1,5 +1,5 @@
-use crate::parse::frontmatter::field_as_string;
 use crate::parse::DocEntry;
+use crate::parse::frontmatter::field_as_string;
 
 /// Check if a document entry's frontmatter matches the given type and topic filters.
 /// Returns true if all provided filters match (AND logic).
