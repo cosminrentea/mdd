@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
@@ -19,6 +20,10 @@ pub struct Cli {
     /// Fail on first malformed file instead of skipping with a warning
     #[arg(long, global = true)]
     pub strict: bool,
+}
+
+fn parse_date(s: &str) -> Result<NaiveDate, chrono::ParseError> {
+    NaiveDate::parse_from_str(s, "%Y-%m-%d")
 }
 
 #[derive(Subcommand, Debug)]
@@ -91,8 +96,8 @@ pub enum Command {
         has_code: Option<String>,
 
         /// Only files modified after this date (YYYY-MM-DD)
-        #[arg(long)]
-        newer_than: Option<String>,
+        #[arg(long, value_parser = parse_date)]
+        newer_than: Option<NaiveDate>,
     },
 
     /// Frontmatter inspection and modification.

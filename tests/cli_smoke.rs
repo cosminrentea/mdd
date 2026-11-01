@@ -886,3 +886,71 @@ fn find_has_code_yaml() {
         .success()
         .stdout(predicate::str::contains("service-doc.md"));
 }
+
+// ─── find --newer-than ────────────────────────────────────────────────
+
+fn write_with_mtime(dir: &std::path::Path, name: &str, unix_secs: i64) {
+    let path = dir.join(name);
+    std::fs::write(&path, "# Title\n\ntext\n").unwrap();
+    let mtime = if unix_secs >= 0 {
+        std::time::UNIX_EPOCH + std::time::Duration::from_secs(unix_secs as u64)
+    } else {
+        std::time::UNIX_EPOCH - std::time::Duration::from_secs(unix_secs.unsigned_abs())
+    };
+    std::fs::OpenOptions::new()
+        .write(true)
+        .open(&path)
+        .unwrap()
+        .set_modified(mtime)
+        .unwrap();
+}
+
+fn find_newer_than(dir: &std::path::Path, date: &str) -> assert_cmd::assert::Assert {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "find"])
+        .arg(dir)
+        .args(["--newer-than", date])
+        .assert()
+}
+
+#[test]
+fn find_newer_than_pre_1970_date_does_not_panic() {
+    let tmp = tempfile::tempdir().unwrap();
+    write_with_mtime(tmp.path(), "recent.md", 1_700_000_000);
+    find_newer_than(tmp.path(), "1960-01-01")
+        .success()
+        .stdout(predicate::str::contains("recent.md"));
+}
+
+#[test]
+fn find_newer_than_rejects_invalid_date_with_usage_error() {
+    let tmp = tempfile::tempdir().unwrap();
+    write_with_mtime(tmp.path(), "recent.md", 1_700_000_000);
+    find_newer_than(tmp.path(), "not-a-date")
+        .code(2)
+        .stderr(predicate::str::contains("--newer-than"));
+}
+
+#[test]
+fn find_newer_than_filters_by_mtime() {
+    let tmp = tempfile::tempdir().unwrap();
+    write_with_mtime(tmp.path(), "old.md", 1_577_836_800); // 2020-01-01
+    write_with_mtime(tmp.path(), "new.md", 1_780_272_000); // 2026-06-01
+    find_newer_than(tmp.path(), "2024-01-01")
+        .success()
+        .stdout(predicate::str::contains("new.md"))
+        .stdout(predicate::str::contains("old.md").not());
+}
+
+#[test]
+fn find_newer_than_cutoff_is_inclusive_utc_midnight() {
+    let tmp = tempfile::tempdir().unwrap();
+    // 2024-01-01T00:00:00Z is 1_704_067_200
+    write_with_mtime(tmp.path(), "at-cutoff.md", 1_704_067_200);
+    write_with_mtime(tmp.path(), "just-before.md", 1_704_067_199);
+    find_newer_than(tmp.path(), "2024-01-01")
+        .success()
+        .stdout(predicate::str::contains("at-cutoff.md"))
+        .stdout(predicate::str::contains("just-before.md").not());
+}
