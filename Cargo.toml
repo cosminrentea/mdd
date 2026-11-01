@@ -61,7 +61,17 @@ proptest = "1"
 unsafe_code = "deny"
 
 [lints.clippy]
+pedantic = { level = "warn", priority = -1 }
 dbg_macro = "warn"
 todo = "warn"
 unimplemented = "warn"
 unwrap_used = "warn"
+# Structural, revisited with later refactors
+needless_pass_by_value = "allow"
+too_many_lines = "allow"
+struct_excessive_bools = "allow"
+# Public API surface, revisited when the library API shrinks
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+# Statistics and display arithmetic
+cast_precision_loss = "allow"

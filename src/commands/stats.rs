@@ -7,6 +7,7 @@ use crate::output::fmt_size;
 use crate::parse::frontmatter::field_as_string;
 use crate::query;
 
+#[allow(clippy::cast_possible_truncation, reason = "file sizes fit in usize")]
 pub fn run(dir: PathBuf, _cli: &Cli) -> Result<()> {
     if !dir.exists() || !dir.is_dir() {
         return Err(MddError::FileNotFound { path: dir });

@@ -18,7 +18,7 @@ use crate::error::{MddError, Result};
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-/// Parse a Markdown file from disk into an MdFile struct.
+/// Parse a Markdown file from disk into an `MdFile` struct.
 ///
 /// Reads the file, gets mtime, then delegates to `parse_content`.
 pub fn parse_file(path: &Path) -> Result<MdFile> {
@@ -54,16 +54,16 @@ pub fn parse_file(path: &Path) -> Result<MdFile> {
     Ok(md_file)
 }
 
-/// Parse a Markdown string into an MdFile struct (no filesystem access).
+/// Parse a Markdown string into an `MdFile` struct (no filesystem access).
 ///
 /// This is the workhorse function. It:
-/// 1. Builds a line_starts lookup table
+/// 1. Builds a `line_starts` lookup table
 /// 2. Iterates pulldown-cmark events with byte offsets
-/// 3. Detects entry boundaries (MetadataBlock events)
+/// 3. Detects entry boundaries (`MetadataBlock` events)
 /// 4. Tracks headings and their hierarchical relationships
-/// 5. Accumulates ContentFeatures per section
+/// 5. Accumulates `ContentFeatures` per section
 ///
-/// Returns an MdFile with path set to an empty PathBuf (caller fills it in).
+/// Returns an `MdFile` with path set to an empty `PathBuf` (caller fills it in).
 pub fn parse_content(content: &str) -> MdFile {
     // Pre-compute a table mapping line numbers to byte offsets.
     // Index 0 = byte offset of line 1's start (always 0).
@@ -250,16 +250,16 @@ pub fn parse_content(content: &str) -> MdFile {
 
 /// Convert a byte offset in the source string to a 1-based line number.
 ///
-/// Uses binary search (partition_point) on the pre-computed line_starts table.
+/// Uses binary search (`partition_point`) on the pre-computed `line_starts` table.
 /// This is O(log n) where n = number of lines.
 ///
-/// For line_starts sorted ascending, `partition_point` gives the count of line
+/// For `line_starts` sorted ascending, `partition_point` gives the count of line
 /// starts that are <= our byte offset, which equals the 1-based line number.
 fn byte_to_line(line_starts: &[usize], byte_offset: usize) -> usize {
     line_starts.partition_point(|&start| start <= byte_offset)
 }
 
-/// Convert pulldown-cmark's HeadingLevel enum to a u8 (1-6).
+/// Convert pulldown-cmark's `HeadingLevel` enum to a u8 (1-6).
 fn heading_level_to_u8(level: HeadingLevel) -> u8 {
     match level {
         HeadingLevel::H1 => 1,

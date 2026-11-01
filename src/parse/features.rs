@@ -11,7 +11,7 @@ use super::ContentFeatures;
 /// Mutable accumulator that collects feature signals from parser events.
 ///
 /// The builder lives only during parsing; once a section ends, we call `.finish()`
-/// to produce the final ContentFeatures value.
+/// to produce the final `ContentFeatures` value.
 #[derive(Debug, Default, Clone)]
 pub struct FeatureAccumulator {
     pub has_table: bool,
@@ -33,6 +33,10 @@ impl FeatureAccumulator {
     /// Process a single pulldown-cmark event, updating feature counts.
     ///
     /// Call this for every event that falls within the current section's range.
+    #[allow(
+        clippy::cast_possible_truncation,
+        reason = "per-event word counts fit in u32"
+    )]
     pub fn process_event(&mut self, event: &Event) {
         match event {
             // Tables
@@ -78,7 +82,7 @@ impl FeatureAccumulator {
         }
     }
 
-    /// Convert the accumulated state into an immutable ContentFeatures.
+    /// Convert the accumulated state into an immutable `ContentFeatures`.
     pub fn finish(self) -> ContentFeatures {
         ContentFeatures {
             has_table: self.has_table,
