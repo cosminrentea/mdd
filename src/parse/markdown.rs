@@ -4,12 +4,6 @@
 // document. The key insight: pulldown-cmark emits (Event, Range<usize>) pairs
 // where the Range is the byte offset span in the source string. We convert
 // byte offsets to 1-based line numbers using a pre-computed lookup table.
-//
-// Rust concept: this module demonstrates:
-// - Iterator processing with state machines
-// - The builder pattern (accumulating state, then finalizing)
-// - Enum pattern matching for event dispatch
-// - Lifetime-free design (we clone text as we go, avoiding lifetime complexity)
 
 use std::fs;
 use std::path::Path;
@@ -74,9 +68,6 @@ pub fn parse_content(content: &str) -> MdFile {
     // Pre-compute a table mapping line numbers to byte offsets.
     // Index 0 = byte offset of line 1's start (always 0).
     // Index 1 = byte offset of line 2's start (position after first \n).
-    //
-    // Rust concept: iterator chaining. `once(0)` provides the first element,
-    // then we chain all positions after newline characters.
     let line_starts: Vec<usize> = std::iter::once(0)
         .chain(content.match_indices('\n').map(|(i, _)| i + 1))
         .collect();
@@ -263,10 +254,8 @@ pub fn parse_content(content: &str) -> MdFile {
 /// Uses binary search (partition_point) on the pre-computed line_starts table.
 /// This is O(log n) where n = number of lines.
 ///
-/// Rust concept: `partition_point` returns the index where the predicate
-/// switches from true to false. For line_starts sorted ascending, this gives
-/// us the count of line starts that are <= our byte offset, which equals the
-/// 1-based line number.
+/// For line_starts sorted ascending, `partition_point` gives the count of line
+/// starts that are <= our byte offset, which equals the 1-based line number.
 fn byte_to_line(line_starts: &[usize], byte_offset: usize) -> usize {
     line_starts.partition_point(|&start| start <= byte_offset)
 }
