@@ -35,3 +35,15 @@ jobs:
         run: cargo doc --no-deps
         env:
           RUSTDOCFLAGS: -D warnings
+
+  deny:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        checks: [advisories, "bans licenses sources"]
+    continue-on-error: ${{ matrix.checks == 'advisories' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: EmbarkStudios/cargo-deny-action@v2.1.1
+        with:
+          command: check ${{ matrix.checks }}
