@@ -3,6 +3,12 @@ use mdd::cli::{Cli, Command};
 use mdd::commands;
 
 fn main() {
+    #[cfg(unix)]
+    // SAFETY: restoring the default SIGPIPE disposition before any threads start.
+    unsafe {
+        libc::signal(libc::SIGPIPE, libc::SIG_DFL);
+    }
+
     // Parse CLI arguments. Clap handles --help, --version, and validation
     // automatically from the derive macros in cli.rs.
     let cli = Cli::parse();

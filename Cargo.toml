@@ -46,6 +46,10 @@ thiserror = "2"
 # Terminal coloring
 owo-colors = "4"
 
+[target.'cfg(unix)'.dependencies]
+# Reset SIGPIPE so a closed stdout pipe ends the process quietly
+libc = "0.2"
+
 [dev-dependencies]
 # Snapshot testing
 insta = { version = "1", features = ["yaml"] }
