@@ -56,7 +56,7 @@ pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
                     .filter(|(k, _)| !matches!(k.as_str(), "weight" | "weight-reason" | "agent"))
                     .map(|(k, v)| {
                         let val = match v {
-                            serde_yaml::Value::String(s) => s.clone(),
+                            serde_norway::Value::String(s) => s.clone(),
                             other => format!("{other:?}"),
                         };
                         format!("{k}={val}")

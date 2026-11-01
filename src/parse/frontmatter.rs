@@ -1,6 +1,6 @@
 // YAML frontmatter parsing with raw text preservation for round-trip edits.
 //
-// Strategy: use serde_yaml to parse the YAML text into a BTreeMap for queries,
+// Strategy: use serde_norway to parse the YAML text into a BTreeMap for queries,
 // but also keep the raw string so `mdd fm --set key=val` can do line-level
 // string surgery without reformatting the entire YAML block.
 
@@ -23,9 +23,9 @@ pub fn parse_frontmatter(raw_yaml: &str, offset: usize) -> Option<Frontmatter> {
         return None;
     }
 
-    // serde_yaml::from_str can parse into various types. We want a BTreeMap
+    // serde_norway::from_str can parse into various types. We want a BTreeMap
     // because it preserves key ordering (alphabetical) for deterministic output.
-    let fields: BTreeMap<String, serde_yaml::Value> = serde_yaml::from_str(trimmed).ok()?;
+    let fields: BTreeMap<String, serde_norway::Value> = serde_norway::from_str(trimmed).ok()?;
 
     Some(Frontmatter {
         fields,
@@ -41,10 +41,10 @@ pub fn parse_frontmatter(raw_yaml: &str, offset: usize) -> Option<Frontmatter> {
 pub fn field_as_string(fm: &Frontmatter, key: &str) -> Option<String> {
     let value = fm.fields.get(key)?;
     match value {
-        serde_yaml::Value::String(s) => Some(s.clone()),
-        serde_yaml::Value::Number(n) => Some(n.to_string()),
-        serde_yaml::Value::Bool(b) => Some(b.to_string()),
-        serde_yaml::Value::Null => Some("null".to_owned()),
+        serde_norway::Value::String(s) => Some(s.clone()),
+        serde_norway::Value::Number(n) => Some(n.to_string()),
+        serde_norway::Value::Bool(b) => Some(b.to_string()),
+        serde_norway::Value::Null => Some("null".to_owned()),
         // Sequences and mappings aren't representable as a simple string
         _ => None,
     }
@@ -84,7 +84,7 @@ mod tests {
         let fm = parse_frontmatter(yaml, 5).expect("should parse");
         assert_eq!(fm.offset, 5);
         assert_eq!(field_as_string(&fm, "type"), Some("note".to_owned()));
-        // Multi-line strings are still strings in serde_yaml
+        // Multi-line strings are still strings in serde_norway
         let desc = field_as_string(&fm, "description").unwrap();
         assert!(desc.contains("multi-line"));
     }

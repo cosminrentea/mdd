@@ -234,20 +234,22 @@ fn format_line(key: &str, value: &str) -> String {
     format!("{key}: {value}")
 }
 
-fn format_yaml_value(val: &serde_yaml::Value) -> String {
+fn format_yaml_value(val: &serde_norway::Value) -> String {
     match val {
-        serde_yaml::Value::String(s) => s.clone(),
-        serde_yaml::Value::Number(n) => n.to_string(),
-        serde_yaml::Value::Bool(b) => b.to_string(),
-        serde_yaml::Value::Null => "null".to_owned(),
-        serde_yaml::Value::Sequence(seq) => {
+        serde_norway::Value::String(s) => s.clone(),
+        serde_norway::Value::Number(n) => n.to_string(),
+        serde_norway::Value::Bool(b) => b.to_string(),
+        serde_norway::Value::Null => "null".to_owned(),
+        serde_norway::Value::Sequence(seq) => {
             let items: Vec<String> = seq.iter().map(format_yaml_value).collect();
             format!("[{}]", items.join(", "))
         }
-        serde_yaml::Value::Mapping(_) | serde_yaml::Value::Tagged(_) => serde_yaml::to_string(val)
-            .unwrap_or_default()
-            .trim()
-            .to_owned(),
+        serde_norway::Value::Mapping(_) | serde_norway::Value::Tagged(_) => {
+            serde_norway::to_string(val)
+                .unwrap_or_default()
+                .trim()
+                .to_owned()
+        }
     }
 }
 
