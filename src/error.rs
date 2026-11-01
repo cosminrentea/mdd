@@ -6,12 +6,6 @@ use thiserror::Error;
 ///
 /// Uses `thiserror` for ergonomic error variants and `miette` for
 /// rich terminal output (source highlighting, suggestions).
-///
-/// # Rust concept: Error enums
-/// In Rust, errors are typically modeled as enums where each variant
-/// represents a distinct failure mode. The `#[error(...)]` attribute
-/// from thiserror auto-generates the `Display` impl, and `#[diagnostic]`
-/// from miette adds structured error metadata (codes, help text).
 #[derive(Error, Diagnostic, Debug)]
 pub enum MddError {
     #[error("file not found: {path}")]
@@ -40,8 +34,4 @@ pub enum MddError {
 }
 
 /// Convenience type alias used throughout the codebase.
-///
-/// # Rust concept: Type aliases
-/// `Result<T>` here means `Result<T, MddError>` -- saves typing the error
-/// type everywhere. This is a common Rust pattern (std::io::Result does the same).
 pub type Result<T> = std::result::Result<T, MddError>;

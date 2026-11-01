@@ -1,8 +1,4 @@
 // Re-exports and shared data model for the parse module.
-//
-// Rust concept: mod.rs defines what a module exposes.
-// `pub use` re-exports items so callers can write `parse::MdFile` instead of
-// `parse::markdown::MdFile`.
 
 pub mod features;
 pub mod frontmatter;
@@ -18,11 +14,6 @@ use std::time::SystemTime;
 // These structs represent the parsed structure of a Markdown file. They are
 // produced by `markdown::parse_file` / `markdown::parse_content` and consumed
 // by commands (toc, sec, at, find, map, etc.).
-//
-// Rust concept: `#[derive(...)]` auto-generates trait implementations.
-// - Debug: enables `{:?}` formatting (useful for tests/logging)
-// - Clone: allows creating owned copies (needed when we cache)
-// - Default: provides a zero-value constructor via `T::default()`
 
 /// A fully parsed Markdown file with structural metadata.
 #[derive(Debug, Clone)]
@@ -53,7 +44,7 @@ pub struct DocEntry {
 
 /// Parsed YAML frontmatter with the raw text preserved for round-trip editing.
 ///
-/// Rust concept: BTreeMap keeps keys sorted, which gives deterministic output
+/// BTreeMap keeps keys sorted, which gives deterministic output
 /// when iterating (useful for tests and for predictable `mdd fm` output).
 #[derive(Debug, Clone)]
 pub struct Frontmatter {
@@ -85,9 +76,6 @@ pub struct Section {
 }
 
 /// Summary of section content -- lets agents decide whether to drill in.
-///
-/// Rust concept: `#[derive(Default)]` generates a constructor where all bools
-/// are false, all numbers are 0, and all Vecs are empty.
 #[derive(Debug, Clone, Default)]
 pub struct ContentFeatures {
     pub has_table: bool,

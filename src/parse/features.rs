@@ -10,7 +10,6 @@ use super::ContentFeatures;
 
 /// Mutable accumulator that collects feature signals from parser events.
 ///
-/// Rust concept: separating the mutable builder from the immutable result type.
 /// The builder lives only during parsing; once a section ends, we call `.finish()`
 /// to produce the final ContentFeatures value.
 #[derive(Debug, Default, Clone)]

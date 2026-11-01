@@ -16,9 +16,6 @@ fn main() {
 
     // Match on a reference to cli.command. This avoids moving fields out of
     // the Cli struct, so we can still pass &cli to each command handler.
-    //
-    // Rust concept: when you match on `&enum_value`, destructured bindings
-    // are automatically references (&PathBuf, &Option<String>, etc.).
     // We clone() where handlers need owned values -- acceptable since these
     // are small CLI argument strings, not large data.
     let result = match &cli.command {

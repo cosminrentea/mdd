@@ -13,7 +13,6 @@ use super::Frontmatter;
 ///
 /// Returns None if the YAML is empty or cannot be parsed as a mapping.
 ///
-/// # Rust concept: Option vs Result
 /// We return Option here (not Result) because malformed frontmatter in a single
 /// file shouldn't abort parsing of the entire document. The caller decides
 /// whether to warn (default) or fail (--strict mode).
@@ -26,9 +25,6 @@ pub fn parse_frontmatter(raw_yaml: &str, offset: usize) -> Option<Frontmatter> {
 
     // serde_yaml::from_str can parse into various types. We want a BTreeMap
     // because it preserves key ordering (alphabetical) for deterministic output.
-    //
-    // Rust concept: turbofish syntax `::<Type>` tells the compiler what type
-    // we want serde_yaml to deserialize into.
     let fields: BTreeMap<String, serde_yaml::Value> = serde_yaml::from_str(trimmed).ok()?;
 
     Some(Frontmatter {
