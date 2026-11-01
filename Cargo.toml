@@ -70,8 +70,5 @@ unwrap_used = "warn"
 needless_pass_by_value = "allow"
 too_many_lines = "allow"
 struct_excessive_bools = "allow"
-# Public API surface, revisited when the library API shrinks
-must_use_candidate = "allow"
-missing_errors_doc = "allow"
 # Statistics and display arithmetic
 cast_precision_loss = "allow"
