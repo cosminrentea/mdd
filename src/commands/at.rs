@@ -64,7 +64,7 @@ pub fn run(path: PathBuf, line: usize, level: usize, cli: &Cli) -> Result<()> {
     let end = (start + target.limit).min(lines_vec.len());
     let section_content = lines_vec[start..end].join("\n");
 
-    let format = output::resolve_format(&cli.format);
+    let format = output::resolve_format(cli.format.as_ref());
     output::render_at(
         &format,
         &AtOutput {

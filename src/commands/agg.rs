@@ -33,7 +33,7 @@ pub fn run(
     }
 
     let parsed = query::walk_and_parse(&dir);
-    let format = output::resolve_format(&cli.format);
+    let format = output::resolve_format(cli.format.as_ref());
 
     // Collect all matching sections with their content
     let mut matches: Vec<AggMatch> = Vec::new();
