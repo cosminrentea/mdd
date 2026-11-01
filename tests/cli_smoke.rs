@@ -929,7 +929,8 @@ fn find_newer_than_rejects_invalid_date_with_usage_error() {
     write_with_mtime(tmp.path(), "recent.md", 1_700_000_000);
     find_newer_than(tmp.path(), "not-a-date")
         .code(2)
-        .stderr(predicate::str::contains("--newer-than"));
+        .stderr(predicate::str::contains("--newer-than"))
+        .stderr(predicate::str::contains("YYYY-MM-DD"));
 }
 
 #[test]
