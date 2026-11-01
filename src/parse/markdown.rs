@@ -297,11 +297,17 @@ fn finalize_sections(
     compute_limits(sections, end_of_entry);
 }
 
+#[cfg(test)]
+#[path = "../../tests/common/mod.rs"]
+mod strategies;
+
 // ─── Unit Tests ───────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {
+    use super::strategies::{arb_level_drop_doc, arb_markdown_doc};
     use super::*;
+    use proptest::prelude::*;
 
     #[test]
     fn byte_to_line_basic() {
@@ -548,5 +554,32 @@ fn main() {}
         assert!(!sections[2].features.has_code_block);
         assert!(sections[2].features.has_list);
         assert_eq!(sections[2].features.list_item_count, 2);
+    }
+
+    proptest! {
+        #[test]
+        fn parsed_sections_are_ordered_and_bounded_by_their_entry(
+            doc in prop_oneof![arb_markdown_doc(), arb_level_drop_doc()]
+        ) {
+            let md = parse_content(&doc);
+            prop_assert!(!md.entries.is_empty());
+            prop_assert_eq!(md.entries.last().unwrap().end_offset, md.total_lines);
+
+            let mut prev_offset = 0;
+            for entry in &md.entries {
+                prop_assert!(entry.end_offset <= md.total_lines);
+                for s in &entry.sections {
+                    prop_assert!(s.offset >= 1, "offset must be >= 1, got {}", s.offset);
+                    prop_assert!(s.limit >= 1, "limit must be >= 1, got {}", s.limit);
+                    prop_assert!(s.offset > prev_offset, "offsets must ascend: {} after {}", s.offset, prev_offset);
+                    prop_assert!(
+                        s.offset + s.limit - 1 <= entry.end_offset,
+                        "section {:?} (offset {}, limit {}) escapes entry ending at {}",
+                        s.title, s.offset, s.limit, entry.end_offset
+                    );
+                    prev_offset = s.offset;
+                }
+            }
+        }
     }
 }

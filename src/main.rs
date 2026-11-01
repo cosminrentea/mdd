@@ -1,6 +1,13 @@
 use clap::Parser;
-use mdd::cli::{Cli, Command};
-use mdd::commands;
+
+mod cli;
+mod commands;
+mod error;
+mod output;
+mod parse;
+mod query;
+
+use cli::{Cli, Command};
 
 fn main() {
     #[cfg(unix)]
