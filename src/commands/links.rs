@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use crate::cli::Cli;
 use crate::error::{MddError, Result};
 use crate::output;
-use crate::parse::markdown::parse_file;
 use crate::parse::Link;
+use crate::parse::markdown::parse_file;
 use crate::query;
 
 pub fn run(path: PathBuf, check: bool, broken: bool, cli: &Cli) -> Result<()> {

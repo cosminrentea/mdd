@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use crate::cli::Cli;
 use crate::error::{MddError, Result};
 use crate::output::{self, TocDirEntry, TocDirOutput, TocFileOutput};
-use crate::parse::markdown::{parse_content, parse_file};
 use crate::parse::Section;
+use crate::parse::markdown::{parse_content, parse_file};
 
 pub fn run(path: PathBuf, pattern: Option<String>, cli: &Cli) -> Result<()> {
     if path.is_dir() {

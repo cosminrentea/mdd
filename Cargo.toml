@@ -2,7 +2,8 @@
 name = "mdd"
 version = "0.2.1"
 readme = "README.md"
-edition = "2021"
+edition = "2024"
+rust-version = "1.88"
 authors = ["Cosmin Rentea <cosminrentea@gmail.com>"]
 description = "Markdown-Driven Development -- structural queries for coding agents"
 license = "MIT"
@@ -10,20 +11,12 @@ repository = "https://github.com/cosminrentea/mdd"
 keywords = ["markdown", "cli", "agent", "documentation"]
 categories = ["command-line-utilities", "text-processing"]
 
-[lib]
-name = "mdd"
-path = "src/lib.rs"
-
-[[bin]]
-name = "mdd"
-path = "src/main.rs"
-
 [dependencies]
 # CLI framework (derive macros for zero-boilerplate argument parsing)
 clap = { version = "4", features = ["derive"] }
 
 # Markdown parsing (pulldown-cmark: fastest, byte offsets, multi-part support)
-pulldown-cmark = { version = "0.13", features = ["serde"] }
+pulldown-cmark = { version = "0.13", default-features = false }
 
 # YAML frontmatter
 serde_yaml = "0.9"
@@ -33,7 +26,7 @@ serde_json = "1"
 ignore = "0.4"
 
 # Date parsing and comparison
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { version = "0.4", default-features = false, features = ["std"] }
 
 # Pattern matching
 regex = "1"
@@ -52,7 +45,7 @@ libc = "0.2"
 
 [dev-dependencies]
 # Snapshot testing
-insta = { version = "1", features = ["yaml"] }
+insta = "1"
 
 # Integration test helpers
 assert_cmd = "2"
@@ -63,3 +56,13 @@ tempfile = "3"
 
 # Property-based / fuzz testing
 proptest = "1"
+
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+dbg_macro = "warn"
+todo = "warn"
+unimplemented = "warn"
+# 2024 let-chains: collapse in PR 6
+collapsible_if = "allow"

@@ -9,7 +9,7 @@ Updated: 2026-10-31
 
 ## Install
 
-Updated: 2026-10-31
+Updated: 2026-11-01
 
 On macOS arm64, install with Homebrew:
 
@@ -22,6 +22,8 @@ Or install from the repository with a Rust toolchain:
 ```bash
 cargo install --git https://github.com/cosminrentea/mdd
 ```
+
+Building from source requires Rust 1.88 or newer.
 
 ## Quick start
 

@@ -5,9 +5,9 @@ use std::time::{Duration, SystemTime};
 
 use crate::cli::Cli;
 use crate::error::{MddError, Result};
+use crate::parse::MdFile;
 use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
-use crate::parse::MdFile;
 
 pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
     if !path.exists() || !path.is_dir() {

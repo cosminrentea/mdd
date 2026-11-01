@@ -4,8 +4,8 @@ use std::path::PathBuf;
 use crate::cli::Cli;
 use crate::error::{MddError, Result};
 use crate::output::{self, SecMatch, SecOutput};
-use crate::parse::markdown::parse_file;
 use crate::parse::Section;
+use crate::parse::markdown::parse_file;
 
 pub fn run(path: PathBuf, patterns: Vec<String>, cli: &Cli) -> Result<()> {
     if !path.exists() {
