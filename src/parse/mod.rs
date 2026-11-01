@@ -19,9 +19,6 @@ use std::time::SystemTime;
 #[derive(Debug, Clone)]
 pub struct MdFile {
     pub path: PathBuf,
-    /// Content before the first `MetadataBlock` (e.g., a title line or intro text).
-    /// In single-frontmatter files, this is None (frontmatter is inside the entry).
-    pub preamble: Option<String>,
     /// Each logical entry: single-part files have one entry; multi-part (lrn) have many.
     pub entries: Vec<DocEntry>,
     /// All links found in the document.
@@ -42,7 +39,7 @@ pub struct DocEntry {
     pub end_offset: usize,
 }
 
-/// Parsed YAML frontmatter with the raw text preserved for round-trip editing.
+/// Parsed YAML frontmatter.
 ///
 /// `BTreeMap` keeps keys sorted, which gives deterministic output
 /// when iterating (useful for tests and for predictable `mdd fm` output).
@@ -51,8 +48,6 @@ pub struct Frontmatter {
     pub fields: BTreeMap<String, serde_norway::Value>,
     /// Line where the opening `---` appears (1-based).
     pub offset: usize,
-    /// The raw YAML text between the `---` delimiters (for string-surgery writes).
-    pub raw: String,
 }
 
 /// A heading-delimited section of content.
@@ -69,8 +64,6 @@ pub struct Section {
     pub offset: usize,
     /// Number of lines in this section (heading through end of content).
     pub limit: usize,
-    /// Index of the parent section in the same entry's `sections` vec, or None for top-level.
-    pub parent_idx: Option<usize>,
     /// Summary of what this section contains.
     pub features: ContentFeatures,
 }
@@ -90,17 +83,9 @@ pub struct ContentFeatures {
 /// A link found in the document.
 #[derive(Debug, Clone)]
 pub struct Link {
-    pub kind: LinkKind,
     pub target: String,
     /// Resolved absolute path (if it's a relative file link and resolution succeeded).
     pub resolved_path: Option<PathBuf>,
     /// Line where the link appears (1-based).
     pub line: usize,
-}
-
-/// Classification of link types found in Markdown.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum LinkKind {
-    /// Standard `[text](url)` link.
-    Markdown,
 }

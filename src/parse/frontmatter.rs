@@ -1,8 +1,6 @@
-// YAML frontmatter parsing with raw text preservation for round-trip edits.
+// YAML frontmatter parsing.
 //
-// Strategy: use serde_norway to parse the YAML text into a BTreeMap for queries,
-// but also keep the raw string so `mdd fm --set key=val` can do line-level
-// string surgery without reformatting the entire YAML block.
+// Strategy: use serde_norway to parse the YAML text into a BTreeMap for queries.
 
 use std::collections::BTreeMap;
 
@@ -27,11 +25,7 @@ pub fn parse_frontmatter(raw_yaml: &str, offset: usize) -> Option<Frontmatter> {
     // because it preserves key ordering (alphabetical) for deterministic output.
     let fields: BTreeMap<String, serde_norway::Value> = serde_norway::from_str(trimmed).ok()?;
 
-    Some(Frontmatter {
-        fields,
-        offset,
-        raw: raw_yaml.to_owned(),
-    })
+    Some(Frontmatter { fields, offset })
 }
 
 /// Extract the value of a specific field from frontmatter as a string.
@@ -60,7 +54,6 @@ mod tests {
         let fm = parse_frontmatter(yaml, 1).expect("should parse");
 
         assert_eq!(fm.offset, 1);
-        assert_eq!(fm.raw, yaml);
         assert_eq!(field_as_string(&fm, "type"), Some("reference".to_owned()));
         assert_eq!(field_as_string(&fm, "topic"), Some("testing".to_owned()));
         assert_eq!(field_as_string(&fm, "weight"), Some("0.8".to_owned()));

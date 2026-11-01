@@ -95,7 +95,6 @@ pub fn parse_content(content: &str) -> MdFile {
 
     // ─── State machine ────────────────────────────────────────────────────────
     let mut entries: Vec<DocEntry> = Vec::new();
-    let mut preamble: Option<String> = None;
 
     // Current entry being built (None before first MetadataBlock)
     let mut current_entry_sections: Vec<Section> = Vec::new();
@@ -143,13 +142,6 @@ pub fn parse_content(content: &str) -> MdFile {
                         end_offset: prev_end,
                     });
                     current_features = FeatureAccumulator::new();
-                } else if fm_line > 1 {
-                    // Content before the first metadata block is the preamble.
-                    let preamble_end_byte = metadata_byte_start;
-                    let pre_text = content[..preamble_end_byte].trim();
-                    if !pre_text.is_empty() {
-                        preamble = Some(pre_text.to_owned());
-                    }
                 }
 
                 seen_metadata_block = true;
@@ -192,16 +184,11 @@ pub fn parse_content(content: &str) -> MdFile {
                 }
                 current_features = FeatureAccumulator::new();
 
-                // Determine parent: walk backwards to find the nearest heading
-                // with a strictly lower level.
-                let parent_idx = find_parent(&current_entry_sections, heading_level);
-
                 current_entry_sections.push(Section {
                     level: heading_level,
                     title: heading_text.clone(),
                     offset: line,
                     limit: 0, // computed post-hoc by compute_limits()
-                    parent_idx,
                     features: ContentFeatures::default(),
                 });
             }
@@ -237,7 +224,6 @@ pub fn parse_content(content: &str) -> MdFile {
 
     MdFile {
         path: std::path::PathBuf::new(),
-        preamble,
         entries,
         links: super::links::extract_links(content, std::path::Path::new("")),
         total_lines,
@@ -269,19 +255,6 @@ fn heading_level_to_u8(level: HeadingLevel) -> u8 {
         HeadingLevel::H5 => 5,
         HeadingLevel::H6 => 6,
     }
-}
-
-/// Find the parent section index for a new heading at `level`.
-///
-/// Walks backwards through existing sections to find the most recent heading
-/// with a strictly smaller level number (i.e., a higher-level parent).
-fn find_parent(sections: &[Section], level: u8) -> Option<usize> {
-    sections
-        .iter()
-        .enumerate()
-        .rev()
-        .find(|(_, s)| s.level < level)
-        .map(|(i, _)| i)
 }
 
 /// Compute section limits post-hoc (matching Python mdd semantics).
@@ -366,7 +339,6 @@ mod tests {
         assert_eq!(entry.sections[0].level, 1);
         assert_eq!(entry.sections[1].title, "Section One");
         assert_eq!(entry.sections[1].level, 2);
-        assert_eq!(entry.sections[1].parent_idx, Some(0));
     }
 
     #[test]
@@ -482,10 +454,6 @@ Content of the second entry.
 ";
         let md = parse_content(content);
 
-        // Should have a preamble (the # Title line before first ---)
-        assert!(md.preamble.is_some());
-        assert!(md.preamble.as_ref().unwrap().contains("Daily 2026-05-10"));
-
         // Should have 2 entries (one per metadata block)
         assert_eq!(md.entries.len(), 2);
 
@@ -566,27 +534,6 @@ fn main() {}
         let content = "# The `main` Function\n\nBody.\n";
         let md = parse_content(content);
         assert_eq!(md.entries[0].sections[0].title, "The main Function");
-    }
-
-    #[test]
-    fn parent_idx_hierarchy() {
-        let content = "# H1\n\n## H2a\n\n### H3\n\n## H2b\n\nText.\n";
-        let md = parse_content(content);
-        let sections = &md.entries[0].sections;
-        assert_eq!(sections.len(), 4);
-        assert_eq!(sections[0].parent_idx, None); // H1 is root
-        assert_eq!(sections[1].parent_idx, Some(0)); // H2a -> H1
-        assert_eq!(sections[2].parent_idx, Some(1)); // H3 -> H2a
-        assert_eq!(sections[3].parent_idx, Some(0)); // H2b -> H1 (not H3)
-    }
-
-    #[test]
-    fn same_level_headings_no_parent() {
-        let content = "## A\n\nText.\n\n## B\n\nText.\n";
-        let md = parse_content(content);
-        let sections = &md.entries[0].sections;
-        assert_eq!(sections[0].parent_idx, None); // no parent for first H2
-        assert_eq!(sections[1].parent_idx, None); // H2 B has no H1 parent
     }
 
     #[test]
