@@ -1,6 +1,5 @@
 # mdd
 
-[![Crates.io](https://img.shields.io/crates/v/mdd.svg)](https://crates.io/crates/mdd)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Updated: 2026-10-31

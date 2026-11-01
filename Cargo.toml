@@ -7,6 +7,7 @@ rust-version = "1.88"
 authors = ["Cosmin Rentea <cosminrentea@gmail.com>"]
 description = "Markdown-Driven Development -- structural queries for coding agents"
 license = "MIT"
+publish = false
 repository = "https://github.com/cosminrentea/mdd"
 keywords = ["markdown", "cli", "agent", "documentation"]
 categories = ["command-line-utilities", "text-processing"]
