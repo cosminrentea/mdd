@@ -152,13 +152,10 @@ pub fn run(
     let remaining = matches.len() - emitted;
     if remaining > 0 {
         let remaining_lines: usize = matches[emitted..].iter().map(|m| m.limit).sum();
-        eprintln!(
-            "--- ({} more sections, {} lines truncated) ---",
-            remaining, remaining_lines
-        );
+        eprintln!("--- ({remaining} more sections, {remaining_lines} lines truncated) ---");
     }
 
-    eprintln!("{} sections emitted ({} lines)", emitted, lines_used);
+    eprintln!("{emitted} sections emitted ({lines_used} lines)");
 
     Ok(())
 }

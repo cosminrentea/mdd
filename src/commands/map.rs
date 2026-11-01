@@ -132,14 +132,14 @@ pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
 
             let mut desc = format!("[{}L]", md.total_lines);
             if let Some(t) = topic {
-                desc.push_str(&format!(" topic={}", t));
+                desc.push_str(&format!(" topic={t}"));
             }
             if !headings.is_empty() {
                 desc.push_str(&format!(
                     " {}",
                     headings
                         .iter()
-                        .map(|h| format!("## {}", h))
+                        .map(|h| format!("## {h}"))
                         .collect::<Vec<_>>()
                         .join(", ")
                 ));
@@ -180,7 +180,7 @@ pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
         let top: Vec<String> = sorted_topics
             .iter()
             .take(8)
-            .map(|(k, v)| format!("{}({})", k, v))
+            .map(|(k, v)| format!("{k}({v})"))
             .collect();
         println!("\nTOP TOPICS: {}", top.join(", "));
     }

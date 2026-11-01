@@ -48,10 +48,10 @@ fn list_field_values(path: &std::path::Path, field: &str) -> Result<()> {
     }
 
     if values.is_empty() {
-        eprintln!("No values found for field '{}'", field);
+        eprintln!("No values found for field '{field}'");
     } else {
         for val in &values {
-            println!("{}", val);
+            println!("{val}");
         }
         eprintln!("\n{} unique values", values.len());
     }
@@ -112,7 +112,7 @@ fn show_frontmatter(path: &std::path::Path) -> Result<()> {
             with_fm,
             count,
             if count > 0 {
-                with_fm as f64 / count as f64 * 100.0
+                f64::from(with_fm) / f64::from(count) * 100.0
             } else {
                 0.0
             }
@@ -125,7 +125,7 @@ fn set_field(path: &std::path::Path, assignment: &str, apply: bool) -> Result<()
     let (key, value) = assignment
         .split_once('=')
         .ok_or_else(|| MddError::NoMatch {
-            pattern: format!("invalid format '{}', expected key=value", assignment),
+            pattern: format!("invalid format '{assignment}', expected key=value"),
         })?;
 
     if !path.is_file() {
@@ -166,7 +166,7 @@ fn set_field(path: &std::path::Path, assignment: &str, apply: bool) -> Result<()
         eprintln!("Updated {} in {}", key.trim(), path.display());
     } else {
         eprintln!("Dry run (use --apply to write):");
-        println!("{}", new_content);
+        println!("{new_content}");
     }
 
     Ok(())
@@ -181,7 +181,7 @@ fn apply_frontmatter_set(
     value: &str,
 ) -> Result<String> {
     let lines: Vec<&str> = content.split_inclusive('\n').collect();
-    let prefix = format!("{}:", key);
+    let prefix = format!("{key}:");
     let mut out = String::with_capacity(content.len() + key.len() + value.len() + 4);
     let mut next = 0;
     let mut found = false;
@@ -189,10 +189,7 @@ fn apply_frontmatter_set(
     for (n, &start) in block_starts.iter().enumerate() {
         let open = start.saturating_sub(1);
         let delimiter_error = |what: &str| MddError::NoMatch {
-            pattern: format!(
-                "frontmatter {} delimiter not found near line {}",
-                what, start
-            ),
+            pattern: format!("frontmatter {what} delimiter not found near line {start}"),
         };
         if open < next || !lines.get(open).is_some_and(|l| l.trim_end() == "---") {
             return Err(delimiter_error("opening"));
@@ -235,7 +232,7 @@ fn line_ending(line: &str) -> &'static str {
 }
 
 fn format_line(key: &str, value: &str) -> String {
-    format!("{}: {}", key, value)
+    format!("{key}: {value}")
 }
 
 fn format_yaml_value(val: &serde_yaml::Value) -> String {

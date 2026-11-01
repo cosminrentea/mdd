@@ -33,7 +33,7 @@ pub fn run(path: PathBuf, line: usize, level: usize, cli: &Cli) -> Result<()> {
         .collect();
 
     let Some(&last) = containing.last() else {
-        eprintln!("Line {} is before any heading", line);
+        eprintln!("Line {line} is before any heading");
         return Ok(());
     };
 

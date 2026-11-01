@@ -85,7 +85,7 @@ pub fn run(path: PathBuf, check: bool, broken: bool, cli: &Cli) -> Result<()> {
                     let status_suffix = if status_str.is_empty() {
                         String::new()
                     } else {
-                        format!(", {}", status_str)
+                        format!(", {status_str}")
                     };
                     println!(
                         "[{}:{}] -> {} ({}{})",
@@ -101,9 +101,9 @@ pub fn run(path: PathBuf, check: bool, broken: bool, cli: &Cli) -> Result<()> {
     }
 
     if check {
-        eprintln!("\n{} links total, {} broken", total, broken_count);
+        eprintln!("\n{total} links total, {broken_count} broken");
     } else {
-        eprintln!("\n{} links total", total);
+        eprintln!("\n{total} links total");
     }
 
     Ok(())

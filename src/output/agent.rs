@@ -8,7 +8,7 @@ pub fn render_toc_file(output: &TocFileOutput) {
         let sig_suffix = if sig.is_empty() {
             String::new()
         } else {
-            format!(" {}", sig)
+            format!(" {sig}")
         };
         println!(
             "{}[{}:{},{}] {} {}{}",
@@ -49,7 +49,7 @@ pub fn render_sec(output: &SecOutput) {
             println!("\n---\n");
         }
         first = false;
-        println!("[{}:{},{}]", output.path.display(), m.offset, m.limit,);
+        println!("[{}:{},{}]", output.path.display(), m.offset, m.limit);
         print!("{}", m.content);
     }
 }

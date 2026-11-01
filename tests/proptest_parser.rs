@@ -30,11 +30,11 @@ fn arb_heading() -> impl Strategy<Value = String> {
 
 fn arb_code_block() -> impl Strategy<Value = String> {
     let langs = prop::sample::select(vec!["rust", "java", "python", "yaml", "go", ""]);
-    (langs, arb_sentence()).prop_map(|(lang, content)| format!("```{}\n{}\n```", lang, content))
+    (langs, arb_sentence()).prop_map(|(lang, content)| format!("```{lang}\n{content}\n```"))
 }
 
 fn arb_list_item() -> impl Strategy<Value = String> {
-    arb_sentence().prop_map(|s| format!("- {}", s))
+    arb_sentence().prop_map(|s| format!("- {s}"))
 }
 
 fn arb_list() -> impl Strategy<Value = String> {
@@ -51,11 +51,11 @@ fn arb_table() -> impl Strategy<Value = String> {
         let row = format!(
             "| {} |",
             cols.iter()
-                .map(|c| format!("val-{}", c))
+                .map(|c| format!("val-{c}"))
                 .collect::<Vec<_>>()
                 .join(" | ")
         );
-        format!("{}\n{}\n{}", header, sep, row)
+        format!("{header}\n{sep}\n{row}")
     })
 }
 
@@ -72,7 +72,7 @@ fn arb_frontmatter() -> impl Strategy<Value = String> {
         "architecture",
         "config",
     ]);
-    (types, topics).prop_map(|(t, topic)| format!("---\ntype: {}\ntopic: {}\n---", t, topic))
+    (types, topics).prop_map(|(t, topic)| format!("---\ntype: {t}\ntopic: {topic}\n---"))
 }
 
 fn arb_content_block() -> impl Strategy<Value = String> {
@@ -132,7 +132,7 @@ fn arb_multi_entry_doc() -> impl Strategy<Value = String> {
         prop::collection::vec(entry, 2..5),
     )
         .prop_map(|(title, entries)| {
-            let head = title.map(|t| format!("# {}\n\n", t)).unwrap_or_default();
+            let head = title.map(|t| format!("# {t}\n\n")).unwrap_or_default();
             head + &entries.join("\n")
         })
 }
@@ -259,7 +259,7 @@ proptest! {
         let dir = TempDir::new().unwrap();
         // Write 3 random files
         for i in 0..3 {
-            let file = dir.path().join(format!("doc{}.md", i));
+            let file = dir.path().join(format!("doc{i}.md"));
             std::fs::write(&file, &doc).unwrap();
         }
 
@@ -278,7 +278,7 @@ proptest! {
         let dir = TempDir::new().unwrap();
         let file_count = 3;
         for i in 0..file_count {
-            let file = dir.path().join(format!("doc{}.md", i));
+            let file = dir.path().join(format!("doc{i}.md"));
             std::fs::write(&file, &doc).unwrap();
         }
 
@@ -291,7 +291,7 @@ proptest! {
         if output.status.success() {
             let stdout = String::from_utf8_lossy(&output.stdout);
             prop_assert!(
-                stdout.contains(&format!("Files: {}", file_count)),
+                stdout.contains(&format!("Files: {file_count}")),
                 "expected 'Files: {}' in output: {}", file_count, stdout
             );
         }
@@ -317,7 +317,7 @@ proptest! {
     fn agg_respects_budget_invariant(doc in arb_markdown_doc()) {
         let dir = TempDir::new().unwrap();
         for i in 0..3 {
-            let file = dir.path().join(format!("doc{}.md", i));
+            let file = dir.path().join(format!("doc{i}.md"));
             std::fs::write(&file, &doc).unwrap();
         }
 
@@ -481,7 +481,7 @@ fn parser_handles_very_long_lines() {
     let dir = TempDir::new().unwrap();
     let file = dir.path().join("longline.md");
     let long_word = "x".repeat(10000);
-    let content = format!("# Title\n\n{}\n\n## Next\n\nShort.\n", long_word);
+    let content = format!("# Title\n\n{long_word}\n\n## Next\n\nShort.\n");
     std::fs::write(&file, &content).unwrap();
 
     Command::cargo_bin("mdd")
@@ -496,7 +496,7 @@ fn parser_handles_many_headings() {
     let dir = TempDir::new().unwrap();
     let file = dir.path().join("many.md");
     let content: String = (1..=200)
-        .map(|i| format!("## Section {}\n\nParagraph {}.\n\n", i, i))
+        .map(|i| format!("## Section {i}\n\nParagraph {i}.\n\n"))
         .collect();
     std::fs::write(&file, &content).unwrap();
 
