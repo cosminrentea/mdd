@@ -43,10 +43,10 @@ pub fn run(dir: PathBuf, _cli: &Cli) -> Result<()> {
         let mut file_has_list = false;
 
         for entry in &md.entries {
-            if let Some(ref fm) = entry.frontmatter {
-                if let Some(t) = field_as_string(fm, "type") {
-                    *type_counts.entry(t).or_insert(0) += 1;
-                }
+            if let Some(ref fm) = entry.frontmatter
+                && let Some(t) = field_as_string(fm, "type")
+            {
+                *type_counts.entry(t).or_insert(0) += 1;
             }
             for section in &entry.sections {
                 total_sections += 1;

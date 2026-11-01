@@ -8,10 +8,10 @@ pub fn section_matches(
     has_table: bool,
     has_code: Option<&str>,
 ) -> bool {
-    if let Some(h) = heading {
-        if !section.title.to_lowercase().contains(&h.to_lowercase()) {
-            return false;
-        }
+    if let Some(h) = heading
+        && !section.title.to_lowercase().contains(&h.to_lowercase())
+    {
+        return false;
     }
 
     if has_table && !section.features.has_table {

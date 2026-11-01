@@ -32,10 +32,10 @@ pub fn run(
     let mut match_count = 0;
 
     for (file_path, md) in &parsed {
-        if let Some(cutoff) = newer_cutoff {
-            if DateTime::<Utc>::from(md.mtime) < cutoff {
-                continue;
-            }
+        if let Some(cutoff) = newer_cutoff
+            && DateTime::<Utc>::from(md.mtime) < cutoff
+        {
+            continue;
         }
 
         let matching_sections = find_matching_sections(
