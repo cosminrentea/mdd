@@ -26,10 +26,7 @@ pub fn run(path: PathBuf, check: bool, broken: bool, cli: &Cli) -> Result<()> {
             .collect()
     } else {
         let md = parse_file(&path)?;
-        let rel = path
-            .file_name()
-            .map(PathBuf::from)
-            .unwrap_or_else(|| path.clone());
+        let rel = path.file_name().map_or_else(|| path.clone(), PathBuf::from);
         vec![(rel, md.links)]
     };
 

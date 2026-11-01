@@ -13,7 +13,7 @@ pub fn walk_md_files(dir: &Path) -> Vec<PathBuf> {
     let walker = ignore::WalkBuilder::new(dir).follow_links(true).build();
 
     let mut files: Vec<PathBuf> = walker
-        .filter_map(|e| e.ok())
+        .filter_map(std::result::Result::ok)
         .filter(|e| e.path().extension().is_some_and(|ext| ext == "md"))
         .filter(|e| {
             let name = e.file_name().to_string_lossy();
@@ -22,7 +22,7 @@ pub fn walk_md_files(dir: &Path) -> Vec<PathBuf> {
                 "AGENTS.md" | "CLAUDE.local.md" | "CLAUDE.md" | "README.md"
             )
         })
-        .map(|e| e.into_path())
+        .map(ignore::DirEntry::into_path)
         .collect();
 
     files.sort();
