@@ -1,5 +1,4 @@
 /target
-.mdd/
 mutants.out/
 mutants.out.old/
 *.swp

@@ -9,7 +9,7 @@ Updated: 2026-10-31
 
 ## Install
 
-Updated: 2026-11-01
+Updated: 2026-10-31
 
 On macOS arm64, install with Homebrew:
 
@@ -46,7 +46,7 @@ By default, output is human-readable on a terminal and uses an agent-oriented fo
 
 ## Commands
 
-Updated: 2026-10-31
+Updated: 2026-11-01
 
 | Command | Purpose |
 | --- | --- |
@@ -60,7 +60,6 @@ Updated: 2026-10-31
 | `parts` | List or filter entries in a multi-frontmatter file. |
 | `fm` | Inspect or update frontmatter. |
 | `stats` | Summarize directory statistics. |
-| `cache` | Placeholder; caching is not implemented. |
 
 ## Documentation
 
