@@ -6,13 +6,13 @@ Run `mdd --help` or `mdd <command> --help` for the installed version's options. 
 
 ## Global options and output
 
-Updated: 2026-10-31
+Updated: 2026-11-01
 
 - `-f, --format human|agent|json` selects an output format. Without it, `mdd` selects `human` for a terminal and `agent` otherwise.
 - `-h, --help` and `-V, --version` print help and version information.
 - `--strict` is accepted, but the current implementation does not use it to change error handling. Directory walkers can silently skip unreadable files.
 
-For supported commands, agent output can contain `[file:offset,limit]`: `offset` is a 1-based line number and `limit` is a line count. Signatures can include table, code, list, word, and link counts. JSON shape varies by command: `find`, `parts`, and `links` emit one JSON object per line, while `agg` emits an array. `map`, `fm`, `stats`, and `cache` do not honor `--format`.
+For supported commands, agent output can contain `[file:offset,limit]`: `offset` is a 1-based line number and `limit` is a line count. Signatures can include table, code, list, word, and link counts. JSON shape varies by command: `find`, `parts`, and `links` emit one JSON object per line, while `agg` emits an array. `map`, `fm`, and `stats` do not honor `--format`.
 
 ## Outline and extract
 
@@ -35,9 +35,8 @@ These directory commands and directory `toc` use ignore-aware traversal, follow 
 
 ## Links and frontmatter
 
-Updated: 2026-10-31
+Updated: 2026-11-01
 
 - `mdd links <path> [--check | --broken]` lists Markdown links. `--check` tests whether local target paths exist; `--broken` implies checking and prints only broken local targets. HTTP, HTTPS, and mail links are labeled external, not fetched. Anchor fragments are not validated, and broken targets do not make the command fail. Directory scans use the exclusions above.
 - `mdd parts <file> [--filter key=value]` lists entries in a multi-frontmatter document. The filter compares the selected frontmatter value case-insensitively.
 - `mdd fm <path>` prints frontmatter fields for a file or coverage for a directory. `--list-values <field>` lists unique values. `--set key=value` previews an edit to a single file; add `--apply` to write it. Only the frontmatter blocks are rewritten, line endings are preserved, and a directory path is an error (exit code 1). Directory `fm` scans do not use the filename exclusions above.
-- `mdd cache <dir> [--clear]` prints a not-implemented message; it does not inspect or clear a cache.

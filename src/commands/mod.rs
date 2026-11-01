@@ -1,6 +1,5 @@
 pub mod agg;
 pub mod at;
-pub mod cache;
 pub mod find;
 pub mod fm;
 pub mod links;

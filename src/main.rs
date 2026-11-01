@@ -71,7 +71,6 @@ fn main() {
         ),
         Command::Parts { path, filter } => commands::parts::run(path.clone(), filter.clone(), &cli),
         Command::Stats { dir } => commands::stats::run(dir.clone(), &cli),
-        Command::Cache { dir, clear } => commands::cache::run(dir.clone(), *clear, &cli),
     };
 
     // Handle errors with miette's fancy reporting.

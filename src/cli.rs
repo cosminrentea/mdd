@@ -169,16 +169,6 @@ pub enum Command {
         /// Directory path
         dir: PathBuf,
     },
-
-    /// Show or clear the transparent parse cache.
-    Cache {
-        /// Directory whose cache to inspect
-        dir: PathBuf,
-
-        /// Clear the cache for this directory
-        #[arg(long)]
-        clear: bool,
-    },
 }
 
 /// Output format selection.
