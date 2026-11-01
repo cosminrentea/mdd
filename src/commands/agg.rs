@@ -39,9 +39,8 @@ pub fn run(
     let mut matches: Vec<AggMatch> = Vec::new();
 
     for (file_path, md) in &parsed {
-        let file_content = match std::fs::read_to_string(file_path) {
-            Ok(c) => c,
-            Err(_) => continue,
+        let Ok(file_content) = std::fs::read_to_string(file_path) else {
+            continue;
         };
         let lines: Vec<&str> = file_content.lines().collect();
         let rel_path = file_path.strip_prefix(&dir).unwrap_or(file_path);
