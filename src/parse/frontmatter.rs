@@ -361,4 +361,17 @@ mod tests {
         let neg_zero = fm.fields["c"].as_f64().unwrap();
         assert!(neg_zero == 0.0 && neg_zero.is_sign_negative());
     }
+
+    #[test]
+    fn fixture_fields_come_out_in_alphabetical_key_order() {
+        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/service-doc.md");
+        let md = crate::parse::markdown::parse_file(std::path::Path::new(path)).unwrap();
+        let fm = md.entries[0].frontmatter.as_ref().unwrap();
+        let keys: Vec<&str> = fm.fields.keys().map(String::as_str).collect();
+        assert_eq!(keys, ["last_updated", "topic", "type"]);
+        assert_eq!(
+            field_as_string(fm, "last_updated").as_deref(),
+            Some("2026-04-18")
+        );
+    }
 }
