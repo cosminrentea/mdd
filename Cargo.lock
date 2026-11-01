@@ -707,6 +707,7 @@ dependencies = [
  "clap",
  "ignore",
  "insta",
+ "libc",
  "miette",
  "owo-colors",
  "predicates",

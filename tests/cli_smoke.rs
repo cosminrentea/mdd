@@ -954,3 +954,45 @@ fn find_newer_than_cutoff_is_inclusive_utc_midnight() {
         .stdout(predicate::str::contains("at-cutoff.md"))
         .stdout(predicate::str::contains("just-before.md").not());
 }
+
+// ─── closed stdout pipe ───────────────────────────────────────────────
+
+#[cfg(unix)]
+#[test]
+fn closed_stdout_pipe_does_not_panic() {
+    use std::io::Read;
+    use std::process::{Command as StdCommand, Stdio};
+
+    let tmp = tempfile::tempdir().unwrap();
+    let doc: String = (0..20_000)
+        .map(|i| format!("## Heading {i}\n\ntext\n\n"))
+        .collect();
+    let path = tmp.path().join("big.md");
+    std::fs::write(&path, doc).unwrap();
+
+    let mut child = StdCommand::new(assert_cmd::cargo::cargo_bin("mdd"))
+        .args(["toc", "--format", "agent"])
+        .arg(&path)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+
+    let mut stdout = child.stdout.take().unwrap();
+    let mut head = [0u8; 16];
+    stdout.read_exact(&mut head).unwrap();
+    drop(stdout);
+
+    let status = child.wait().unwrap();
+    let mut stderr = String::new();
+    child
+        .stderr
+        .take()
+        .unwrap()
+        .read_to_string(&mut stderr)
+        .unwrap();
+
+    assert!(!stderr.contains("panicked"), "stderr: {stderr}");
+    assert!(stderr.is_empty(), "stderr: {stderr}");
+    assert_ne!(status.code(), Some(101));
+}
