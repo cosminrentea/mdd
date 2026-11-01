@@ -48,7 +48,7 @@ pub struct DocEntry {
 /// when iterating (useful for tests and for predictable `mdd fm` output).
 #[derive(Debug, Clone)]
 pub struct Frontmatter {
-    pub fields: BTreeMap<String, serde_yaml::Value>,
+    pub fields: BTreeMap<String, serde_norway::Value>,
     /// Line where the opening `---` appears (1-based).
     pub offset: usize,
     /// The raw YAML text between the `---` delimiters (for string-surgery writes).
