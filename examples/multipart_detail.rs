@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+
 use pulldown_cmark::{Event, MetadataBlockKind, Options, Parser, Tag, TagEnd};
 
 fn main() {

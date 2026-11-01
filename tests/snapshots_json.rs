@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+
 use assert_cmd::Command;
 
 fn run(args: &[&str]) -> String {

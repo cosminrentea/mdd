@@ -32,12 +32,12 @@ pub fn run(path: PathBuf, line: usize, level: usize, cli: &Cli) -> Result<()> {
         .copied()
         .collect();
 
-    if containing.is_empty() {
+    let Some(&last) = containing.last() else {
         eprintln!("Line {} is before any heading", line);
         return Ok(());
-    }
+    };
 
-    let mut target = *containing.last().unwrap();
+    let mut target = last;
 
     for _ in 0..level {
         let parent = containing.iter().rev().find(|s| s.level < target.level);

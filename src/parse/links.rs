@@ -4,6 +4,10 @@ use regex::Regex;
 
 use super::{Link, LinkKind};
 
+static MD_LINK_RE: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| {
+    Regex::new(r"\[([^\]]*)\]\(([^)]+)\)").expect("valid regex literal")
+});
+
 /// Extract all standard markdown links from content using regex.
 ///
 /// Pattern: `[text](target)` -- skips pure anchors (#section) and empty targets.
@@ -15,10 +19,11 @@ pub fn extract_links(content: &str, file_dir: &Path) -> Vec<Link> {
         .chain(content.match_indices('\n').map(|(i, _)| i + 1))
         .collect();
 
-    let md_re = Regex::new(r"\[([^\]]*)\]\(([^)]+)\)").unwrap();
-    for cap in md_re.captures_iter(content) {
-        let full_match = cap.get(0).unwrap();
-        let target = cap.get(2).unwrap().as_str().to_owned();
+    for cap in MD_LINK_RE.captures_iter(content) {
+        let (Some(full_match), Some(target_match)) = (cap.get(0), cap.get(2)) else {
+            continue;
+        };
+        let target = target_match.as_str().to_owned();
 
         if target.is_empty() || target.starts_with('#') {
             continue;
