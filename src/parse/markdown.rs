@@ -149,7 +149,7 @@ pub fn parse_content(content: &str) -> MdFile {
                 current_entry_fm = parse_frontmatter(&metadata_text, fm_line);
 
                 // Any headings collected before the first metadata block
-                // belong to the preamble, not to an entry. Discard them.
+                // precede the first entry and belong to no entry. Discard them.
                 if entries.is_empty() && !current_entry_sections.is_empty() {
                     current_entry_sections.clear();
                     current_features = FeatureAccumulator::new();
