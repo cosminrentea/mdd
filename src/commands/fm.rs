@@ -266,4 +266,62 @@ mod tests {
     fn refuses_when_the_closing_delimiter_is_missing() {
         assert!(apply_frontmatter_set("---\ntype: a\n", &[1], "type", "b").is_err());
     }
+
+    #[test]
+    fn pins_format_yaml_value() {
+        let raw = concat!(
+            "map:\n",
+            "  yes_s: \"yes\"\n",
+            "  one: \"1\"\n",
+            "  empty: \"\"\n",
+            "  colon: \"a: b\"\n",
+            "  lead: \" x\"\n",
+            "  trail: \"x \"\n",
+            "  real_bool: true\n",
+            "  nul: ~\n",
+            "  n: 5\n",
+            "  f: 1.5\n",
+            "  nested:\n",
+            "    k: v\n",
+            "multi: \"l1\\nl2\\n\"\n",
+            "seq_of_maps:\n",
+            "  - x: 1\n",
+            "    y: \"yes\"\n",
+            "  - z: [1, 2]\n",
+            "seq_scalars: [a, \"b c\", \"1\", yes, \"\"]\n",
+            "tag: !custom x\n",
+            "tag_map: !custom\n",
+            "  k: v\n",
+            "tag_seq: !custom [1, 2]\n",
+        );
+        let fm = crate::parse::frontmatter::parse_frontmatter(raw, 1).unwrap();
+        let shown = |key: &str| format_yaml_value(&fm.fields[key]);
+
+        assert_eq!(
+            shown("map"),
+            "yes_s: yes\none: '1'\nempty: ''\ncolon: 'a: b'\nlead: ' x'\ntrail: 'x '\nreal_bool: true\nnul: null\nn: 5\nf: 1.5\nnested:\n  k: v"
+        );
+        assert_eq!(shown("multi"), "l1\nl2\n");
+        assert_eq!(shown("seq_of_maps"), "[x: 1\ny: yes, z:\n- 1\n- 2]");
+        assert_eq!(shown("seq_scalars"), "[a, b c, 1, yes, ]");
+        assert_eq!(shown("tag"), "!custom x");
+        assert_eq!(shown("tag_map"), "!custom\nk: v");
+        assert_eq!(shown("tag_seq"), "!custom\n- 1\n- 2");
+    }
+
+    #[test]
+    fn pins_format_yaml_value_numbers() {
+        let raw = "a: 1e3\nb: .5\nc: -0.0\nd: .inf\ne: -.inf\nf: .nan\ng: 18446744073709551615\nh: -9223372036854775808\ni: [1e3, .inf, .nan]";
+        let fm = crate::parse::frontmatter::parse_frontmatter(raw, 1).unwrap();
+        let shown = |key: &str| format_yaml_value(&fm.fields[key]);
+        assert_eq!(shown("a"), "1000.0");
+        assert_eq!(shown("b"), "0.5");
+        assert_eq!(shown("c"), "-0.0");
+        assert_eq!(shown("d"), ".inf");
+        assert_eq!(shown("e"), "-.inf");
+        assert_eq!(shown("f"), ".nan");
+        assert_eq!(shown("g"), u64::MAX.to_string());
+        assert_eq!(shown("h"), i64::MIN.to_string());
+        assert_eq!(shown("i"), "[1000.0, .inf, .nan]");
+    }
 }
