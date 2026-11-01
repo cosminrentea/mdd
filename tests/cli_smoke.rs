@@ -841,7 +841,9 @@ fn sec_multi_pattern_partial_miss() {
         .assert()
         .success()
         .stdout(predicate::str::contains("### Queue Bindings"))
-        .stderr(predicate::str::contains("warning: no match for: NONEXISTENT_HEADING_XYZ"));
+        .stderr(predicate::str::contains(
+            "warning: no match for: NONEXISTENT_HEADING_XYZ",
+        ));
 }
 
 #[test]
