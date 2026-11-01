@@ -23,7 +23,7 @@ path = "src/main.rs"
 clap = { version = "4", features = ["derive"] }
 
 # Markdown parsing (pulldown-cmark: fastest, byte offsets, multi-part support)
-pulldown-cmark = { version = "0.13", features = ["serde"] }
+pulldown-cmark = { version = "0.13", default-features = false }
 
 # YAML frontmatter
 serde_yaml = "0.9"
@@ -33,7 +33,7 @@ serde_json = "1"
 ignore = "0.4"
 
 # Date parsing and comparison
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { version = "0.4", default-features = false, features = ["std"] }
 
 # Pattern matching
 regex = "1"
@@ -52,7 +52,7 @@ libc = "0.2"
 
 [dev-dependencies]
 # Snapshot testing
-insta = { version = "1", features = ["yaml"] }
+insta = "1"
 
 # Integration test helpers
 assert_cmd = "2"
