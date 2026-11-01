@@ -66,10 +66,10 @@ fn collect_field_values(
 ) -> Result<()> {
     let md = parse_file(path)?;
     for entry in &md.entries {
-        if let Some(ref fm) = entry.frontmatter {
-            if let Some(val) = field_as_string(fm, field) {
-                values.insert(val);
-            }
+        if let Some(ref fm) = entry.frontmatter
+            && let Some(val) = field_as_string(fm, field)
+        {
+            values.insert(val);
         }
     }
     Ok(())

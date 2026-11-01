@@ -182,14 +182,13 @@ pub fn parse_content(content: &str) -> MdFile {
                 let line = byte_to_line(&line_starts, heading_byte_start);
 
                 // Store the accumulated features for the previous section (if any).
-                if let Some(prev) = current_entry_sections.last_mut() {
-                    if prev.features.word_count == 0
-                        && !prev.features.has_table
-                        && !prev.features.has_code_block
-                        && !prev.features.has_list
-                    {
-                        prev.features = std::mem::take(&mut current_features).finish();
-                    }
+                if let Some(prev) = current_entry_sections.last_mut()
+                    && prev.features.word_count == 0
+                    && !prev.features.has_table
+                    && !prev.features.has_code_block
+                    && !prev.features.has_list
+                {
+                    prev.features = std::mem::take(&mut current_features).finish();
                 }
                 current_features = FeatureAccumulator::new();
 
@@ -315,14 +314,13 @@ fn finalize_sections(
     current_features: FeatureAccumulator,
 ) {
     // Give the last section any trailing features.
-    if let Some(last) = sections.last_mut() {
-        if last.features.word_count == 0
-            && !last.features.has_table
-            && !last.features.has_code_block
-            && !last.features.has_list
-        {
-            last.features = current_features.finish();
-        }
+    if let Some(last) = sections.last_mut()
+        && last.features.word_count == 0
+        && !last.features.has_table
+        && !last.features.has_code_block
+        && !last.features.has_list
+    {
+        last.features = current_features.finish();
     }
     compute_limits(sections, end_of_entry);
 }

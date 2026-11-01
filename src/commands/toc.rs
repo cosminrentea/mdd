@@ -131,12 +131,12 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()
     }
 
     let total_files = dir_entries.len();
-    if total_files == 0 {
-        if let Some(pat) = pattern {
-            return Err(MddError::NoMatch {
-                pattern: pat.to_owned(),
-            });
-        }
+    if total_files == 0
+        && let Some(pat) = pattern
+    {
+        return Err(MddError::NoMatch {
+            pattern: pat.to_owned(),
+        });
     }
 
     let format = output::resolve_format(&cli.format);
