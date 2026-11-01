@@ -21,7 +21,7 @@ pub fn render_toc_file(output: &TocFileOutput) {
         "path": output.path.display().to_string(),
         "sections": sections,
     });
-    println!("{}", serde_json::to_string_pretty(&doc).unwrap());
+    println!("{doc:#}");
 }
 
 pub fn render_toc_dir(output: &TocDirOutput) {
@@ -55,7 +55,7 @@ pub fn render_toc_dir(output: &TocDirOutput) {
         "total_files": output.total_files,
         "entries": entries,
     });
-    println!("{}", serde_json::to_string_pretty(&doc).unwrap());
+    println!("{doc:#}");
 }
 
 pub fn render_sec(output: &SecOutput) {
@@ -76,7 +76,7 @@ pub fn render_sec(output: &SecOutput) {
         "path": output.path.display().to_string(),
         "matches": matches,
     });
-    println!("{}", serde_json::to_string_pretty(&doc).unwrap());
+    println!("{doc:#}");
 }
 
 pub fn render_at(output: &AtOutput) {
@@ -92,7 +92,7 @@ pub fn render_at(output: &AtOutput) {
         },
         "content": output.content,
     });
-    println!("{}", serde_json::to_string_pretty(&doc).unwrap());
+    println!("{doc:#}");
 }
 
 fn features_json(f: &crate::parse::ContentFeatures) -> Value {

@@ -64,5 +64,6 @@ unsafe_code = "deny"
 dbg_macro = "warn"
 todo = "warn"
 unimplemented = "warn"
+unwrap_used = "warn"
 # 2024 let-chains: collapse in PR 6
 collapsible_if = "allow"

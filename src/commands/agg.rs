@@ -104,7 +104,7 @@ pub fn run(
                 lines_used += m.limit;
                 emitted += 1;
             }
-            println!("{}", serde_json::to_string_pretty(&json_sections).unwrap());
+            println!("{:#}", serde_json::Value::Array(json_sections));
         }
         crate::cli::OutputFormat::Agent => {
             for m in &matches {
