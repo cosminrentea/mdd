@@ -43,7 +43,7 @@ pub fn parse_file(path: &Path) -> Result<MdFile> {
     let byte_size = metadata.len();
 
     let mut md_file = parse_content(&content);
-    md_file.path = path.to_owned();
+    path.clone_into(&mut md_file.path);
     md_file.byte_size = byte_size;
     md_file.mtime = mtime;
 
@@ -300,8 +300,7 @@ fn compute_limits(sections: &mut [Section], end_of_entry: usize) {
         let end_line = sections[i + 1..]
             .iter()
             .find(|s| s.level <= level)
-            .map(|s| s.offset - 1)
-            .unwrap_or(end_of_entry);
+            .map_or(end_of_entry, |s| s.offset - 1);
 
         sections[i].limit = end_line - offset + 1;
     }

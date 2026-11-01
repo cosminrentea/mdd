@@ -22,10 +22,10 @@ pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
     // Parse filter: "key=value"
     let filter_kv: Option<(&str, &str)> = filter.as_deref().and_then(|f| f.split_once('='));
 
-    let rel_path = path
-        .file_name()
-        .map(|n| n.to_string_lossy().to_string())
-        .unwrap_or_else(|| path.display().to_string());
+    let rel_path = path.file_name().map_or_else(
+        || path.display().to_string(),
+        |n| n.to_string_lossy().to_string(),
+    );
 
     let mut shown = 0usize;
 

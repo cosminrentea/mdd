@@ -68,14 +68,8 @@ impl FeatureAccumulator {
                 self.link_count = self.link_count.saturating_add(1);
             }
 
-            // Text -- count words
-            Event::Text(text) => {
-                let count = text.split_whitespace().count() as u32;
-                self.word_count = self.word_count.saturating_add(count);
-            }
-
-            // Code text inside inline code also contributes to word count
-            Event::Code(text) => {
+            // Text and inline code both count towards the word count
+            Event::Text(text) | Event::Code(text) => {
                 let count = text.split_whitespace().count() as u32;
                 self.word_count = self.word_count.saturating_add(count);
             }

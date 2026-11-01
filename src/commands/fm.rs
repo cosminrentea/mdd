@@ -36,9 +36,9 @@ fn list_field_values(path: &std::path::Path, field: &str) -> Result<()> {
     } else {
         let walker = ignore::WalkBuilder::new(path).follow_links(true).build();
         let mut files: Vec<PathBuf> = walker
-            .filter_map(|e| e.ok())
+            .filter_map(std::result::Result::ok)
             .filter(|e| e.path().extension().is_some_and(|ext| ext == "md"))
-            .map(|e| e.into_path())
+            .map(ignore::DirEntry::into_path)
             .collect();
         files.sort();
 
@@ -88,9 +88,9 @@ fn show_frontmatter(path: &std::path::Path) -> Result<()> {
     } else {
         let walker = ignore::WalkBuilder::new(path).follow_links(true).build();
         let mut files: Vec<PathBuf> = walker
-            .filter_map(|e| e.ok())
+            .filter_map(std::result::Result::ok)
             .filter(|e| e.path().extension().is_some_and(|ext| ext == "md"))
-            .map(|e| e.into_path())
+            .map(ignore::DirEntry::into_path)
             .collect();
         files.sort();
 
@@ -191,7 +191,7 @@ fn apply_frontmatter_set(
         let delimiter_error = |what: &str| MddError::NoMatch {
             pattern: format!("frontmatter {what} delimiter not found near line {start}"),
         };
-        if open < next || !lines.get(open).is_some_and(|l| l.trim_end() == "---") {
+        if open < next || lines.get(open).is_none_or(|l| l.trim_end() != "---") {
             return Err(delimiter_error("opening"));
         }
         let close = (open + 1..lines.len())

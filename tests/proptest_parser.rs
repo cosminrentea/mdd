@@ -191,8 +191,8 @@ proptest! {
             let sections = json.get("sections").and_then(|s| s.as_array());
             prop_assert!(sections.is_some(), "missing sections array: {}", stdout);
             for section in sections.unwrap() {
-                let offset = section.get("offset").and_then(|o| o.as_u64()).unwrap_or(0);
-                let limit = section.get("limit").and_then(|l| l.as_u64()).unwrap_or(0);
+                let offset = section.get("offset").and_then(serde_json::Value::as_u64).unwrap_or(0);
+                let limit = section.get("limit").and_then(serde_json::Value::as_u64).unwrap_or(0);
                 prop_assert!(offset >= 1, "offset must be >= 1, got {}", offset);
                 prop_assert!(limit >= 1, "limit must be >= 1, got {}", limit);
             }
@@ -223,7 +223,7 @@ proptest! {
             let sections = json.get("sections").and_then(|s| s.as_array());
             prop_assert!(sections.is_some(), "missing sections array: {}", toc_str);
             for section in sections.unwrap() {
-                let limit = section.get("limit").and_then(|l| l.as_u64()).unwrap_or(0);
+                let limit = section.get("limit").and_then(serde_json::Value::as_u64).unwrap_or(0);
                 // Section limit must not exceed total file lines
                 prop_assert!(
                     limit as usize <= total_lines,

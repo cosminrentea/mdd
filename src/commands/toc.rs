@@ -65,7 +65,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()
     let walker = ignore::WalkBuilder::new(dir).follow_links(true).build();
 
     let mut files: Vec<PathBuf> = walker
-        .filter_map(|e| e.ok())
+        .filter_map(std::result::Result::ok)
         .filter(|e| e.path().extension().is_some_and(|ext| ext == "md"))
         .filter(|e| {
             let name = e.file_name().to_string_lossy();
@@ -74,7 +74,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()
                 "AGENTS.md" | "CLAUDE.local.md" | "CLAUDE.md" | "README.md"
             )
         })
-        .map(|e| e.into_path())
+        .map(ignore::DirEntry::into_path)
         .collect();
 
     files.sort();
@@ -93,8 +93,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()
 
         let first_heading = all_sections
             .first()
-            .map(|s| s.title.clone())
-            .unwrap_or_else(|| "(no headings)".to_owned());
+            .map_or_else(|| "(no headings)".to_owned(), |s| s.title.clone());
 
         let min_level = all_sections.iter().map(|s| s.level).min().unwrap_or(1);
         let sub_headings: Vec<Section> = all_sections

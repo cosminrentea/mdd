@@ -17,7 +17,7 @@ pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
     let walker = ignore::WalkBuilder::new(&path).follow_links(true).build();
 
     let mut files: Vec<PathBuf> = walker
-        .filter_map(|e| e.ok())
+        .filter_map(std::result::Result::ok)
         .filter(|e| e.path().extension().is_some_and(|ext| ext == "md"))
         .filter(|e| {
             let name = e.file_name().to_string_lossy();
@@ -26,7 +26,7 @@ pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
                 "AGENTS.md" | "CLAUDE.local.md" | "CLAUDE.md" | "README.md"
             )
         })
-        .map(|e| e.into_path())
+        .map(ignore::DirEntry::into_path)
         .collect();
 
     files.sort();
@@ -39,12 +39,9 @@ pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
     let mut hot_files: Vec<(PathBuf, &MdFile)> = Vec::new();
 
     for file_path in &files {
-        match parse_file(file_path) {
-            Ok(md) => {
-                total_lines += md.total_lines;
-                parsed.push((file_path.clone(), md));
-            }
-            Err(_) => continue,
+        if let Ok(md) = parse_file(file_path) {
+            total_lines += md.total_lines;
+            parsed.push((file_path.clone(), md));
         }
     }
 
@@ -127,8 +124,7 @@ pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
                 .entries
                 .iter()
                 .filter_map(|e| e.frontmatter.as_ref())
-                .filter_map(|fm| field_as_string(fm, "topic"))
-                .next();
+                .find_map(|fm| field_as_string(fm, "topic"));
 
             let mut desc = format!("[{}L]", md.total_lines);
             if let Some(t) = topic {
@@ -163,7 +159,11 @@ pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
             let fields_str = if info.fm_fields.is_empty() {
                 String::new()
             } else {
-                let fields: Vec<&str> = info.fm_fields.iter().map(|s| s.as_str()).collect();
+                let fields: Vec<&str> = info
+                    .fm_fields
+                    .iter()
+                    .map(std::string::String::as_str)
+                    .collect();
                 format!(", fields: {}", fields.join(", "))
             };
             println!(
