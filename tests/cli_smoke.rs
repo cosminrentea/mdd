@@ -996,3 +996,30 @@ fn closed_stdout_pipe_does_not_panic() {
     assert!(stderr.is_empty(), "stderr: {stderr}");
     assert_ne!(status.code(), Some(101));
 }
+
+// ─── directory toc with a heading level drop ──────────────────────────
+
+#[test]
+fn toc_dir_handles_shallower_heading_after_deeper_first_heading() {
+    let tmp = tempfile::tempdir().unwrap();
+    std::fs::write(
+        tmp.path().join("drop.md"),
+        "## Alpha\n\ntext\n\n# Bravo\n\ntext\n",
+    )
+    .unwrap();
+
+    for format in ["human", "agent", "json"] {
+        let out = Command::cargo_bin("mdd")
+            .unwrap()
+            .args(["-f", format, "toc"])
+            .arg(tmp.path())
+            .assert()
+            .success()
+            .get_output()
+            .stdout
+            .clone();
+        let out = String::from_utf8(out).unwrap();
+        assert!(out.contains("Alpha"), "{format}: {out}");
+        assert!(out.contains("Bravo"), "{format}: {out}");
+    }
+}
