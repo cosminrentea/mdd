@@ -182,7 +182,8 @@ pub enum Command {
 pub enum OutputFormat {
     /// Colored, indented, human-readable
     Human,
-    /// Context-efficient with provenance: [file:offset,limit] heading {signature}
+    /// Context-efficient with provenance: `[file:offset,limit] heading {signature}`
+    #[value(help = "Context-efficient with provenance: [file:offset,limit] heading {signature}")]
     Agent,
     /// Structured JSON
     Json,
