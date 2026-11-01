@@ -18,7 +18,10 @@ fn version_flag_works() {
         .arg("--version")
         .assert()
         .success()
-        .stdout(predicate::str::contains("mdd 0.2.0"));
+        .stdout(predicate::str::contains(format!(
+            "mdd {}",
+            env!("CARGO_PKG_VERSION")
+        )));
 }
 
 #[test]
