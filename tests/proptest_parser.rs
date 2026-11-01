@@ -6,6 +6,7 @@ use tempfile::TempDir;
 // that must hold for ANY valid input.
 
 use assert_cmd::Command;
+use mdd::parse::markdown::parse_content;
 use predicates::prelude::*;
 
 // ─── Strategies: generate random markdown ───────────────────────────────────
@@ -109,9 +110,42 @@ fn arb_markdown_doc() -> impl Strategy<Value = String> {
         prop::collection::vec(arb_section(), 1..8).prop_map(|sections| sections.join("\n"));
 
     prop_oneof![
-        8 => with_fm,
+        6 => with_fm,
         2 => without_fm,
+        2 => arb_multi_entry_doc(),
     ]
+}
+
+/// Several frontmatter blocks, each followed by its own sections.
+fn arb_multi_entry_doc() -> impl Strategy<Value = String> {
+    let entry = (
+        arb_frontmatter(),
+        prop::collection::vec(arb_section(), 1..4),
+    )
+        .prop_map(|(fm, sections)| {
+            let mut parts = vec![fm, String::new()];
+            parts.extend(sections);
+            parts.join("\n")
+        });
+    (
+        prop::option::of(arb_sentence()),
+        prop::collection::vec(entry, 2..5),
+    )
+        .prop_map(|(title, entries)| {
+            let head = title.map(|t| format!("# {}\n\n", t)).unwrap_or_default();
+            head + &entries.join("\n")
+        })
+}
+
+/// A flat run of headings whose levels are unconstrained, so a deeper
+/// heading can precede a shallower one.
+fn arb_level_drop_doc() -> impl Strategy<Value = String> {
+    prop::collection::vec((arb_heading_level(), arb_sentence()), 2..8).prop_map(|headings| {
+        headings
+            .into_iter()
+            .map(|(level, text)| format!("{} {}\n\nbody text\n\n", "#".repeat(level), text))
+            .collect()
+    })
 }
 
 // ─── Property tests ─────────────────────────────────────────────────────────
@@ -131,8 +165,9 @@ proptest! {
             .output()
             .unwrap();
 
-        // Must never panic (exit with signal) -- may succeed or fail gracefully
+        // Must never panic (a Rust panic exits 101) -- may succeed or fail gracefully
         prop_assert!(result.status.code().is_some(), "process was killed by signal");
+        prop_assert_ne!(result.status.code(), Some(101), "mdd panicked");
     }
 
     #[test]
@@ -147,18 +182,19 @@ proptest! {
             .output()
             .unwrap();
 
+        prop_assert_ne!(output.status.code(), Some(101), "mdd panicked");
         if output.status.success() {
             let stdout = String::from_utf8_lossy(&output.stdout);
-            // If JSON output is valid, every section's offset must be >= 1
-            if let Ok(json) = serde_json::from_str::<serde_json::Value>(&stdout) {
-                if let Some(sections) = json.get("sections").and_then(|s| s.as_array()) {
-                    for section in sections {
-                        let offset = section.get("offset").and_then(|o| o.as_u64()).unwrap_or(0);
-                        let limit = section.get("limit").and_then(|l| l.as_u64()).unwrap_or(0);
-                        prop_assert!(offset >= 1, "offset must be >= 1, got {}", offset);
-                        prop_assert!(limit >= 1, "limit must be >= 1, got {}", limit);
-                    }
-                }
+            let json = serde_json::from_str::<serde_json::Value>(&stdout);
+            prop_assert!(json.is_ok(), "toc -f json printed invalid JSON: {}", stdout);
+            let json = json.unwrap();
+            let sections = json.get("sections").and_then(|s| s.as_array());
+            prop_assert!(sections.is_some(), "missing sections array: {}", stdout);
+            for section in sections.unwrap() {
+                let offset = section.get("offset").and_then(|o| o.as_u64()).unwrap_or(0);
+                let limit = section.get("limit").and_then(|l| l.as_u64()).unwrap_or(0);
+                prop_assert!(offset >= 1, "offset must be >= 1, got {}", offset);
+                prop_assert!(limit >= 1, "limit must be >= 1, got {}", limit);
             }
         }
     }
@@ -178,23 +214,21 @@ proptest! {
             .output()
             .unwrap();
 
+        prop_assert_ne!(toc_out.status.code(), Some(101), "mdd panicked");
         if toc_out.status.success() {
             let toc_str = String::from_utf8_lossy(&toc_out.stdout);
-            if let Ok(json) = serde_json::from_str::<serde_json::Value>(&toc_str) {
-                if let Some(sections) = json.get("sections").and_then(|s| s.as_array()) {
-                    if let Some(first) = sections.first() {
-                        let title = first.get("title").and_then(|t| t.as_str()).unwrap_or("");
-                        let limit = first.get("limit").and_then(|l| l.as_u64()).unwrap_or(0);
-
-                        if !title.is_empty() {
-                            // Section limit must not exceed total file lines
-                            prop_assert!(
-                                limit as usize <= total_lines,
-                                "section limit {} exceeds file lines {}", limit, total_lines
-                            );
-                        }
-                    }
-                }
+            let json = serde_json::from_str::<serde_json::Value>(&toc_str);
+            prop_assert!(json.is_ok(), "toc -f json printed invalid JSON: {}", toc_str);
+            let json = json.unwrap();
+            let sections = json.get("sections").and_then(|s| s.as_array());
+            prop_assert!(sections.is_some(), "missing sections array: {}", toc_str);
+            for section in sections.unwrap() {
+                let limit = section.get("limit").and_then(|l| l.as_u64()).unwrap_or(0);
+                // Section limit must not exceed total file lines
+                prop_assert!(
+                    limit as usize <= total_lines,
+                    "section limit {} exceeds file lines {}", limit, total_lines
+                );
             }
         }
     }
@@ -236,6 +270,7 @@ proptest! {
             .unwrap();
 
         prop_assert!(result.status.code().is_some());
+        prop_assert_ne!(result.status.code(), Some(101), "mdd panicked");
     }
 
     #[test]
@@ -275,6 +310,7 @@ proptest! {
             .unwrap();
 
         prop_assert!(result.status.code().is_some());
+        prop_assert_ne!(result.status.code(), Some(101), "mdd panicked");
     }
 
     #[test]
@@ -300,6 +336,54 @@ proptest! {
                     "expected emission notice in stderr: {}", stderr
                 );
             }
+        }
+    }
+}
+
+proptest! {
+    #[test]
+    fn parsed_sections_are_ordered_and_bounded_by_their_entry(
+        doc in prop_oneof![arb_markdown_doc(), arb_level_drop_doc()]
+    ) {
+        let md = parse_content(&doc);
+        prop_assert!(!md.entries.is_empty());
+        prop_assert_eq!(md.entries.last().unwrap().end_offset, md.total_lines);
+
+        let mut prev_offset = 0;
+        for entry in &md.entries {
+            prop_assert!(entry.end_offset <= md.total_lines);
+            for s in &entry.sections {
+                prop_assert!(s.offset >= 1, "offset must be >= 1, got {}", s.offset);
+                prop_assert!(s.limit >= 1, "limit must be >= 1, got {}", s.limit);
+                prop_assert!(s.offset > prev_offset, "offsets must ascend: {} after {}", s.offset, prev_offset);
+                prop_assert!(
+                    s.offset + s.limit - 1 <= entry.end_offset,
+                    "section {:?} (offset {}, limit {}) escapes entry ending at {}",
+                    s.title, s.offset, s.limit, entry.end_offset
+                );
+                prev_offset = s.offset;
+            }
+        }
+    }
+}
+
+proptest! {
+    #![proptest_config(ProptestConfig::with_cases(20))]
+
+    #[test]
+    fn toc_dir_never_panics_on_level_drops(doc in prop_oneof![arb_level_drop_doc(), arb_markdown_doc()]) {
+        let dir = TempDir::new().unwrap();
+        std::fs::write(dir.path().join("doc.md"), &doc).unwrap();
+
+        for format in ["human", "agent", "json"] {
+            let result = Command::cargo_bin("mdd")
+                .unwrap()
+                .args(["-f", format, "toc", dir.path().to_str().unwrap()])
+                .output()
+                .unwrap();
+
+            prop_assert_ne!(result.status.code(), Some(101), "mdd panicked ({})", format);
+            prop_assert!(result.status.success(), "toc DIR failed ({}): {}", format, String::from_utf8_lossy(&result.stderr));
         }
     }
 }
