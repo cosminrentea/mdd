@@ -966,13 +966,15 @@ fn find_newer_than_cutoff_is_inclusive_utc_midnight() {
 #[cfg(unix)]
 #[test]
 fn closed_stdout_pipe_does_not_panic() {
+    use std::fmt::Write;
     use std::io::Read;
     use std::process::{Command as StdCommand, Stdio};
 
     let tmp = tempfile::tempdir().unwrap();
-    let doc: String = (0..20_000)
-        .map(|i| format!("## Heading {i}\n\ntext\n\n"))
-        .collect();
+    let doc: String = (0..20_000).fold(String::new(), |mut acc, i| {
+        let _ = write!(acc, "## Heading {i}\n\ntext\n\n");
+        acc
+    });
     let path = tmp.path().join("big.md");
     std::fs::write(&path, doc).unwrap();
 

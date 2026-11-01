@@ -83,9 +83,8 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()
     let mut dir_entries: Vec<TocDirEntry> = Vec::new();
 
     for file_path in &files {
-        let content = match std::fs::read_to_string(file_path) {
-            Ok(c) => c,
-            Err(_) => continue,
+        let Ok(content) = std::fs::read_to_string(file_path) else {
+            continue;
         };
 
         let md = parse_content(&content);

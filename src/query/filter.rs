@@ -13,9 +13,8 @@ pub fn entry_matches_frontmatter(
         return true;
     }
 
-    let fm = match &entry.frontmatter {
-        Some(fm) => fm,
-        None => return false,
+    let Some(fm) = &entry.frontmatter else {
+        return false;
     };
 
     if let Some(t) = type_filter {

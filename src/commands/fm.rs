@@ -98,9 +98,8 @@ fn show_frontmatter(path: &std::path::Path) -> Result<()> {
         let mut with_fm = 0;
         for file_path in &files {
             count += 1;
-            let md = match parse_file(file_path) {
-                Ok(m) => m,
-                Err(_) => continue,
+            let Ok(md) = parse_file(file_path) else {
+                continue;
             };
             let has_fm = md.entries.iter().any(|e| e.frontmatter.is_some());
             if has_fm {

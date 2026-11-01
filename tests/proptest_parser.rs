@@ -1,4 +1,5 @@
 use proptest::prelude::*;
+use std::fmt::Write;
 use tempfile::TempDir;
 
 // We can't import from a binary crate directly, so we test via CLI.
@@ -143,8 +144,10 @@ fn arb_level_drop_doc() -> impl Strategy<Value = String> {
     prop::collection::vec((arb_heading_level(), arb_sentence()), 2..8).prop_map(|headings| {
         headings
             .into_iter()
-            .map(|(level, text)| format!("{} {}\n\nbody text\n\n", "#".repeat(level), text))
-            .collect()
+            .fold(String::new(), |mut acc, (level, text)| {
+                let _ = write!(acc, "{} {}\n\nbody text\n\n", "#".repeat(level), text);
+                acc
+            })
     })
 }
 
@@ -495,9 +498,10 @@ fn parser_handles_very_long_lines() {
 fn parser_handles_many_headings() {
     let dir = TempDir::new().unwrap();
     let file = dir.path().join("many.md");
-    let content: String = (1..=200)
-        .map(|i| format!("## Section {i}\n\nParagraph {i}.\n\n"))
-        .collect();
+    let content: String = (1..=200).fold(String::new(), |mut acc, i| {
+        let _ = write!(acc, "## Section {i}\n\nParagraph {i}.\n\n");
+        acc
+    });
     std::fs::write(&file, &content).unwrap();
 
     let output = Command::cargo_bin("mdd")

@@ -1,5 +1,6 @@
 use std::cmp::Reverse;
 use std::collections::{BTreeMap, BTreeSet};
+use std::fmt::Write;
 use std::path::PathBuf;
 use std::time::{Duration, SystemTime};
 
@@ -128,17 +129,18 @@ pub fn run(path: PathBuf, _cli: &Cli) -> Result<()> {
 
             let mut desc = format!("[{}L]", md.total_lines);
             if let Some(t) = topic {
-                desc.push_str(&format!(" topic={t}"));
+                let _ = write!(desc, " topic={t}");
             }
             if !headings.is_empty() {
-                desc.push_str(&format!(
+                let _ = write!(
+                    desc,
                     " {}",
                     headings
                         .iter()
                         .map(|h| format!("## {h}"))
                         .collect::<Vec<_>>()
                         .join(", ")
-                ));
+                );
             }
             println!("  {} {}", rel.display(), desc);
         }
