@@ -143,8 +143,8 @@ pub fn parse_content(content: &str) -> MdFile {
 
                 if seen_metadata_block {
                     // Finalize the previous entry before starting a new one.
-                    finalize_sections(&mut current_entry_sections, total_lines, current_features);
                     let prev_end = if fm_line > 1 { fm_line - 1 } else { 1 };
+                    finalize_sections(&mut current_entry_sections, prev_end, current_features);
                     entries.push(DocEntry {
                         frontmatter: current_entry_fm.take(),
                         sections: std::mem::take(&mut current_entry_sections),
@@ -300,10 +300,10 @@ fn find_parent(sections: &[Section], level: u8) -> Option<usize> {
 ///
 /// For each section at level L, its limit extends until:
 /// - The next heading at level <= L (same or higher importance), minus 1
-/// - Or the end of file if no such heading follows.
+/// - Or the end of the entry if no such heading follows.
 ///
 /// This means parent sections INCLUDE their children's ranges.
-fn compute_limits(sections: &mut [Section], total_lines: usize) {
+fn compute_limits(sections: &mut [Section], end_of_entry: usize) {
     for i in 0..sections.len() {
         let level = sections[i].level;
         let offset = sections[i].offset;
@@ -313,7 +313,7 @@ fn compute_limits(sections: &mut [Section], total_lines: usize) {
             .iter()
             .find(|s| s.level <= level)
             .map(|s| s.offset - 1)
-            .unwrap_or(total_lines);
+            .unwrap_or(end_of_entry);
 
         sections[i].limit = end_line - offset + 1;
     }
@@ -322,7 +322,7 @@ fn compute_limits(sections: &mut [Section], total_lines: usize) {
 /// Store trailing features on the last section and compute all limits.
 fn finalize_sections(
     sections: &mut [Section],
-    total_lines: usize,
+    end_of_entry: usize,
     current_features: FeatureAccumulator,
 ) {
     // Give the last section any trailing features.
@@ -335,7 +335,7 @@ fn finalize_sections(
             last.features = current_features.finish();
         }
     }
-    compute_limits(sections, total_lines);
+    compute_limits(sections, end_of_entry);
 }
 
 // ─── Unit Tests ───────────────────────────────────────────────────────────────
@@ -420,6 +420,36 @@ mod tests {
         assert_eq!(sections[2].title, "Section Two");
         assert_eq!(sections[2].offset, 12);
         assert_eq!(sections[2].limit, 3); // lines 12-14
+    }
+
+    #[test]
+    fn section_limits_stay_within_their_entry() {
+        let content = include_str!("../../tests/fixtures/multipart-lrn.md");
+        let md = parse_content(content);
+
+        assert_eq!(md.entries.len(), 3);
+        assert_eq!(md.entries[0].end_offset, 27);
+        assert_eq!(md.entries.last().unwrap().end_offset, md.total_lines);
+
+        for entry in &md.entries {
+            for s in &entry.sections {
+                assert!(
+                    s.offset >= entry.offset && s.offset + s.limit - 1 <= entry.end_offset,
+                    "section {:?} (offset {}, limit {}) escapes entry {}..={}",
+                    s.title,
+                    s.offset,
+                    s.limit,
+                    entry.offset,
+                    entry.end_offset
+                );
+            }
+        }
+
+        let thread_pool = &md.entries[0].sections[1];
+        assert_eq!(thread_pool.title, "Thread Pool Utilization");
+        assert_eq!((thread_pool.offset, thread_pool.limit), (21, 7));
+        let last = md.entries[2].sections.last().unwrap();
+        assert_eq!(last.offset + last.limit - 1, md.total_lines);
     }
 
     #[test]
