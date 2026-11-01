@@ -5,6 +5,7 @@ use mdd::commands;
 fn main() {
     #[cfg(unix)]
     // SAFETY: restoring the default SIGPIPE disposition before any threads start.
+    #[allow(unsafe_code)]
     unsafe {
         libc::signal(libc::SIGPIPE, libc::SIG_DFL);
     }
