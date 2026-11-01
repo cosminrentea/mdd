@@ -96,7 +96,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()
             .map(|s| s.title.clone())
             .unwrap_or_else(|| "(no headings)".to_owned());
 
-        let min_level = all_sections.first().map(|s| s.level).unwrap_or(1);
+        let min_level = all_sections.iter().map(|s| s.level).min().unwrap_or(1);
         let sub_headings: Vec<Section> = all_sections
             .iter()
             .skip(1)
