@@ -113,7 +113,7 @@ pub fn format_signature(features: &ContentFeatures) -> String {
         } else {
             features.code_languages.join(",")
         };
-        parts.push(format!("code:{}", langs));
+        parts.push(format!("code:{langs}"));
     }
     if features.has_list {
         parts.push(format!("lists:{}", features.list_item_count));
@@ -137,6 +137,6 @@ pub fn fmt_size(nbytes: usize) -> String {
     } else if nbytes >= 1024 {
         format!("{}K", nbytes / 1024)
     } else {
-        format!("{}B", nbytes)
+        format!("{nbytes}B")
     }
 }

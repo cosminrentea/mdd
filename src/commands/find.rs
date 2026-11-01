@@ -83,7 +83,7 @@ pub fn run(
                     let sig_suffix = if sig.is_empty() {
                         String::new()
                     } else {
-                        format!(" {}", sig)
+                        format!(" {sig}")
                     };
                     println!(
                         "[{}:{},{}] {} {}{}",
@@ -124,7 +124,7 @@ pub fn run(
     if match_count == 0 {
         eprintln!("No files matched the given filters.");
     } else {
-        eprintln!("\n{} files matched", match_count);
+        eprintln!("\n{match_count} files matched");
     }
 
     Ok(())

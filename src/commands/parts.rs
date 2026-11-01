@@ -57,9 +57,9 @@ pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
                     .map(|(k, v)| {
                         let val = match v {
                             serde_yaml::Value::String(s) => s.clone(),
-                            other => format!("{:?}", other),
+                            other => format!("{other:?}"),
                         };
-                        format!("{}={}", k, val)
+                        format!("{k}={val}")
                     })
                     .collect::<Vec<_>>()
                     .join(", ")
@@ -98,7 +98,7 @@ pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
                 let heading_suffix = if headings_str.is_empty() {
                     String::new()
                 } else {
-                    format!(" {{{}}}", headings_str)
+                    format!(" {{{headings_str}}}")
                 };
                 println!(
                     "[{}:{},{}] Entry {}: {}{}",
@@ -115,7 +115,7 @@ pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
                 let heading_suffix = if headings_str.is_empty() {
                     String::new()
                 } else {
-                    format!(" {{{}}}", headings_str)
+                    format!(" {{{headings_str}}}")
                 };
                 println!(
                     "{} {} {}{}",

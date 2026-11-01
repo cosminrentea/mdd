@@ -85,7 +85,7 @@ pub fn run(dir: PathBuf, _cli: &Cli) -> Result<()> {
 
     let dir_display = dir.file_name().unwrap_or(dir.as_os_str()).to_string_lossy();
 
-    println!("=== stats for {}/ ===", dir_display);
+    println!("=== stats for {dir_display}/ ===");
     println!(
         "Files: {} ({} lines, {})",
         file_count,
@@ -94,29 +94,17 @@ pub fn run(dir: PathBuf, _cli: &Cli) -> Result<()> {
     );
 
     let coverage_pct = with_frontmatter as f64 / file_count as f64 * 100.0;
-    println!(
-        "Frontmatter: {}/{} ({:.0}% coverage)",
-        with_frontmatter, file_count, coverage_pct,
-    );
+    println!("Frontmatter: {with_frontmatter}/{file_count} ({coverage_pct:.0}% coverage)");
 
     if !type_counts.is_empty() {
         let mut sorted: Vec<(&String, &usize)> = type_counts.iter().collect();
         sorted.sort_by(|a, b| b.1.cmp(a.1));
-        let type_str: Vec<String> = sorted
-            .iter()
-            .map(|(k, v)| format!("{}({})", k, v))
-            .collect();
+        let type_str: Vec<String> = sorted.iter().map(|(k, v)| format!("{k}({v})")).collect();
         println!("  type: {}", type_str.join(", "));
     }
 
-    println!(
-        "Content: {} with tables, {} with code, {} with lists",
-        with_tables, with_code, with_lists,
-    );
-    println!(
-        "Headings: avg {:.1}/file, max depth {}",
-        avg_sections, max_depth,
-    );
+    println!("Content: {with_tables} with tables, {with_code} with code, {with_lists} with lists");
+    println!("Headings: avg {avg_sections:.1}/file, max depth {max_depth}");
 
     Ok(())
 }
