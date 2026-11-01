@@ -203,6 +203,7 @@ proptest! {
     }
 
     #[test]
+    #[allow(clippy::cast_possible_truncation, reason = "section limits fit in usize")]
     fn sec_returns_subset_of_file(doc in arb_markdown_doc()) {
         let dir = TempDir::new().unwrap();
         let file = dir.path().join("test.md");

@@ -894,6 +894,7 @@ fn find_has_code_yaml() {
 
 // ─── find --newer-than ────────────────────────────────────────────────
 
+#[allow(clippy::cast_sign_loss, reason = "guarded by the non-negative branch")]
 fn write_with_mtime(dir: &std::path::Path, name: &str, unix_secs: i64) {
     let path = dir.join(name);
     std::fs::write(&path, "# Title\n\ntext\n").unwrap();

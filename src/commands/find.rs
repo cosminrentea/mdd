@@ -11,6 +11,7 @@ use crate::query::filter::entry_matches_frontmatter;
 use crate::query::predicates::section_matches;
 
 #[allow(clippy::too_many_arguments)]
+#[allow(clippy::cast_possible_truncation, reason = "file sizes fit in usize")]
 pub fn run(
     dir: PathBuf,
     type_filter: Option<String>,

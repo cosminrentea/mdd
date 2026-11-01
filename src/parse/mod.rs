@@ -19,7 +19,7 @@ use std::time::SystemTime;
 #[derive(Debug, Clone)]
 pub struct MdFile {
     pub path: PathBuf,
-    /// Content before the first MetadataBlock (e.g., a title line or intro text).
+    /// Content before the first `MetadataBlock` (e.g., a title line or intro text).
     /// In single-frontmatter files, this is None (frontmatter is inside the entry).
     pub preamble: Option<String>,
     /// Each logical entry: single-part files have one entry; multi-part (lrn) have many.
@@ -44,7 +44,7 @@ pub struct DocEntry {
 
 /// Parsed YAML frontmatter with the raw text preserved for round-trip editing.
 ///
-/// BTreeMap keeps keys sorted, which gives deterministic output
+/// `BTreeMap` keeps keys sorted, which gives deterministic output
 /// when iterating (useful for tests and for predictable `mdd fm` output).
 #[derive(Debug, Clone)]
 pub struct Frontmatter {
@@ -58,7 +58,7 @@ pub struct Frontmatter {
 /// A heading-delimited section of content.
 ///
 /// `offset` and `limit` are designed for direct use with the Read tool:
-///   Read(file_path="...", offset=section.offset, limit=section.limit)
+///   `Read(file_path="...", offset=section.offset, limit=section.limit)`
 #[derive(Debug, Clone)]
 pub struct Section {
     /// Heading depth (1-6).
