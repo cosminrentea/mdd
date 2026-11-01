@@ -2,7 +2,7 @@
 
 Updated: 2026-10-31
 
-Run `mdd --help` or `mdd <command> --help` for the installed version's options. This reference describes the repository's 0.2.0 source.
+Run `mdd --help` or `mdd <command> --help` for the installed version's options. This reference describes the repository's 0.2.1 source.
 
 ## Global options and output
 
