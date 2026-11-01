@@ -10,14 +10,6 @@ repository = "https://github.com/cosminrentea/mdd"
 keywords = ["markdown", "cli", "agent", "documentation"]
 categories = ["command-line-utilities", "text-processing"]
 
-[lib]
-name = "mdd"
-path = "src/lib.rs"
-
-[[bin]]
-name = "mdd"
-path = "src/main.rs"
-
 [dependencies]
 # CLI framework (derive macros for zero-boilerplate argument parsing)
 clap = { version = "4", features = ["derive"] }
