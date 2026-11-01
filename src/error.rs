@@ -37,10 +37,6 @@ pub enum MddError {
     #[error("no matching sections for pattern: {pattern}")]
     #[diagnostic(code(mdd::no_match))]
     NoMatch { pattern: String },
-
-    #[error("invalid date format: {value} (expected YYYY-MM-DD)")]
-    #[diagnostic(code(mdd::invalid_date))]
-    InvalidDate { value: String },
 }
 
 /// Convenience type alias used throughout the codebase.

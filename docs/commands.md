@@ -26,7 +26,7 @@ Updated: 2026-10-31
 
 Updated: 2026-10-31
 
-- `mdd find <dir> [filters]` finds matching sections. Combine `-t, --type <value>`, `--topic <value>`, `-H, --heading <pattern>`, `--has-table`, `--has-code <language>`, and `--newer-than <YYYY-MM-DD>`. Filters combine with AND. Type matches exactly, topic and heading match substrings, all case-insensitively. The date uses the file's modification time.
+- `mdd find <dir> [filters]` finds matching sections. Combine `-t, --type <value>`, `--topic <value>`, `-H, --heading <pattern>`, `--has-table`, `--has-code <language>`, and `--newer-than <YYYY-MM-DD>`. Filters combine with AND. Type matches exactly, topic and heading match substrings, all case-insensitively. The date uses the file's modification time, compared inclusively at UTC midnight. An invalid date is a usage error (exit code 2).
 - `mdd agg <dir> [-H <pattern>] [-t <type>] [--topic <topic>] [--budget <lines>]` prints matching sections, newest files first, then shorter sections first. The default budget is 500 content lines. The first matching section is emitted even if it exceeds the budget; subsequent sections stop at the first one that would exceed it.
 - `mdd map <dir>` summarizes recent files, directory structure, topics, and content features. Recent means modified in the last three days.
 - `mdd stats <dir>` reports file and line counts, frontmatter coverage, types, content features, and heading depth.

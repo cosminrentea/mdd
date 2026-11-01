@@ -34,7 +34,7 @@ fn main() {
             heading.clone(),
             *has_table,
             has_code.clone(),
-            newer_than.clone(),
+            *newer_than,
             &cli,
         ),
         Command::Fm {

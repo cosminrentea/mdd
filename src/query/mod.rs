@@ -2,11 +2,7 @@ pub mod filter;
 pub mod predicates;
 
 use std::path::{Path, PathBuf};
-use std::time::SystemTime;
 
-use chrono::NaiveDate;
-
-use crate::error::{MddError, Result};
 use crate::parse::markdown::parse_file;
 use crate::parse::MdFile;
 
@@ -40,15 +36,4 @@ pub fn walk_and_parse(dir: &Path) -> Vec<(PathBuf, MdFile)> {
         .into_iter()
         .filter_map(|p| parse_file(&p).ok().map(|md| (p, md)))
         .collect()
-}
-
-/// Parse a date string (YYYY-MM-DD) into a SystemTime for mtime comparisons.
-pub fn parse_date_to_system_time(date_str: &str) -> Result<SystemTime> {
-    let date =
-        NaiveDate::parse_from_str(date_str, "%Y-%m-%d").map_err(|e| MddError::InvalidDate {
-            value: format!("'{}': {}", date_str, e),
-        })?;
-    let datetime = date.and_hms_opt(0, 0, 0).unwrap();
-    let timestamp = datetime.and_utc().timestamp();
-    Ok(SystemTime::UNIX_EPOCH + std::time::Duration::from_secs(timestamp as u64))
 }

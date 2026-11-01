@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use chrono::{DateTime, NaiveDate, NaiveTime, Utc};
+
 use crate::cli::Cli;
 use crate::error::{MddError, Result};
 use crate::output::{self, fmt_size, format_signature};
@@ -16,25 +18,22 @@ pub fn run(
     heading: Option<String>,
     has_table: bool,
     has_code: Option<String>,
-    newer_than: Option<String>,
+    newer_than: Option<NaiveDate>,
     cli: &Cli,
 ) -> Result<()> {
     if !dir.exists() {
         return Err(MddError::FileNotFound { path: dir });
     }
 
-    let newer_cutoff = newer_than
-        .as_deref()
-        .map(query::parse_date_to_system_time)
-        .transpose()?;
+    let newer_cutoff = newer_than.map(|d| d.and_time(NaiveTime::MIN).and_utc());
 
     let parsed = query::walk_and_parse(&dir);
     let format = output::resolve_format(&cli.format);
     let mut match_count = 0;
 
     for (file_path, md) in &parsed {
-        if let Some(ref cutoff) = newer_cutoff {
-            if md.mtime < *cutoff {
+        if let Some(cutoff) = newer_cutoff {
+            if DateTime::<Utc>::from(md.mtime) < cutoff {
                 continue;
             }
         }
