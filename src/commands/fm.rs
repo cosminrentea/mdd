@@ -172,9 +172,7 @@ fn set_field(path: &std::path::Path, assignment: &str, apply: bool) -> Result<()
     Ok(())
 }
 
-/// Rewrites `key` inside the frontmatter blocks whose opening `---` sits on the
-/// given 1-based lines (as found by the parser); all other bytes are copied
-/// verbatim, so line endings and the trailing newline are preserved.
+/// Rewrites `key` only in the parser-located blocks (1-based opening `---` lines).
 /// An absent key is appended to the first block only.
 fn apply_frontmatter_set(
     content: &str,
