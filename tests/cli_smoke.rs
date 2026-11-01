@@ -1023,3 +1023,34 @@ fn toc_dir_handles_shallower_heading_after_deeper_first_heading() {
         assert!(out.contains("Bravo"), "{format}: {out}");
     }
 }
+
+// ─── multi-entry files: sections do not leak across entries ───────────
+
+#[test]
+fn sec_in_first_entry_does_not_include_next_entry() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args([
+            "-f",
+            "agent",
+            "sec",
+            "tests/fixtures/multipart-lrn.md",
+            "Thread Pool Utilization",
+        ])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Bulk POST: 4.1s"))
+        .stdout(predicate::str::contains("Consumer Library Broker 3.9").not());
+}
+
+#[test]
+fn at_in_first_entry_stays_inside_the_entry() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["-f", "agent", "at", "tests/fixtures/multipart-lrn.md", "25"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Bulk POST: 4.1s"))
+        .stdout(predicate::str::contains("type: note").not())
+        .stdout(predicate::str::contains("Consumer Library Broker 3.9").not());
+}
