@@ -3,6 +3,7 @@ name = "mdd"
 version = "0.2.1"
 readme = "README.md"
 edition = "2021"
+rust-version = "1.88"
 authors = ["Cosmin Rentea <cosminrentea@gmail.com>"]
 description = "Markdown-Driven Development -- structural queries for coding agents"
 license = "MIT"
