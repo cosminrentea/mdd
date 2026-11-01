@@ -22,8 +22,8 @@ pub struct Cli {
     pub strict: bool,
 }
 
-fn parse_date(s: &str) -> Result<NaiveDate, chrono::ParseError> {
-    NaiveDate::parse_from_str(s, "%Y-%m-%d")
+fn parse_date(s: &str) -> Result<NaiveDate, String> {
+    NaiveDate::parse_from_str(s, "%Y-%m-%d").map_err(|_| "expected a date as YYYY-MM-DD".to_owned())
 }
 
 #[derive(Subcommand, Debug)]
