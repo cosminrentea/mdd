@@ -173,7 +173,7 @@ pub enum Command {
 
 /// Output format selection.
 /// When not specified: `human` on TTY, `agent` on pipe.
-#[derive(Debug, Clone, clap::ValueEnum)]
+#[derive(Debug, Clone, Copy, clap::ValueEnum)]
 pub enum OutputFormat {
     /// Colored, indented, human-readable
     Human,

@@ -1,14 +1,13 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
-use crate::cli::Cli;
 use crate::error::{MddError, Result};
 use crate::output::fmt_size;
 use crate::parse::frontmatter::field_as_string;
 use crate::query;
 
 #[allow(clippy::cast_possible_truncation, reason = "file sizes fit in usize")]
-pub fn run(dir: PathBuf, _cli: &Cli) -> Result<()> {
+pub fn run(dir: PathBuf) -> Result<()> {
     if !dir.exists() || !dir.is_dir() {
         return Err(MddError::FileNotFound { path: dir });
     }

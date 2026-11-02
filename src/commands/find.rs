@@ -2,9 +2,9 @@ use std::path::PathBuf;
 
 use chrono::{DateTime, NaiveDate, NaiveTime, Utc};
 
-use crate::cli::Cli;
+use crate::cli::OutputFormat;
 use crate::error::{MddError, Result};
-use crate::output::{self, fmt_size, format_signature};
+use crate::output::{fmt_size, format_signature};
 use crate::parse::Section;
 use crate::query;
 use crate::query::filter::entry_matches_frontmatter;
@@ -20,7 +20,7 @@ pub fn run(
     has_table: bool,
     has_code: Option<String>,
     newer_than: Option<NaiveDate>,
-    cli: &Cli,
+    format: OutputFormat,
 ) -> Result<()> {
     if !dir.exists() {
         return Err(MddError::FileNotFound { path: dir });
@@ -29,7 +29,6 @@ pub fn run(
     let newer_cutoff = newer_than.map(|d| d.and_time(NaiveTime::MIN).and_utc());
 
     let parsed = query::walk_and_parse(&dir);
-    let format = output::resolve_format(cli.format.as_ref());
     let mut match_count = 0;
 
     for (file_path, md) in &parsed {
@@ -55,7 +54,7 @@ pub fn run(
         match_count += 1;
         let rel_path = file_path.strip_prefix(&dir).unwrap_or(file_path);
 
-        match &format {
+        match format {
             crate::cli::OutputFormat::Json => {
                 let sections_json: Vec<serde_json::Value> = matching_sections
                     .iter()

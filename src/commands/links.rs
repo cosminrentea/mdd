@@ -1,18 +1,16 @@
 use std::path::PathBuf;
 
-use crate::cli::Cli;
+use crate::cli::OutputFormat;
 use crate::error::{MddError, Result};
-use crate::output;
 use crate::parse::Link;
 use crate::parse::markdown::parse_file;
 use crate::query;
 
-pub fn run(path: PathBuf, check: bool, broken: bool, cli: &Cli) -> Result<()> {
+pub fn run(path: PathBuf, check: bool, broken: bool, format: OutputFormat) -> Result<()> {
     if !path.exists() {
         return Err(MddError::FileNotFound { path });
     }
 
-    let format = output::resolve_format(cli.format.as_ref());
     let check = check || broken;
 
     let all_links: Vec<(PathBuf, Vec<Link>)> = if path.is_dir() {
@@ -65,7 +63,7 @@ pub fn run(path: PathBuf, check: bool, broken: bool, cli: &Cli) -> Result<()> {
                 LinkStatus::Unchecked => "",
             };
 
-            match &format {
+            match format {
                 crate::cli::OutputFormat::Json => {
                     println!(
                         "{}",

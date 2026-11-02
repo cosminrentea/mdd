@@ -1,7 +1,6 @@
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 
-use crate::cli::Cli;
 use crate::error::{MddError, Result};
 use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
@@ -11,7 +10,6 @@ pub fn run(
     list_values: Option<String>,
     set: Option<String>,
     apply: bool,
-    _cli: &Cli,
 ) -> Result<()> {
     if !path.exists() {
         return Err(MddError::FileNotFound { path });
