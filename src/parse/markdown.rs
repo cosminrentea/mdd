@@ -171,7 +171,7 @@ fn parse_owned(source: String, file_dir: &Path) -> MdFile {
 
                 seen_metadata_block = true;
                 current_entry_start_line = fm_line;
-                current_entry_fm = parse_frontmatter(&metadata_text, fm_line);
+                current_entry_fm = parse_frontmatter(&metadata_text);
 
                 // Any headings collected before the first metadata block
                 // precede the first entry and belong to no entry. Discard them.
@@ -433,7 +433,8 @@ mod tests {
         let offsets: Vec<usize> = md
             .entries
             .iter()
-            .map(|e| e.frontmatter.as_ref().unwrap().offset)
+            .filter(|e| e.frontmatter.is_some())
+            .map(|e| e.offset)
             .collect();
         assert_eq!(offsets, vec![3, 28, 45]);
         for offset in offsets {

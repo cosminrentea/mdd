@@ -48,8 +48,6 @@ pub struct DocEntry {
 #[derive(Debug, Clone)]
 pub struct Frontmatter {
     pub fields: BTreeMap<String, serde_norway::Value>,
-    /// Line where the opening `---` appears (1-based).
-    pub offset: usize,
 }
 
 /// A heading-delimited section of content.

@@ -153,14 +153,6 @@ pub struct FmArgs {
     /// List all unique values for a frontmatter field
     #[arg(long)]
     pub list_values: Option<String>,
-
-    /// Set a frontmatter field (key=value format). Dry-run by default.
-    #[arg(long)]
-    pub set: Option<String>,
-
-    /// Actually apply the --set modification (without this, only prints what would change)
-    #[arg(long)]
-    pub apply: bool,
 }
 
 #[derive(clap::Args, Debug)]

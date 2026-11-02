@@ -1120,3 +1120,45 @@ fn fm_single_infrastructure_file_is_still_read() {
         .success()
         .stdout("type: infra-type\n");
 }
+
+// ─── read-only: fm has no write path ──────────────────────────────────
+
+#[test]
+fn fm_set_and_apply_are_usage_errors_and_leave_the_file_alone() {
+    let tmp = tempfile::tempdir().unwrap();
+    let path = tmp.path().join("a.md");
+    let doc = "---\ntype: a\n---\n\n# H\n";
+    std::fs::write(&path, doc).unwrap();
+    for extra in [vec!["--set", "type=b"], vec!["--set", "type=b", "--apply"]] {
+        Command::cargo_bin("mdd")
+            .unwrap()
+            .arg("fm")
+            .arg(&path)
+            .args(extra)
+            .assert()
+            .code(2)
+            .stdout("")
+            .stderr(predicate::str::contains("unexpected argument '--set'"));
+    }
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .arg("fm")
+        .arg(&path)
+        .arg("--apply")
+        .assert()
+        .code(2)
+        .stderr(predicate::str::contains("unexpected argument '--apply'"));
+    assert_eq!(std::fs::read_to_string(&path).unwrap(), doc);
+}
+
+#[test]
+fn fm_help_lists_no_write_options() {
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .args(["fm", "--help"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("--list-values"))
+        .stdout(predicate::str::contains("--set").not())
+        .stdout(predicate::str::contains("--apply").not());
+}
