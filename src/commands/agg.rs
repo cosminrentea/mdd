@@ -45,9 +45,7 @@ pub fn run(args: &AggArgs, format: OutputFormat) -> Result<()> {
                     continue;
                 }
 
-                let start = section.offset.saturating_sub(1);
-                let end = (start + section.limit).min(lines.len());
-                let content = lines[start..end].join("\n");
+                let content = section.slice(&lines);
                 let signature = format_signature(&section.features);
 
                 matches.push(AggMatch {
