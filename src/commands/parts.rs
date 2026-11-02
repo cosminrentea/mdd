@@ -1,18 +1,16 @@
 use std::path::PathBuf;
 
-use crate::cli::Cli;
+use crate::cli::OutputFormat;
 use crate::error::{MddError, Result};
-use crate::output;
 use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
 
-pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
+pub fn run(path: PathBuf, filter: Option<String>, format: OutputFormat) -> Result<()> {
     if !path.exists() {
         return Err(MddError::FileNotFound { path });
     }
 
     let md = parse_file(&path)?;
-    let format = output::resolve_format(cli.format.as_ref());
 
     if md.entries.is_empty() {
         eprintln!("No entries found in {}", path.display());
@@ -75,7 +73,7 @@ pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
             .collect::<Vec<_>>()
             .join(", ");
 
-        match &format {
+        match format {
             crate::cli::OutputFormat::Json => {
                 let headings: Vec<&str> = entry
                     .sections

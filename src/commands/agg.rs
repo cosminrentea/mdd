@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 use std::time::SystemTime;
 
-use crate::cli::Cli;
+use crate::cli::OutputFormat;
 use crate::error::{MddError, Result};
-use crate::output::{self, format_signature};
+use crate::output::format_signature;
 use crate::query;
 use crate::query::filter::entry_matches_frontmatter;
 use crate::query::predicates::section_matches;
@@ -26,14 +26,13 @@ pub fn run(
     type_filter: Option<String>,
     topic: Option<String>,
     budget: usize,
-    cli: &Cli,
+    format: OutputFormat,
 ) -> Result<()> {
     if !dir.exists() {
         return Err(MddError::FileNotFound { path: dir.clone() });
     }
 
     let parsed = query::walk_and_parse(&dir);
-    let format = output::resolve_format(cli.format.as_ref());
 
     // Collect all matching sections with their content
     let mut matches: Vec<AggMatch> = Vec::new();
@@ -86,7 +85,7 @@ pub fn run(
     let mut lines_used = 0usize;
     let mut emitted = 0usize;
 
-    match &format {
+    match format {
         crate::cli::OutputFormat::Json => {
             let mut json_sections: Vec<serde_json::Value> = Vec::new();
             for m in &matches {

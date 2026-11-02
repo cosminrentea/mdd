@@ -21,15 +21,18 @@ fn main() {
     // automatically from the derive macros in cli.rs.
     let cli = Cli::parse();
 
-    // Match on a reference to cli.command. This avoids moving fields out of
-    // the Cli struct, so we can still pass &cli to each command handler.
-    // We clone() where handlers need owned values -- acceptable since these
-    // are small CLI argument strings, not large data.
+    // Match on a reference to cli.command. We clone() where handlers need
+    // owned values -- acceptable since these are small CLI argument strings,
+    // not large data.
+    let format = output::resolve_format(cli.format);
+
     let result = match &cli.command {
-        Command::Toc { path, pattern } => commands::toc::run(path.clone(), pattern.clone(), &cli),
-        Command::Sec { path, patterns } => commands::sec::run(path.clone(), patterns.clone(), &cli),
-        Command::At { path, line, level } => commands::at::run(path.clone(), *line, *level, &cli),
-        Command::Map { path } => commands::map::run(path.clone(), &cli),
+        Command::Toc { path, pattern } => commands::toc::run(path.clone(), pattern.clone(), format),
+        Command::Sec { path, patterns } => {
+            commands::sec::run(path.clone(), patterns.clone(), format)
+        }
+        Command::At { path, line, level } => commands::at::run(path.clone(), *line, *level, format),
+        Command::Map { path } => commands::map::run(path.clone()),
         Command::Find {
             dir,
             r#type,
@@ -46,19 +49,19 @@ fn main() {
             *has_table,
             has_code.clone(),
             *newer_than,
-            &cli,
+            format,
         ),
         Command::Fm {
             path,
             list_values,
             set,
             apply,
-        } => commands::fm::run(path.clone(), list_values.clone(), set.clone(), *apply, &cli),
+        } => commands::fm::run(path.clone(), list_values.clone(), set.clone(), *apply),
         Command::Links {
             path,
             check,
             broken,
-        } => commands::links::run(path.clone(), *check, *broken, &cli),
+        } => commands::links::run(path.clone(), *check, *broken, format),
         Command::Agg {
             dir,
             heading,
@@ -71,10 +74,12 @@ fn main() {
             r#type.clone(),
             topic.clone(),
             *budget,
-            &cli,
+            format,
         ),
-        Command::Parts { path, filter } => commands::parts::run(path.clone(), filter.clone(), &cli),
-        Command::Stats { dir } => commands::stats::run(dir.clone(), &cli),
+        Command::Parts { path, filter } => {
+            commands::parts::run(path.clone(), filter.clone(), format)
+        }
+        Command::Stats { dir } => commands::stats::run(dir.clone()),
     };
 
     // Handle errors with miette's fancy reporting.

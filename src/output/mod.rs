@@ -8,9 +8,9 @@ use std::path::{Path, PathBuf};
 use crate::cli::OutputFormat;
 use crate::parse::{ContentFeatures, Section};
 
-pub fn resolve_format(explicit: Option<&OutputFormat>) -> OutputFormat {
+pub fn resolve_format(explicit: Option<OutputFormat>) -> OutputFormat {
     match explicit {
-        Some(f) => f.clone(),
+        Some(f) => f,
         None => {
             if io::stdout().is_terminal() {
                 OutputFormat::Human
@@ -68,7 +68,7 @@ pub struct AtOutput<'a> {
 
 // -- Rendering dispatch --
 
-pub fn render_toc_file(format: &OutputFormat, output: &TocFileOutput) {
+pub fn render_toc_file(format: OutputFormat, output: &TocFileOutput) {
     match format {
         OutputFormat::Human => human::render_toc_file(output),
         OutputFormat::Agent => agent::render_toc_file(output),
@@ -76,7 +76,7 @@ pub fn render_toc_file(format: &OutputFormat, output: &TocFileOutput) {
     }
 }
 
-pub fn render_toc_dir(format: &OutputFormat, output: &TocDirOutput) {
+pub fn render_toc_dir(format: OutputFormat, output: &TocDirOutput) {
     match format {
         OutputFormat::Human => human::render_toc_dir(output),
         OutputFormat::Agent => agent::render_toc_dir(output),
@@ -84,7 +84,7 @@ pub fn render_toc_dir(format: &OutputFormat, output: &TocDirOutput) {
     }
 }
 
-pub fn render_sec(format: &OutputFormat, output: &SecOutput<'_>) {
+pub fn render_sec(format: OutputFormat, output: &SecOutput<'_>) {
     match format {
         OutputFormat::Human => human::render_sec(output),
         OutputFormat::Agent => agent::render_sec(output),
@@ -92,7 +92,7 @@ pub fn render_sec(format: &OutputFormat, output: &SecOutput<'_>) {
     }
 }
 
-pub fn render_at(format: &OutputFormat, output: &AtOutput<'_>) {
+pub fn render_at(format: OutputFormat, output: &AtOutput<'_>) {
     match format {
         OutputFormat::Human => human::render_at(output),
         OutputFormat::Agent => agent::render_at(output),

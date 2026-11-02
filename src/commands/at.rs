@@ -1,13 +1,13 @@
 use std::fs;
 use std::path::PathBuf;
 
-use crate::cli::Cli;
+use crate::cli::OutputFormat;
 use crate::error::{MddError, Result};
 use crate::output::{self, AtOutput};
 use crate::parse::Section;
 use crate::parse::markdown::parse_file;
 
-pub fn run(path: PathBuf, line: usize, level: usize, cli: &Cli) -> Result<()> {
+pub fn run(path: PathBuf, line: usize, level: usize, format: OutputFormat) -> Result<()> {
     if !path.exists() {
         return Err(MddError::FileNotFound { path });
     }
@@ -64,9 +64,8 @@ pub fn run(path: PathBuf, line: usize, level: usize, cli: &Cli) -> Result<()> {
     let end = (start + target.limit).min(lines_vec.len());
     let section_content = lines_vec[start..end].join("\n");
 
-    let format = output::resolve_format(cli.format.as_ref());
     output::render_at(
-        &format,
+        format,
         &AtOutput {
             path: &path,
             breadcrumb,

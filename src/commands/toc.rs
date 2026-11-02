@@ -1,20 +1,20 @@
 use std::path::PathBuf;
 
-use crate::cli::Cli;
+use crate::cli::OutputFormat;
 use crate::error::{MddError, Result};
 use crate::output::{self, TocDirEntry, TocDirOutput, TocFileOutput};
 use crate::parse::Section;
 use crate::parse::markdown::{parse_content, parse_file};
 
-pub fn run(path: PathBuf, pattern: Option<String>, cli: &Cli) -> Result<()> {
+pub fn run(path: PathBuf, pattern: Option<String>, format: OutputFormat) -> Result<()> {
     if path.is_dir() {
-        run_dir(&path, pattern.as_deref(), cli)
+        run_dir(&path, pattern.as_deref(), format)
     } else {
-        run_file(&path, pattern.as_deref(), cli)
+        run_file(&path, pattern.as_deref(), format)
     }
 }
 
-fn run_file(path: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()> {
+fn run_file(path: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -> Result<()> {
     let md = parse_file(path)?;
     let all_sections: Vec<&Section> = md.entries.iter().flat_map(|e| &e.sections).collect();
 
@@ -41,10 +41,9 @@ fn run_file(path: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<
     };
 
     let min_level = filtered.iter().map(|s| s.level).min().unwrap_or(1);
-    let format = output::resolve_format(cli.format.as_ref());
 
     output::render_toc_file(
-        &format,
+        format,
         &TocFileOutput {
             path,
             sections: filtered,
@@ -55,7 +54,7 @@ fn run_file(path: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<
     Ok(())
 }
 
-fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()> {
+fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -> Result<()> {
     if !dir.exists() {
         return Err(MddError::FileNotFound {
             path: dir.to_owned(),
@@ -137,9 +136,8 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()
         });
     }
 
-    let format = output::resolve_format(cli.format.as_ref());
     output::render_toc_dir(
-        &format,
+        format,
         &TocDirOutput {
             entries: dir_entries,
             total_files,

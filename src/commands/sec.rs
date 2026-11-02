@@ -1,13 +1,13 @@
 use std::fs;
 use std::path::PathBuf;
 
-use crate::cli::Cli;
+use crate::cli::OutputFormat;
 use crate::error::{MddError, Result};
 use crate::output::{self, SecMatch, SecOutput};
 use crate::parse::Section;
 use crate::parse::markdown::parse_file;
 
-pub fn run(path: PathBuf, patterns: Vec<String>, cli: &Cli) -> Result<()> {
+pub fn run(path: PathBuf, patterns: Vec<String>, format: OutputFormat) -> Result<()> {
     if !path.exists() {
         return Err(MddError::FileNotFound { path });
     }
@@ -58,9 +58,8 @@ pub fn run(path: PathBuf, patterns: Vec<String>, cli: &Cli) -> Result<()> {
         eprintln!("warning: no match for: {}", unmatched.join(", "));
     }
 
-    let format = output::resolve_format(cli.format.as_ref());
     output::render_sec(
-        &format,
+        format,
         &SecOutput {
             path: &path,
             matches: all_matches,
