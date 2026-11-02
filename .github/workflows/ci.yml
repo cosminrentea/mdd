@@ -30,7 +30,7 @@ jobs:
       - name: Test
         run: cargo test --locked
       - name: Property tests (extended)
-        run: PROPTEST_CASES=200 cargo test --locked --test proptest_parser
+        run: PROPTEST_CASES=1000 cargo test --locked --test proptest_parser --bin mdd
       - name: Docs
         run: cargo doc --no-deps
         env:

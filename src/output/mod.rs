@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use crate::cli::OutputFormat;
 use crate::parse::{ContentFeatures, Section};
 
-pub fn resolve_format(explicit: &Option<OutputFormat>) -> OutputFormat {
+pub fn resolve_format(explicit: Option<&OutputFormat>) -> OutputFormat {
     match explicit {
         Some(f) => f.clone(),
         None => {

@@ -41,7 +41,7 @@ fn run_file(path: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<
     };
 
     let min_level = filtered.iter().map(|s| s.level).min().unwrap_or(1);
-    let format = output::resolve_format(&cli.format);
+    let format = output::resolve_format(cli.format.as_ref());
 
     output::render_toc_file(
         &format,
@@ -137,7 +137,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, cli: &Cli) -> Result<()
         });
     }
 
-    let format = output::resolve_format(&cli.format);
+    let format = output::resolve_format(cli.format.as_ref());
     output::render_toc_dir(
         &format,
         &TocDirOutput {

@@ -12,7 +12,7 @@ pub fn run(path: PathBuf, check: bool, broken: bool, cli: &Cli) -> Result<()> {
         return Err(MddError::FileNotFound { path });
     }
 
-    let format = output::resolve_format(&cli.format);
+    let format = output::resolve_format(cli.format.as_ref());
     let check = check || broken;
 
     let all_links: Vec<(PathBuf, Vec<Link>)> = if path.is_dir() {

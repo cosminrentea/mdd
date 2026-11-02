@@ -58,7 +58,7 @@ pub fn run(path: PathBuf, patterns: Vec<String>, cli: &Cli) -> Result<()> {
         eprintln!("warning: no match for: {}", unmatched.join(", "));
     }
 
-    let format = output::resolve_format(&cli.format);
+    let format = output::resolve_format(cli.format.as_ref());
     output::render_sec(
         &format,
         &SecOutput {

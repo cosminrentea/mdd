@@ -1,9 +1,8 @@
 # mdd
 
-[![Crates.io](https://img.shields.io/crates/v/mdd.svg)](https://crates.io/crates/mdd)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Updated: 2026-10-31
+Updated: 2026-11-02
 
 `mdd` is a Rust CLI for structural queries on Markdown. It helps coding agents and humans inspect document headings, select sections, and search collections without reading every file in full.
 

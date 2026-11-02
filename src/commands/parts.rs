@@ -12,7 +12,7 @@ pub fn run(path: PathBuf, filter: Option<String>, cli: &Cli) -> Result<()> {
     }
 
     let md = parse_file(&path)?;
-    let format = output::resolve_format(&cli.format);
+    let format = output::resolve_format(cli.format.as_ref());
 
     if md.entries.is_empty() {
         eprintln!("No entries found in {}", path.display());

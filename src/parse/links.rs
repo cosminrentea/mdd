@@ -2,7 +2,7 @@ use std::path::Path;
 
 use regex::Regex;
 
-use super::{Link, LinkKind};
+use super::Link;
 
 static MD_LINK_RE: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| {
     Regex::new(r"\[([^\]]*)\]\(([^)]+)\)").expect("valid regex literal")
@@ -33,7 +33,6 @@ pub fn extract_links(content: &str, file_dir: &Path) -> Vec<Link> {
         let resolved = resolve_link_path(&target, file_dir);
 
         links.push(Link {
-            kind: LinkKind::Markdown,
             target,
             resolved_path: resolved,
             line,
@@ -78,7 +77,6 @@ mod tests {
         let content = "# Title\n\nSee [other](./other.md) for details.\n";
         let links = extract_links(content, Path::new("/docs/notes"));
         assert_eq!(links.len(), 1);
-        assert_eq!(links[0].kind, LinkKind::Markdown);
         assert_eq!(links[0].target, "./other.md");
         assert_eq!(
             links[0].resolved_path,

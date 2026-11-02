@@ -29,7 +29,7 @@ pub fn run(
     let newer_cutoff = newer_than.map(|d| d.and_time(NaiveTime::MIN).and_utc());
 
     let parsed = query::walk_and_parse(&dir);
-    let format = output::resolve_format(&cli.format);
+    let format = output::resolve_format(cli.format.as_ref());
     let mut match_count = 0;
 
     for (file_path, md) in &parsed {

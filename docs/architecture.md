@@ -1,8 +1,8 @@
 # Architecture and development
 
-Updated: 2026-10-31
+Updated: 2026-11-02
 
-`mdd` parses local Markdown into a structural model, applies the selected command, and renders the result. It also exposes a Rust library through `src/lib.rs`.
+`mdd` parses local Markdown into a structural model, applies the selected command, and renders the result.
 
 ```mermaid
 flowchart LR
