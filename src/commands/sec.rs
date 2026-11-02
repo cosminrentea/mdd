@@ -1,21 +1,21 @@
 use std::fs;
-use std::path::PathBuf;
 
-use crate::cli::OutputFormat;
+use crate::cli::{OutputFormat, SecArgs};
 use crate::error::{MddError, Result};
 use crate::output::{self, SecMatch, SecOutput};
 use crate::parse::Section;
 use crate::parse::markdown::parse_file;
 
-pub fn run(path: PathBuf, patterns: Vec<String>, format: OutputFormat) -> Result<()> {
+pub fn run(args: &SecArgs, format: OutputFormat) -> Result<()> {
+    let SecArgs { path, patterns } = args;
     if !path.exists() {
-        return Err(MddError::FileNotFound { path });
+        return Err(MddError::FileNotFound { path: path.clone() });
     }
 
-    let md = parse_file(&path)?;
+    let md = parse_file(path)?;
     let all_sections: Vec<&Section> = md.entries.iter().flat_map(|e| &e.sections).collect();
 
-    let content = fs::read_to_string(&path).map_err(|e| MddError::IoError {
+    let content = fs::read_to_string(path).map_err(|e| MddError::IoError {
         path: path.clone(),
         source: e,
     })?;
@@ -24,7 +24,7 @@ pub fn run(path: PathBuf, patterns: Vec<String>, format: OutputFormat) -> Result
     let mut all_matches: Vec<SecMatch> = Vec::new();
     let mut unmatched: Vec<&str> = Vec::new();
 
-    for pattern in &patterns {
+    for pattern in patterns {
         let pat = clean_pattern(pattern).to_lowercase();
         let matched: Vec<&&Section> = all_sections
             .iter()
@@ -61,7 +61,7 @@ pub fn run(path: PathBuf, patterns: Vec<String>, format: OutputFormat) -> Result
     output::render_sec(
         format,
         &SecOutput {
-            path: &path,
+            path,
             matches: all_matches,
         },
     );

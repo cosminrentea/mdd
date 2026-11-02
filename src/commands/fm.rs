@@ -1,29 +1,31 @@
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 
+use crate::cli::FmArgs;
 use crate::error::{MddError, Result};
 use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
 
-pub fn run(
-    path: PathBuf,
-    list_values: Option<String>,
-    set: Option<String>,
-    apply: bool,
-) -> Result<()> {
+pub fn run(args: &FmArgs) -> Result<()> {
+    let FmArgs {
+        path,
+        list_values,
+        set,
+        apply,
+    } = args;
     if !path.exists() {
-        return Err(MddError::FileNotFound { path });
+        return Err(MddError::FileNotFound { path: path.clone() });
     }
 
-    if let Some(ref field) = list_values {
-        return list_field_values(&path, field);
+    if let Some(field) = list_values {
+        return list_field_values(path, field);
     }
 
-    if let Some(ref assignment) = set {
-        return set_field(&path, assignment, apply);
+    if let Some(assignment) = set {
+        return set_field(path, assignment, *apply);
     }
 
-    show_frontmatter(&path)
+    show_frontmatter(path)
 }
 
 fn list_field_values(path: &std::path::Path, field: &str) -> Result<()> {

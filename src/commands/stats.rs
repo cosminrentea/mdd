@@ -1,18 +1,19 @@
 use std::collections::BTreeMap;
-use std::path::PathBuf;
 
+use crate::cli::StatsArgs;
 use crate::error::{MddError, Result};
 use crate::output::fmt_size;
 use crate::parse::frontmatter::field_as_string;
 use crate::query;
 
 #[allow(clippy::cast_possible_truncation, reason = "file sizes fit in usize")]
-pub fn run(dir: PathBuf) -> Result<()> {
+pub fn run(args: &StatsArgs) -> Result<()> {
+    let dir = &args.dir;
     if !dir.exists() || !dir.is_dir() {
-        return Err(MddError::FileNotFound { path: dir });
+        return Err(MddError::FileNotFound { path: dir.clone() });
     }
 
-    let parsed = query::walk_and_parse(&dir);
+    let parsed = query::walk_and_parse(dir);
 
     if parsed.is_empty() {
         eprintln!("No markdown files found in {}", dir.display());

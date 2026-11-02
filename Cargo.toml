@@ -68,7 +68,6 @@ todo = "warn"
 unimplemented = "warn"
 unwrap_used = "warn"
 # Structural, revisited with later refactors
-needless_pass_by_value = "allow"
 too_many_lines = "allow"
 struct_excessive_bools = "allow"
 # Statistics and display arithmetic
