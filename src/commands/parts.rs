@@ -2,15 +2,15 @@ use super::Outcome;
 use crate::cli::{OutputFormat, PartsArgs};
 use crate::error::{MddError, Result};
 use crate::parse::frontmatter::field_as_string;
-use crate::parse::markdown::parse_file;
+use crate::query::{self, Options};
 
-pub fn run(args: &PartsArgs, format: OutputFormat) -> Result<Outcome> {
+pub fn run(args: &PartsArgs, format: OutputFormat, opts: Options) -> Result<Outcome> {
     let PartsArgs { path, filter } = args;
     if !path.exists() {
         return Err(MddError::FileNotFound { path: path.clone() });
     }
 
-    let md = parse_file(path)?;
+    let md = query::parse_checked(path, opts)?;
 
     if md.entries.is_empty() {
         return Ok(Outcome::NothingFound(format!(

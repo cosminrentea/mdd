@@ -3,16 +3,16 @@ use crate::cli::{AtArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::output::{self, AtOutput};
 use crate::parse::Section;
-use crate::parse::markdown::parse_file;
+use crate::query::{self, Options};
 
-pub fn run(args: &AtArgs, format: OutputFormat) -> Result<Outcome> {
+pub fn run(args: &AtArgs, format: OutputFormat, opts: Options) -> Result<Outcome> {
     let AtArgs { path, line, level } = args;
     let (line, level) = (*line, *level);
     if !path.exists() {
         return Err(MddError::FileNotFound { path: path.clone() });
     }
 
-    let md = parse_file(path)?;
+    let md = query::parse_checked(path, opts)?;
 
     if line < 1 || line > md.total_lines {
         return Err(MddError::LineOutOfRange {

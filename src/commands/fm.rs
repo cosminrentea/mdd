@@ -3,33 +3,31 @@ use std::collections::BTreeSet;
 use super::Outcome;
 use crate::cli::FmArgs;
 use crate::error::{MddError, Result};
+use crate::parse::MdFile;
 use crate::parse::frontmatter::field_as_string;
-use crate::parse::markdown::parse_file;
-use crate::query::walk_md_files;
+use crate::query::{self, Options};
 
-pub fn run(args: &FmArgs) -> Result<Outcome> {
+pub fn run(args: &FmArgs, opts: Options) -> Result<Outcome> {
     let FmArgs { path, list_values } = args;
     if !path.exists() {
         return Err(MddError::FileNotFound { path: path.clone() });
     }
 
     if let Some(field) = list_values {
-        return list_field_values(path, field);
+        return list_field_values(path, field, opts);
     }
 
-    show_frontmatter(path)
+    show_frontmatter(path, opts)
 }
 
-fn list_field_values(path: &std::path::Path, field: &str) -> Result<Outcome> {
+fn list_field_values(path: &std::path::Path, field: &str, opts: Options) -> Result<Outcome> {
     let mut values = BTreeSet::new();
 
     if path.is_file() {
-        collect_field_values(path, field, &mut values)?;
+        collect_field_values(&query::parse_checked(path, opts)?, field, &mut values);
     } else {
-        let files = walk_md_files(path);
-
-        for file_path in &files {
-            let _ = collect_field_values(file_path, field, &mut values);
+        for (_, md) in &query::scan(path, opts)?.parsed {
+            collect_field_values(md, field, &mut values);
         }
     }
 
@@ -46,12 +44,7 @@ fn list_field_values(path: &std::path::Path, field: &str) -> Result<Outcome> {
     Ok(Outcome::Found)
 }
 
-fn collect_field_values(
-    path: &std::path::Path,
-    field: &str,
-    values: &mut BTreeSet<String>,
-) -> Result<()> {
-    let md = parse_file(path)?;
+fn collect_field_values(md: &MdFile, field: &str, values: &mut BTreeSet<String>) {
     for entry in &md.entries {
         if let Some(ref fm) = entry.frontmatter
             && let Some(val) = field_as_string(fm, field)
@@ -59,12 +52,11 @@ fn collect_field_values(
             values.insert(val);
         }
     }
-    Ok(())
 }
 
-fn show_frontmatter(path: &std::path::Path) -> Result<Outcome> {
+fn show_frontmatter(path: &std::path::Path, opts: Options) -> Result<Outcome> {
     if path.is_file() {
-        let md = parse_file(path)?;
+        let md = query::parse_checked(path, opts)?;
         let mut printed = 0usize;
         for entry in &md.entries {
             if let Some(ref fm) = entry.frontmatter {
@@ -81,15 +73,11 @@ fn show_frontmatter(path: &std::path::Path) -> Result<Outcome> {
             )));
         }
     } else {
-        let files = walk_md_files(path);
+        let scan = query::scan(path, opts)?;
 
-        let mut count = 0;
+        let count = u32::try_from(scan.walked).unwrap_or(u32::MAX);
         let mut with_fm = 0;
-        for file_path in &files {
-            count += 1;
-            let Ok(md) = parse_file(file_path) else {
-                continue;
-            };
+        for (_, md) in &scan.parsed {
             let has_fm = md.entries.iter().any(|e| e.frontmatter.is_some());
             if has_fm {
                 with_fm += 1;
@@ -105,7 +93,7 @@ fn show_frontmatter(path: &std::path::Path) -> Result<Outcome> {
                 0.0
             }
         );
-        if files.is_empty() {
+        if scan.walked == 0 {
             return Ok(Outcome::NothingFound(format!(
                 "no Markdown files in {}",
                 path.display()
@@ -165,7 +153,9 @@ mod tests {
             "  k: v\n",
             "tag_seq: !custom [1, 2]\n",
         );
-        let fm = crate::parse::frontmatter::parse_frontmatter(raw).unwrap();
+        let fm = crate::parse::frontmatter::parse_frontmatter(raw)
+            .unwrap()
+            .unwrap();
         let shown = |key: &str| format_yaml_value(&fm.fields[key]);
 
         assert_eq!(
@@ -183,7 +173,9 @@ mod tests {
     #[test]
     fn pins_format_yaml_value_numbers() {
         let raw = "a: 1e3\nb: .5\nc: -0.0\nd: .inf\ne: -.inf\nf: .nan\ng: 18446744073709551615\nh: -9223372036854775808\ni: [1e3, .inf, .nan]";
-        let fm = crate::parse::frontmatter::parse_frontmatter(raw).unwrap();
+        let fm = crate::parse::frontmatter::parse_frontmatter(raw)
+            .unwrap()
+            .unwrap();
         let shown = |key: &str| format_yaml_value(&fm.fields[key]);
         assert_eq!(shown("a"), "1000.0");
         assert_eq!(shown("b"), "0.5");

@@ -13,6 +13,7 @@ mod query;
 use cli::{Cli, Command};
 use commands::Outcome;
 use error::MddError;
+use query::Options;
 
 fn main() -> ExitCode {
     #[cfg(unix)]
@@ -25,22 +26,23 @@ fn main() -> ExitCode {
     let Cli {
         command,
         format,
-        strict: _,
+        strict,
     } = Cli::parse();
+    let opts = Options { strict };
 
     let format = output::resolve_format(format);
 
     let result = match command {
-        Command::Toc(args) => commands::toc::run(&args, format),
-        Command::Sec(args) => commands::sec::run(&args, format),
-        Command::At(args) => commands::at::run(&args, format),
-        Command::Map(args) => commands::map::run(&args),
-        Command::Find(args) => commands::find::run(&args, format),
-        Command::Fm(args) => commands::fm::run(&args),
-        Command::Links(args) => commands::links::run(&args, format),
-        Command::Agg(args) => commands::agg::run(&args, format),
-        Command::Parts(args) => commands::parts::run(&args, format),
-        Command::Stats(args) => commands::stats::run(&args),
+        Command::Toc(args) => commands::toc::run(&args, format, opts),
+        Command::Sec(args) => commands::sec::run(&args, format, opts),
+        Command::At(args) => commands::at::run(&args, format, opts),
+        Command::Map(args) => commands::map::run(&args, opts),
+        Command::Find(args) => commands::find::run(&args, format, opts),
+        Command::Fm(args) => commands::fm::run(&args, opts),
+        Command::Links(args) => commands::links::run(&args, format, opts),
+        Command::Agg(args) => commands::agg::run(&args, format, opts),
+        Command::Parts(args) => commands::parts::run(&args, format, opts),
+        Command::Stats(args) => commands::stats::run(&args, opts),
     };
 
     match result {

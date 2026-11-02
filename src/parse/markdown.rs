@@ -16,7 +16,7 @@ use pulldown_cmark::{
 use super::features::FeatureAccumulator;
 use super::frontmatter::parse_frontmatter;
 use super::links::make_link;
-use super::{ContentFeatures, DocEntry, Frontmatter, Link, MdFile, Section};
+use super::{ContentFeatures, DocEntry, Frontmatter, InvalidFrontmatter, Link, MdFile, Section};
 use crate::error::{MddError, Result};
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -66,7 +66,9 @@ pub fn parse_file(path: &Path) -> Result<MdFile> {
 /// 6. Collects the links (resolved against an empty directory)
 ///
 /// Returns an `MdFile` with path set to an empty `PathBuf` (caller fills it in)
-/// and `source` set to a copy of `content`.
+/// and `source` set to a copy of `content`. Only the unit tests parse text that did
+/// not come from a file.
+#[cfg(test)]
 pub fn parse_content(content: &str) -> MdFile {
     parse_owned(content.to_owned(), Path::new(""))
 }
@@ -127,6 +129,7 @@ fn parse_owned(source: String, file_dir: &Path) -> MdFile {
     let mut current_features = FeatureAccumulator::new();
 
     let mut links: Vec<Link> = Vec::new();
+    let mut invalid_frontmatter: Vec<InvalidFrontmatter> = Vec::new();
 
     for (event, range) in offset_iter {
         // Links are recorded before the state machine so that no state (heading,
@@ -171,7 +174,16 @@ fn parse_owned(source: String, file_dir: &Path) -> MdFile {
 
                 seen_metadata_block = true;
                 current_entry_start_line = fm_line;
-                current_entry_fm = parse_frontmatter(&metadata_text);
+                current_entry_fm = match parse_frontmatter(&metadata_text) {
+                    Ok(fm) => fm,
+                    Err(reason) => {
+                        invalid_frontmatter.push(InvalidFrontmatter {
+                            line: fm_line,
+                            reason,
+                        });
+                        None
+                    }
+                };
 
                 // Any headings collected before the first metadata block
                 // precede the first entry and belong to no entry. Discard them.
@@ -251,6 +263,7 @@ fn parse_owned(source: String, file_dir: &Path) -> MdFile {
         path: std::path::PathBuf::new(),
         entries,
         links,
+        invalid_frontmatter,
         total_lines,
         byte_size: content.len() as u64,
         mtime: SystemTime::UNIX_EPOCH,

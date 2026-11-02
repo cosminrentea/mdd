@@ -1,17 +1,16 @@
 use super::Outcome;
 use super::sec::clean_pattern;
 use crate::cli::{OutputFormat, TocArgs};
-use crate::error::{MddError, Result};
+use crate::error::Result;
 use crate::output::{self, TocDirEntry, TocDirOutput, TocFileOutput};
 use crate::parse::Section;
-use crate::parse::markdown::{parse_content, parse_file};
-use crate::query::walk_md_files;
+use crate::query::{self, Options};
 
-pub fn run(args: &TocArgs, format: OutputFormat) -> Result<Outcome> {
+pub fn run(args: &TocArgs, format: OutputFormat, opts: Options) -> Result<Outcome> {
     if args.path.is_dir() {
-        run_dir(&args.path, args.pattern.as_deref(), format)
+        run_dir(&args.path, args.pattern.as_deref(), format, opts)
     } else {
-        run_file(&args.path, args.pattern.as_deref(), format)
+        run_file(&args.path, args.pattern.as_deref(), format, opts)
     }
 }
 
@@ -19,8 +18,9 @@ fn run_file(
     path: &std::path::Path,
     pattern: Option<&str>,
     format: OutputFormat,
+    opts: Options,
 ) -> Result<Outcome> {
-    let md = parse_file(path)?;
+    let md = query::parse_checked(path, opts)?;
     let all_sections: Vec<&Section> = md.entries.iter().flat_map(|e| &e.sections).collect();
 
     if all_sections.is_empty() {
@@ -62,24 +62,18 @@ fn no_matching_sections(pattern: &str) -> Outcome {
     Outcome::NothingFound(format!("no matching sections for pattern: {pattern}"))
 }
 
-fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -> Result<Outcome> {
-    if !dir.exists() {
-        return Err(MddError::FileNotFound {
-            path: dir.to_owned(),
-        });
-    }
-
-    let files = walk_md_files(dir);
+fn run_dir(
+    dir: &std::path::Path,
+    pattern: Option<&str>,
+    format: OutputFormat,
+    opts: Options,
+) -> Result<Outcome> {
+    let scan = query::scan(dir, opts)?;
 
     let pat_lower = pattern.map(|p| clean_pattern(p).to_lowercase());
     let mut dir_entries: Vec<TocDirEntry> = Vec::new();
 
-    for file_path in &files {
-        let Ok(content) = std::fs::read_to_string(file_path) else {
-            continue;
-        };
-
-        let md = parse_content(&content);
+    for (file_path, md) in &scan.parsed {
         let all_sections: Vec<&Section> = md.entries.iter().flat_map(|e| &e.sections).collect();
 
         let first_heading = all_sections
@@ -113,7 +107,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -
         dir_entries.push(TocDirEntry {
             rel_path,
             total_lines: md.total_lines,
-            byte_size: content.len(),
+            byte_size: md.source.len(),
             first_heading,
             sub_headings,
             min_level,
@@ -135,7 +129,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -
         },
     );
 
-    if files.is_empty() {
+    if scan.walked == 0 {
         return Ok(Outcome::NothingFound(format!(
             "no Markdown files in {}",
             dir.display()

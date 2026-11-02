@@ -3,15 +3,15 @@ use crate::cli::{OutputFormat, SecArgs};
 use crate::error::{MddError, Result};
 use crate::output::{self, SecMatch, SecOutput};
 use crate::parse::Section;
-use crate::parse::markdown::parse_file;
+use crate::query::{self, Options};
 
-pub fn run(args: &SecArgs, format: OutputFormat) -> Result<Outcome> {
+pub fn run(args: &SecArgs, format: OutputFormat, opts: Options) -> Result<Outcome> {
     let SecArgs { path, patterns } = args;
     if !path.exists() {
         return Err(MddError::FileNotFound { path: path.clone() });
     }
 
-    let md = parse_file(path)?;
+    let md = query::parse_checked(path, opts)?;
     let all_sections: Vec<&Section> = md.entries.iter().flat_map(|e| &e.sections).collect();
 
     let lines: Vec<&str> = md.source.lines().collect();

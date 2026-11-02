@@ -23,11 +23,23 @@ pub struct MdFile {
     pub entries: Vec<DocEntry>,
     /// Inline, reference, collapsed and shortcut links in the body, in document order.
     pub links: Vec<Link>,
+    /// Frontmatter blocks that were dropped because they are not a YAML mapping.
+    pub invalid_frontmatter: Vec<InvalidFrontmatter>,
     pub total_lines: usize,
     pub byte_size: u64,
     pub mtime: SystemTime,
     /// The exact text that was parsed (raw: no BOM stripping, no line-ending changes).
     pub source: String,
+}
+
+/// A frontmatter block the parser could not use: its fields are dropped.
+/// The parser reports the problem here instead of printing it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InvalidFrontmatter {
+    /// Line where the opening `---` appears (1-based).
+    pub line: usize,
+    /// One-line description of the YAML error.
+    pub reason: String,
 }
 
 /// One logical entry in a document (a frontmatter block + its subsequent content).

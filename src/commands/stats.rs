@@ -5,10 +5,10 @@ use crate::cli::StatsArgs;
 use crate::error::{MddError, Result};
 use crate::output::fmt_size;
 use crate::parse::frontmatter::field_as_string;
-use crate::query;
+use crate::query::{self, Options};
 
 #[allow(clippy::cast_possible_truncation, reason = "file sizes fit in usize")]
-pub fn run(args: &StatsArgs) -> Result<Outcome> {
+pub fn run(args: &StatsArgs, opts: Options) -> Result<Outcome> {
     let dir = &args.dir;
     if !dir.exists() {
         return Err(MddError::FileNotFound { path: dir.clone() });
@@ -17,7 +17,7 @@ pub fn run(args: &StatsArgs) -> Result<Outcome> {
         return Err(MddError::NotADirectory { path: dir.clone() });
     }
 
-    let parsed = query::walk_and_parse(dir);
+    let parsed = query::scan(dir, opts)?.parsed;
 
     if parsed.is_empty() {
         return Ok(Outcome::NothingFound(format!(
