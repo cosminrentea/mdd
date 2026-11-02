@@ -5,26 +5,20 @@ use crate::error::{MddError, Result};
 use crate::output::{fmt_size, format_signature};
 use crate::parse::Section;
 use crate::query;
-use crate::query::filter::entry_matches_frontmatter;
-use crate::query::predicates::section_matches;
+use crate::query::filter::Filter;
 
 #[allow(clippy::cast_possible_truncation, reason = "file sizes fit in usize")]
 pub fn run(args: &FindArgs, format: OutputFormat) -> Result<()> {
-    let FindArgs {
-        dir,
-        r#type: type_filter,
-        topic,
-        heading,
-        has_table,
-        has_code,
-        newer_than,
-    } = args;
+    let dir = &args.dir;
     if !dir.exists() {
         return Err(MddError::FileNotFound { path: dir.clone() });
     }
 
-    let newer_cutoff = newer_than.map(|d| d.and_time(NaiveTime::MIN).and_utc());
+    let newer_cutoff = args
+        .newer_than
+        .map(|d| d.and_time(NaiveTime::MIN).and_utc());
 
+    let filter = args.filter();
     let parsed = query::walk_and_parse(dir);
     let mut match_count = 0;
 
@@ -35,14 +29,7 @@ pub fn run(args: &FindArgs, format: OutputFormat) -> Result<()> {
             continue;
         }
 
-        let matching_sections = find_matching_sections(
-            md,
-            type_filter.as_deref(),
-            topic.as_deref(),
-            heading.as_deref(),
-            *has_table,
-            has_code.as_deref(),
-        );
+        let matching_sections = find_matching_sections(md, &filter);
 
         if matching_sections.is_empty() {
             continue;
@@ -127,23 +114,16 @@ pub fn run(args: &FindArgs, format: OutputFormat) -> Result<()> {
     Ok(())
 }
 
-fn find_matching_sections<'a>(
-    md: &'a crate::parse::MdFile,
-    type_filter: Option<&str>,
-    topic: Option<&str>,
-    heading: Option<&str>,
-    has_table: bool,
-    has_code: Option<&str>,
-) -> Vec<&'a Section> {
+fn find_matching_sections<'a>(md: &'a crate::parse::MdFile, filter: &Filter) -> Vec<&'a Section> {
     let mut results: Vec<&Section> = Vec::new();
 
     for entry in &md.entries {
-        if !entry_matches_frontmatter(entry, type_filter, topic) {
+        if !filter.matches_entry(entry) {
             continue;
         }
 
         for section in &entry.sections {
-            if !section_matches(section, heading, has_table, has_code) {
+            if !filter.matches_section(section) {
                 continue;
             }
             results.push(section);

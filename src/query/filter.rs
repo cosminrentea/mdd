@@ -1,52 +1,107 @@
-use crate::parse::DocEntry;
 use crate::parse::frontmatter::field_as_string;
+use crate::parse::{DocEntry, Section};
 
-/// Check if a document entry's frontmatter matches the given type and topic filters.
-/// Returns true if all provided filters match (AND logic).
-/// Returns true if no filters are provided.
-pub fn entry_matches_frontmatter(
-    entry: &DocEntry,
-    type_filter: Option<&str>,
-    topic: Option<&str>,
-) -> bool {
-    if type_filter.is_none() && topic.is_none() {
-        return true;
-    }
+/// The filters shared by `find` and `agg`, built once per run.
+///
+/// Every provided predicate must match (AND logic). `topic` and `heading` are
+/// lowercased once at construction (Unicode rules); `type` and the code
+/// language stay raw and are compared with `eq_ignore_ascii_case`.
+pub struct Filter {
+    doc_type: Option<String>,
+    topic: Option<String>,
+    heading: Option<String>,
+    has_table: bool,
+    has_code: Option<String>,
+}
 
-    let Some(fm) = &entry.frontmatter else {
-        return false;
-    };
-
-    if let Some(t) = type_filter {
-        match field_as_string(fm, "type") {
-            Some(val) => {
-                if !val.eq_ignore_ascii_case(t) {
-                    return false;
-                }
-            }
-            None => return false,
+impl Filter {
+    pub fn new(
+        type_filter: Option<&str>,
+        topic: Option<&str>,
+        heading: Option<&str>,
+        has_table: bool,
+        has_code: Option<&str>,
+    ) -> Self {
+        Self {
+            doc_type: type_filter.map(str::to_owned),
+            topic: topic.map(str::to_lowercase),
+            heading: heading.map(str::to_lowercase),
+            has_table,
+            has_code: has_code.map(str::to_owned),
         }
     }
 
-    if let Some(t) = topic {
-        match field_as_string(fm, "topic") {
-            Some(val) => {
-                if !val.to_lowercase().contains(&t.to_lowercase()) {
-                    return false;
-                }
-            }
-            None => return false,
+    /// Check a document entry's frontmatter against the type and topic filters.
+    /// With neither filter set every entry matches, even one without frontmatter.
+    pub fn matches_entry(&self, entry: &DocEntry) -> bool {
+        if self.doc_type.is_none() && self.topic.is_none() {
+            return true;
         }
+
+        let Some(fm) = &entry.frontmatter else {
+            return false;
+        };
+
+        if let Some(t) = &self.doc_type {
+            match field_as_string(fm, "type") {
+                Some(val) => {
+                    if !val.eq_ignore_ascii_case(t) {
+                        return false;
+                    }
+                }
+                None => return false,
+            }
+        }
+
+        if let Some(t) = &self.topic {
+            match field_as_string(fm, "topic") {
+                Some(val) => {
+                    if !val.to_lowercase().contains(t.as_str()) {
+                        return false;
+                    }
+                }
+                None => return false,
+            }
+        }
+
+        true
     }
 
-    true
+    /// Check a section against the heading, table and code-language filters.
+    pub fn matches_section(&self, section: &Section) -> bool {
+        if let Some(h) = &self.heading
+            && !section.title.to_lowercase().contains(h.as_str())
+        {
+            return false;
+        }
+
+        if self.has_table && !section.features.has_table {
+            return false;
+        }
+
+        if let Some(lang) = &self.has_code {
+            if !section.features.has_code_block {
+                return false;
+            }
+            if !lang.is_empty()
+                && !section
+                    .features
+                    .code_languages
+                    .iter()
+                    .any(|l| l.eq_ignore_ascii_case(lang))
+            {
+                return false;
+            }
+        }
+
+        true
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::parse::markdown::parse_content;
-    use crate::query::predicates::section_matches;
 
     const PLAIN: &str = "# Title\n\nbody\n";
     const FM: &str = "---\ntype: reference\ntopic: unit testing\n---\n\n# Title\n\nbody\n";
@@ -93,9 +148,10 @@ mod tests {
     fn evaluate(c: &Case) -> (bool, bool) {
         let md = parse_content(c.doc);
         let entry = &md.entries[0];
+        let filter = Filter::new(c.type_filter, c.topic, c.heading, c.has_table, c.has_code);
         (
-            entry_matches_frontmatter(entry, c.type_filter, c.topic),
-            section_matches(&entry.sections[0], c.heading, c.has_table, c.has_code),
+            filter.matches_entry(entry),
+            filter.matches_section(&entry.sections[0]),
         )
     }
 

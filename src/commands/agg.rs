@@ -5,8 +5,6 @@ use crate::cli::{AggArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::output::format_signature;
 use crate::query;
-use crate::query::filter::entry_matches_frontmatter;
-use crate::query::predicates::section_matches;
 
 /// A matched section ready for output, carrying its content and provenance.
 struct AggMatch {
@@ -21,18 +19,13 @@ struct AggMatch {
 }
 
 pub fn run(args: &AggArgs, format: OutputFormat) -> Result<()> {
-    let AggArgs {
-        dir,
-        heading,
-        r#type: type_filter,
-        topic,
-        budget,
-    } = args;
-    let budget = *budget;
+    let dir = &args.dir;
+    let budget = args.budget;
     if !dir.exists() {
         return Err(MddError::FileNotFound { path: dir.clone() });
     }
 
+    let filter = args.filter();
     let parsed = query::walk_and_parse(dir);
 
     // Collect all matching sections with their content
@@ -46,12 +39,12 @@ pub fn run(args: &AggArgs, format: OutputFormat) -> Result<()> {
         let rel_path = file_path.strip_prefix(dir).unwrap_or(file_path);
 
         for entry in &md.entries {
-            if !entry_matches_frontmatter(entry, type_filter.as_deref(), topic.as_deref()) {
+            if !filter.matches_entry(entry) {
                 continue;
             }
 
             for section in &entry.sections {
-                if !section_matches(section, heading.as_deref(), false, None) {
+                if !filter.matches_section(section) {
                     continue;
                 }
 
