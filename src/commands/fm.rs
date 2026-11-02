@@ -121,12 +121,8 @@ fn set_field(path: &std::path::Path, assignment: &str, apply: bool) -> Result<()
         });
     }
 
-    let content = std::fs::read_to_string(path).map_err(|e| MddError::IoError {
-        path: path.to_owned(),
-        source: e,
-    })?;
-
     let md = parse_file(path)?;
+    let content = md.source.as_str();
     md.entries
         .first()
         .and_then(|e| e.frontmatter.as_ref())
@@ -139,10 +135,10 @@ fn set_field(path: &std::path::Path, assignment: &str, apply: bool) -> Result<()
         .filter_map(|e| e.frontmatter.as_ref().map(|fm| fm.offset))
         .collect();
 
-    let new_content = apply_frontmatter_set(&content, &block_starts, key.trim(), value.trim())?;
+    let new_content = apply_frontmatter_set(content, &block_starts, key.trim(), value.trim())?;
 
     if apply {
-        if new_content == content {
+        if new_content == *content {
             eprintln!("No change to {} in {}", key.trim(), path.display());
             return Ok(());
         }

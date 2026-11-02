@@ -20,7 +20,7 @@ use crate::error::{MddError, Result};
 
 /// Parse a Markdown file from disk into an `MdFile` struct.
 ///
-/// Reads the file, gets mtime, then delegates to `parse_content`.
+/// Reads the file (kept as-is in `MdFile::source`), gets mtime, then parses the text.
 pub fn parse_file(path: &Path) -> Result<MdFile> {
     if !path.exists() {
         return Err(MddError::FileNotFound {
@@ -42,14 +42,14 @@ pub fn parse_file(path: &Path) -> Result<MdFile> {
 
     let byte_size = metadata.len();
 
-    let mut md_file = parse_content(&content);
+    let mut md_file = parse_owned(content);
     path.clone_into(&mut md_file.path);
     md_file.byte_size = byte_size;
     md_file.mtime = mtime;
 
     // Re-extract links with the actual file directory for proper path resolution
     let file_dir = path.parent().unwrap_or(Path::new("."));
-    md_file.links = super::links::extract_links(&content, file_dir);
+    md_file.links = super::links::extract_links(&md_file.source, file_dir);
 
     Ok(md_file)
 }
@@ -63,8 +63,16 @@ pub fn parse_file(path: &Path) -> Result<MdFile> {
 /// 4. Tracks headings and their hierarchical relationships
 /// 5. Accumulates `ContentFeatures` per section
 ///
-/// Returns an `MdFile` with path set to an empty `PathBuf` (caller fills it in).
+/// Returns an `MdFile` with path set to an empty `PathBuf` (caller fills it in)
+/// and `source` set to a copy of `content`.
 pub fn parse_content(content: &str) -> MdFile {
+    parse_owned(content.to_owned())
+}
+
+/// `parse_content` for a caller that already owns the text: it is moved into
+/// `MdFile::source` instead of being copied.
+fn parse_owned(source: String) -> MdFile {
+    let content = source.as_str();
     // Pre-compute a table mapping line numbers to byte offsets.
     // Index 0 = byte offset of line 1's start (always 0).
     // Index 1 = byte offset of line 2's start (position after first \n).
@@ -229,6 +237,7 @@ pub fn parse_content(content: &str) -> MdFile {
         total_lines,
         byte_size: content.len() as u64,
         mtime: SystemTime::UNIX_EPOCH,
+        source,
     }
 }
 
@@ -308,6 +317,18 @@ mod tests {
     use super::strategies::{arb_level_drop_doc, arb_markdown_doc};
     use super::*;
     use proptest::prelude::*;
+
+    #[test]
+    fn source_is_the_raw_text_that_was_parsed() {
+        let raw = "\u{feff}---\r\ntype: a\r\n---\r\n\r\n# T\r\n";
+        assert_eq!(parse_content(raw).source, raw);
+        assert_eq!(parse_content("").source, "");
+
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("raw.md");
+        std::fs::write(&path, raw).unwrap();
+        assert_eq!(parse_file(&path).unwrap().source, raw);
+    }
 
     #[test]
     fn byte_to_line_basic() {

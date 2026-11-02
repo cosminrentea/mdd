@@ -26,6 +26,8 @@ pub struct MdFile {
     pub total_lines: usize,
     pub byte_size: u64,
     pub mtime: SystemTime,
+    /// The exact text that was parsed (raw: no BOM stripping, no line-ending changes).
+    pub source: String,
 }
 
 /// One logical entry in a document (a frontmatter block + its subsequent content).

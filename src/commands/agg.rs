@@ -32,10 +32,7 @@ pub fn run(args: &AggArgs, format: OutputFormat) -> Result<()> {
     let mut matches: Vec<AggMatch> = Vec::new();
 
     for (file_path, md) in &parsed {
-        let Ok(file_content) = std::fs::read_to_string(file_path) else {
-            continue;
-        };
-        let lines: Vec<&str> = file_content.lines().collect();
+        let lines: Vec<&str> = md.source.lines().collect();
         let rel_path = file_path.strip_prefix(dir).unwrap_or(file_path);
 
         for entry in &md.entries {
