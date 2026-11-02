@@ -1,16 +1,16 @@
 use std::path::PathBuf;
 
-use crate::cli::OutputFormat;
+use crate::cli::{OutputFormat, TocArgs};
 use crate::error::{MddError, Result};
 use crate::output::{self, TocDirEntry, TocDirOutput, TocFileOutput};
 use crate::parse::Section;
 use crate::parse::markdown::{parse_content, parse_file};
 
-pub fn run(path: PathBuf, pattern: Option<String>, format: OutputFormat) -> Result<()> {
-    if path.is_dir() {
-        run_dir(&path, pattern.as_deref(), format)
+pub fn run(args: &TocArgs, format: OutputFormat) -> Result<()> {
+    if args.path.is_dir() {
+        run_dir(&args.path, args.pattern.as_deref(), format)
     } else {
-        run_file(&path, pattern.as_deref(), format)
+        run_file(&args.path, args.pattern.as_deref(), format)
     }
 }
 

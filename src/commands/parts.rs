@@ -1,16 +1,15 @@
-use std::path::PathBuf;
-
-use crate::cli::OutputFormat;
+use crate::cli::{OutputFormat, PartsArgs};
 use crate::error::{MddError, Result};
 use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
 
-pub fn run(path: PathBuf, filter: Option<String>, format: OutputFormat) -> Result<()> {
+pub fn run(args: &PartsArgs, format: OutputFormat) -> Result<()> {
+    let PartsArgs { path, filter } = args;
     if !path.exists() {
-        return Err(MddError::FileNotFound { path });
+        return Err(MddError::FileNotFound { path: path.clone() });
     }
 
-    let md = parse_file(&path)?;
+    let md = parse_file(path)?;
 
     if md.entries.is_empty() {
         eprintln!("No entries found in {}", path.display());

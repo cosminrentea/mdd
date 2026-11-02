@@ -4,17 +4,19 @@ use std::fmt::Write;
 use std::path::PathBuf;
 use std::time::{Duration, SystemTime};
 
+use crate::cli::MapArgs;
 use crate::error::{MddError, Result};
 use crate::parse::MdFile;
 use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
 
-pub fn run(path: PathBuf) -> Result<()> {
+pub fn run(args: &MapArgs) -> Result<()> {
+    let path = &args.path;
     if !path.exists() || !path.is_dir() {
-        return Err(MddError::FileNotFound { path });
+        return Err(MddError::FileNotFound { path: path.clone() });
     }
 
-    let walker = ignore::WalkBuilder::new(&path).follow_links(true).build();
+    let walker = ignore::WalkBuilder::new(path).follow_links(true).build();
 
     let mut files: Vec<PathBuf> = walker
         .filter_map(std::result::Result::ok)
@@ -60,7 +62,7 @@ pub fn run(path: PathBuf) -> Result<()> {
     let mut total_with_code = 0usize;
 
     for (fp, md) in &parsed {
-        let rel = fp.strip_prefix(&path).unwrap_or(fp);
+        let rel = fp.strip_prefix(path).unwrap_or(fp);
         let dir_name = rel
             .parent()
             .and_then(|p| p.to_str())
@@ -111,7 +113,7 @@ pub fn run(path: PathBuf) -> Result<()> {
     if !hot_files.is_empty() {
         println!("\nHOT (modified last 3 days):");
         for (fp, md) in hot_files.iter().take(10) {
-            let rel = fp.strip_prefix(&path).unwrap_or(fp);
+            let rel = fp.strip_prefix(path).unwrap_or(fp);
             let headings: Vec<&str> = md
                 .entries
                 .iter()

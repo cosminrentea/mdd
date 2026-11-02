@@ -1,29 +1,35 @@
 use std::path::PathBuf;
 
-use crate::cli::OutputFormat;
+use crate::cli::{LinksArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::parse::Link;
 use crate::parse::markdown::parse_file;
 use crate::query;
 
-pub fn run(path: PathBuf, check: bool, broken: bool, format: OutputFormat) -> Result<()> {
+pub fn run(args: &LinksArgs, format: OutputFormat) -> Result<()> {
+    let LinksArgs {
+        path,
+        check,
+        broken,
+    } = args;
+    let (check, broken) = (*check, *broken);
     if !path.exists() {
-        return Err(MddError::FileNotFound { path });
+        return Err(MddError::FileNotFound { path: path.clone() });
     }
 
     let check = check || broken;
 
     let all_links: Vec<(PathBuf, Vec<Link>)> = if path.is_dir() {
-        query::walk_and_parse(&path)
+        query::walk_and_parse(path)
             .into_iter()
             .filter(|(_, md)| !md.links.is_empty())
             .map(|(p, md)| {
-                let rel = p.strip_prefix(&path).unwrap_or(&p).to_path_buf();
+                let rel = p.strip_prefix(path).unwrap_or(&p).to_path_buf();
                 (rel, md.links)
             })
             .collect()
     } else {
-        let md = parse_file(&path)?;
+        let md = parse_file(path)?;
         let rel = path.file_name().map_or_else(|| path.clone(), PathBuf::from);
         vec![(rel, md.links)]
     };

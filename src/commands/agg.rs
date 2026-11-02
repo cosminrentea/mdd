@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use std::time::SystemTime;
 
-use crate::cli::OutputFormat;
+use crate::cli::{AggArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::output::format_signature;
 use crate::query;
@@ -20,19 +20,20 @@ struct AggMatch {
     mtime: SystemTime,
 }
 
-pub fn run(
-    dir: PathBuf,
-    heading: Option<String>,
-    type_filter: Option<String>,
-    topic: Option<String>,
-    budget: usize,
-    format: OutputFormat,
-) -> Result<()> {
+pub fn run(args: &AggArgs, format: OutputFormat) -> Result<()> {
+    let AggArgs {
+        dir,
+        heading,
+        r#type: type_filter,
+        topic,
+        budget,
+    } = args;
+    let budget = *budget;
     if !dir.exists() {
         return Err(MddError::FileNotFound { path: dir.clone() });
     }
 
-    let parsed = query::walk_and_parse(&dir);
+    let parsed = query::walk_and_parse(dir);
 
     // Collect all matching sections with their content
     let mut matches: Vec<AggMatch> = Vec::new();
@@ -42,7 +43,7 @@ pub fn run(
             continue;
         };
         let lines: Vec<&str> = file_content.lines().collect();
-        let rel_path = file_path.strip_prefix(&dir).unwrap_or(file_path);
+        let rel_path = file_path.strip_prefix(dir).unwrap_or(file_path);
 
         for entry in &md.entries {
             if !entry_matches_frontmatter(entry, type_filter.as_deref(), topic.as_deref()) {

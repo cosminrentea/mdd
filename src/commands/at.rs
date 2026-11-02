@@ -1,18 +1,19 @@
 use std::fs;
-use std::path::PathBuf;
 
-use crate::cli::OutputFormat;
+use crate::cli::{AtArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::output::{self, AtOutput};
 use crate::parse::Section;
 use crate::parse::markdown::parse_file;
 
-pub fn run(path: PathBuf, line: usize, level: usize, format: OutputFormat) -> Result<()> {
+pub fn run(args: &AtArgs, format: OutputFormat) -> Result<()> {
+    let AtArgs { path, line, level } = args;
+    let (line, level) = (*line, *level);
     if !path.exists() {
-        return Err(MddError::FileNotFound { path });
+        return Err(MddError::FileNotFound { path: path.clone() });
     }
 
-    let md = parse_file(&path)?;
+    let md = parse_file(path)?;
 
     if line < 1 || line > md.total_lines {
         return Err(MddError::LineOutOfRange {
@@ -54,7 +55,7 @@ pub fn run(path: PathBuf, line: usize, level: usize, format: OutputFormat) -> Re
         .collect();
     let breadcrumb: Vec<String> = ancestry.iter().map(|s| s.title.clone()).collect();
 
-    let content = fs::read_to_string(&path).map_err(|e| MddError::IoError {
+    let content = fs::read_to_string(path).map_err(|e| MddError::IoError {
         path: path.clone(),
         source: e,
     })?;
@@ -67,7 +68,7 @@ pub fn run(path: PathBuf, line: usize, level: usize, format: OutputFormat) -> Re
     output::render_at(
         format,
         &AtOutput {
-            path: &path,
+            path,
             breadcrumb,
             section: target,
             content: section_content,

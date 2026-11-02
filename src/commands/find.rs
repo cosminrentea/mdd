@@ -1,8 +1,6 @@
-use std::path::PathBuf;
+use chrono::{DateTime, NaiveTime, Utc};
 
-use chrono::{DateTime, NaiveDate, NaiveTime, Utc};
-
-use crate::cli::OutputFormat;
+use crate::cli::{FindArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::output::{fmt_size, format_signature};
 use crate::parse::Section;
@@ -10,25 +8,24 @@ use crate::query;
 use crate::query::filter::entry_matches_frontmatter;
 use crate::query::predicates::section_matches;
 
-#[allow(clippy::too_many_arguments)]
 #[allow(clippy::cast_possible_truncation, reason = "file sizes fit in usize")]
-pub fn run(
-    dir: PathBuf,
-    type_filter: Option<String>,
-    topic: Option<String>,
-    heading: Option<String>,
-    has_table: bool,
-    has_code: Option<String>,
-    newer_than: Option<NaiveDate>,
-    format: OutputFormat,
-) -> Result<()> {
+pub fn run(args: &FindArgs, format: OutputFormat) -> Result<()> {
+    let FindArgs {
+        dir,
+        r#type: type_filter,
+        topic,
+        heading,
+        has_table,
+        has_code,
+        newer_than,
+    } = args;
     if !dir.exists() {
-        return Err(MddError::FileNotFound { path: dir });
+        return Err(MddError::FileNotFound { path: dir.clone() });
     }
 
     let newer_cutoff = newer_than.map(|d| d.and_time(NaiveTime::MIN).and_utc());
 
-    let parsed = query::walk_and_parse(&dir);
+    let parsed = query::walk_and_parse(dir);
     let mut match_count = 0;
 
     for (file_path, md) in &parsed {
@@ -43,7 +40,7 @@ pub fn run(
             type_filter.as_deref(),
             topic.as_deref(),
             heading.as_deref(),
-            has_table,
+            *has_table,
             has_code.as_deref(),
         );
 
@@ -52,7 +49,7 @@ pub fn run(
         }
 
         match_count += 1;
-        let rel_path = file_path.strip_prefix(&dir).unwrap_or(file_path);
+        let rel_path = file_path.strip_prefix(dir).unwrap_or(file_path);
 
         match format {
             crate::cli::OutputFormat::Json => {
