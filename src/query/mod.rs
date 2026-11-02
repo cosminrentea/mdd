@@ -1,5 +1,4 @@
 pub mod filter;
-pub mod predicates;
 
 use std::path::{Path, PathBuf};
 

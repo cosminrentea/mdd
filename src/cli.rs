@@ -2,6 +2,8 @@ use chrono::NaiveDate;
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
+use crate::query::filter::Filter;
+
 /// mdd -- Markdown-Driven Development
 ///
 /// Structural queries on Markdown files for coding agents.
@@ -131,6 +133,18 @@ pub struct FindArgs {
     pub newer_than: Option<NaiveDate>,
 }
 
+impl FindArgs {
+    pub fn filter(&self) -> Filter {
+        Filter::new(
+            self.r#type.as_deref(),
+            self.topic.as_deref(),
+            self.heading.as_deref(),
+            self.has_table,
+            self.has_code.as_deref(),
+        )
+    }
+}
+
 #[derive(clap::Args, Debug)]
 pub struct FmArgs {
     /// Directory or file path
@@ -183,6 +197,18 @@ pub struct AggArgs {
     /// Maximum output lines (default: 500)
     #[arg(long, default_value = "500")]
     pub budget: usize,
+}
+
+impl AggArgs {
+    pub fn filter(&self) -> Filter {
+        Filter::new(
+            self.r#type.as_deref(),
+            self.topic.as_deref(),
+            self.heading.as_deref(),
+            false,
+            None,
+        )
+    }
 }
 
 #[derive(clap::Args, Debug)]
