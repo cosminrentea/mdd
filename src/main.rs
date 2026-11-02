@@ -27,8 +27,9 @@ fn main() -> ExitCode {
         command,
         format,
         strict,
+        all_files,
     } = Cli::parse();
-    let opts = Options { strict };
+    let opts = Options { strict, all_files };
 
     let format = output::resolve_format(format);
 

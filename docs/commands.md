@@ -10,6 +10,7 @@ Updated: 2026-11-02
 
 - `-f, --format human|agent|json` selects an output format. Without it, `mdd` selects `human` for a terminal and `agent` otherwise.
 - `-h, --help` and `-V, --version` print help and version information.
+- `--all-files` includes `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, and `README.md` in directory scans; without it they are skipped (see below).
 - `--strict` makes problems with a single file or frontmatter block errors. Without it, a frontmatter block that is not a YAML mapping prints `mdd: warning: <path>:<line>: invalid frontmatter ignored: <reason>` (its fields are dropped), and a file or directory entry that a directory scan cannot read prints `mdd: warning: skipping <path>: <reason>`; processing and the exit code are unaffected. An empty frontmatter block is not a problem. With `--strict` the first such problem, in file order, is an error (`invalid_frontmatter` or `io`, exit 2) and nothing is printed to stdout.
 
 ### Exit codes and errors
@@ -37,7 +38,7 @@ Updated: 2026-11-02
 - `mdd map <dir>` summarizes recent files, directory structure, topics, and content features. Recent means modified in the last three days.
 - `mdd stats <dir>` reports file and line counts, frontmatter coverage, types, content features, and heading depth.
 
-These directory commands, directory `toc`, and directory `fm` use ignore-aware traversal, follow symlinks, and exclude files named `README.md`, `AGENTS.md`, `CLAUDE.md`, and `CLAUDE.local.md`. Target a README directly with `toc` or `sec` when needed.
+These directory commands, directory `toc`, and directory `fm` use ignore-aware traversal, follow symlinks, and exclude files named `README.md`, `AGENTS.md`, `CLAUDE.md`, and `CLAUDE.local.md` unless `--all-files` is given. Naming such a file directly (`mdd toc README.md`) always reads it.
 
 ## Links and frontmatter
 

@@ -22,6 +22,10 @@ pub struct Cli {
     /// Fail on first malformed file instead of skipping with a warning
     #[arg(long, global = true)]
     pub strict: bool,
+
+    /// Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+    #[arg(long, global = true)]
+    pub all_files: bool,
 }
 
 fn parse_date(s: &str) -> Result<NaiveDate, String> {

@@ -6,7 +6,7 @@ use crate::error::{MddError, Result, one_line};
 use crate::parse::MdFile;
 use crate::parse::markdown::parse_file;
 
-/// File names (case-sensitive) that no directory walk returns.
+/// File names (case-sensitive) that a directory walk skips unless `--all-files` is given.
 const EXCLUDED_FILE_NAMES: [&str; 4] = ["AGENTS.md", "CLAUDE.local.md", "CLAUDE.md", "README.md"];
 
 /// Settings that every command shares (the global command line flags).
@@ -14,6 +14,8 @@ const EXCLUDED_FILE_NAMES: [&str; 4] = ["AGENTS.md", "CLAUDE.local.md", "CLAUDE.
 pub struct Options {
     /// A problem with one file or one frontmatter block is an error instead of a warning.
     pub strict: bool,
+    /// Directory scans also return AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md.
+    pub all_files: bool,
 }
 
 /// Reports one problem: a `mdd: warning: ...` line on stderr, or, with `--strict`, the error.
@@ -96,8 +98,8 @@ fn walk_problem(err: &ignore::Error, fallback: &Path) -> MddError {
 
 /// Walk a directory collecting all .md file paths and unreadable entries, sorted
 /// by path. Follows symlinks, respects .gitignore, excludes infrastructure files
-/// (AGENTS.md, CLAUDE.local.md, CLAUDE.md, README.md).
-fn walk_md_files(dir: &Path) -> Vec<Walked> {
+/// (AGENTS.md, CLAUDE.local.md, CLAUDE.md, README.md) unless `--all-files`.
+fn walk_md_files(dir: &Path, opts: Options) -> Vec<Walked> {
     let walker = ignore::WalkBuilder::new(dir).follow_links(true).build();
 
     let mut entries: Vec<Walked> = walker
@@ -105,7 +107,7 @@ fn walk_md_files(dir: &Path) -> Vec<Walked> {
             Ok(e) => {
                 let name = e.file_name().to_string_lossy();
                 let wanted = e.path().extension().is_some_and(|ext| ext == "md")
-                    && !EXCLUDED_FILE_NAMES.contains(&name.as_ref());
+                    && (opts.all_files || !EXCLUDED_FILE_NAMES.contains(&name.as_ref()));
                 wanted.then(|| Walked::File(e.into_path()))
             }
             Err(err) => Some(Walked::Unreadable(walk_problem(&err, dir))),
@@ -131,7 +133,7 @@ pub struct Scan {
 pub fn scan(dir: &Path, opts: Options) -> Result<Scan> {
     let mut walked = 0;
     let mut parsed = Vec::new();
-    for item in walk_md_files(dir) {
+    for item in walk_md_files(dir, opts) {
         match item {
             Walked::Unreadable(problem) => report(problem, opts)?,
             Walked::File(path) => {
