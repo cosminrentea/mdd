@@ -1,0 +1,261 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (global))
+---
+$ mdd -f human -h
+exit: 0
+--- stdout
+Markdown-Driven Development -- structural queries for coding agents
+
+Usage: mdd [OPTIONS] <COMMAND>
+
+Commands:
+  toc    Table of contents with offset/limit annotations. Works on single files and directories
+  sec    Extract section content by heading match. When path is a directory, searches across all .md files
+  at     Find the section containing a given line number. Prints breadcrumb path to stderr
+  map    Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+  find   Cross-file structural query with composable filters
+  fm     Frontmatter inspection (read-only)
+  links  Link graph extraction and validation
+  agg    Aggregate matching sections into a single context-efficient output
+  parts  List/filter entries in multi-frontmatter documents
+  stats  Directory statistics: file counts, frontmatter coverage, types
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+  -V, --version          Print version
+--- stderr
+
+$ mdd -f agent -h
+exit: 0
+--- stdout
+Markdown-Driven Development -- structural queries for coding agents
+
+Usage: mdd [OPTIONS] <COMMAND>
+
+Commands:
+  toc    Table of contents with offset/limit annotations. Works on single files and directories
+  sec    Extract section content by heading match. When path is a directory, searches across all .md files
+  at     Find the section containing a given line number. Prints breadcrumb path to stderr
+  map    Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+  find   Cross-file structural query with composable filters
+  fm     Frontmatter inspection (read-only)
+  links  Link graph extraction and validation
+  agg    Aggregate matching sections into a single context-efficient output
+  parts  List/filter entries in multi-frontmatter documents
+  stats  Directory statistics: file counts, frontmatter coverage, types
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+  -V, --version          Print version
+--- stderr
+
+$ mdd -f json -h
+exit: 0
+--- stdout
+Markdown-Driven Development -- structural queries for coding agents
+
+Usage: mdd [OPTIONS] <COMMAND>
+
+Commands:
+  toc    Table of contents with offset/limit annotations. Works on single files and directories
+  sec    Extract section content by heading match. When path is a directory, searches across all .md files
+  at     Find the section containing a given line number. Prints breadcrumb path to stderr
+  map    Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+  find   Cross-file structural query with composable filters
+  fm     Frontmatter inspection (read-only)
+  links  Link graph extraction and validation
+  agg    Aggregate matching sections into a single context-efficient output
+  parts  List/filter entries in multi-frontmatter documents
+  stats  Directory statistics: file counts, frontmatter coverage, types
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+  -V, --version          Print version
+--- stderr
+
+$ mdd -f human --version
+exit: 0
+--- stdout
+mdd 0.2.1
+--- stderr
+
+$ mdd -f agent --version
+exit: 0
+--- stdout
+mdd 0.2.1
+--- stderr
+
+$ mdd -f json --version
+exit: 0
+--- stdout
+mdd 0.2.1
+--- stderr
+
+$ mdd -f human --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+Usage: mdd --format <FORMAT> <COMMAND>
+
+For more information, try '--help'.
+
+$ mdd -f agent --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+Usage: mdd --format <FORMAT> <COMMAND>
+
+For more information, try '--help'.
+
+$ mdd -f json --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+Usage: mdd --format <FORMAT> <COMMAND>
+
+For more information, try '--help'.
+
+$ mdd -f human --help
+exit: 0
+--- stdout
+Markdown-Driven Development -- structural queries for coding agents
+
+Usage: mdd [OPTIONS] <COMMAND>
+
+Commands:
+  toc    Table of contents with offset/limit annotations. Works on single files and directories
+  sec    Extract section content by heading match. When path is a directory, searches across all .md files
+  at     Find the section containing a given line number. Prints breadcrumb path to stderr
+  map    Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+  find   Cross-file structural query with composable filters
+  fm     Frontmatter inspection (read-only)
+  links  Link graph extraction and validation
+  agg    Aggregate matching sections into a single context-efficient output
+  parts  List/filter entries in multi-frontmatter documents
+  stats  Directory statistics: file counts, frontmatter coverage, types
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+--- stderr
+
+$ mdd -f agent --help
+exit: 0
+--- stdout
+Markdown-Driven Development -- structural queries for coding agents
+
+Usage: mdd [OPTIONS] <COMMAND>
+
+Commands:
+  toc    Table of contents with offset/limit annotations. Works on single files and directories
+  sec    Extract section content by heading match. When path is a directory, searches across all .md files
+  at     Find the section containing a given line number. Prints breadcrumb path to stderr
+  map    Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+  find   Cross-file structural query with composable filters
+  fm     Frontmatter inspection (read-only)
+  links  Link graph extraction and validation
+  agg    Aggregate matching sections into a single context-efficient output
+  parts  List/filter entries in multi-frontmatter documents
+  stats  Directory statistics: file counts, frontmatter coverage, types
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+--- stderr
+
+$ mdd -f json --help
+exit: 0
+--- stdout
+Markdown-Driven Development -- structural queries for coding agents
+
+Usage: mdd [OPTIONS] <COMMAND>
+
+Commands:
+  toc    Table of contents with offset/limit annotations. Works on single files and directories
+  sec    Extract section content by heading match. When path is a directory, searches across all .md files
+  at     Find the section containing a given line number. Prints breadcrumb path to stderr
+  map    Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+  find   Cross-file structural query with composable filters
+  fm     Frontmatter inspection (read-only)
+  links  Link graph extraction and validation
+  agg    Aggregate matching sections into a single context-efficient output
+  parts  List/filter entries in multi-frontmatter documents
+  stats  Directory statistics: file counts, frontmatter coverage, types
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+--- stderr

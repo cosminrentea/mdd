@@ -1,0 +1,553 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (at))
+---
+$ mdd -f human at fixtures/simple.md 1
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: line 1 is before any heading
+
+$ mdd -f agent at fixtures/simple.md 1
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: line 1 is before any heading
+
+$ mdd -f json at fixtures/simple.md 1
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: line 1 is before any heading
+
+$ mdd -f human at edge11/lists.md 4
+exit: 0
+--- stdout
+# Lists
+
+- a
+  - b
+  - c
+- d
+
+1. one
+   - x
+     - y
+2. two
+
+## Flat
+
+- p
+- q--- stderr
+[[34mLists[39m]
+
+$ mdd -f agent at edge11/lists.md 4
+exit: 0
+--- stdout
+[edge11/lists.md:1,16] # Lists
+# Lists
+
+- a
+  - b
+  - c
+- d
+
+1. one
+   - x
+     - y
+2. two
+
+## Flat
+
+- p
+- q--- stderr
+
+$ mdd -f json at edge11/lists.md 4
+exit: 0
+--- stdout
+{
+  "breadcrumb": [
+    "Lists"
+  ],
+  "content": "# Lists\n\n- a\n  - b\n  - c\n- d\n\n1. one\n   - x\n     - y\n2. two\n\n## Flat\n\n- p\n- q",
+  "path": "edge11/lists.md",
+  "section": {
+    "features": {
+      "code_languages": [],
+      "has_code_block": false,
+      "has_list": true,
+      "has_table": false,
+      "link_count": 0,
+      "list_item_count": 8,
+      "word_count": 8
+    },
+    "level": 1,
+    "limit": 16,
+    "offset": 1,
+    "title": "Lists"
+  }
+}
+--- stderr
+
+$ mdd -f human at -h
+exit: 0
+--- stdout
+Find the section containing a given line number. Prints breadcrumb path to stderr
+
+Usage: mdd at [OPTIONS] <PATH> <LINE> [LEVEL]
+
+Arguments:
+  <PATH>   File path
+  <LINE>   Line number (1-based)
+  [LEVEL]  Levels to climb up from innermost section (0 = innermost) [default: 0]
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f agent at -h
+exit: 0
+--- stdout
+Find the section containing a given line number. Prints breadcrumb path to stderr
+
+Usage: mdd at [OPTIONS] <PATH> <LINE> [LEVEL]
+
+Arguments:
+  <PATH>   File path
+  <LINE>   Line number (1-based)
+  [LEVEL]  Levels to climb up from innermost section (0 = innermost) [default: 0]
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f json at -h
+exit: 0
+--- stdout
+Find the section containing a given line number. Prints breadcrumb path to stderr
+
+Usage: mdd at [OPTIONS] <PATH> <LINE> [LEVEL]
+
+Arguments:
+  <PATH>   File path
+  <LINE>   Line number (1-based)
+  [LEVEL]  Levels to climb up from innermost section (0 = innermost) [default: 0]
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f human at
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+  <LINE>
+
+Usage: mdd at <PATH> <LINE> [LEVEL]
+
+For more information, try '--help'.
+
+$ mdd -f agent at
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+  <LINE>
+
+Usage: mdd at <PATH> <LINE> [LEVEL]
+
+For more information, try '--help'.
+
+$ mdd -f json at
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+  <LINE>
+
+Usage: mdd at <PATH> <LINE> [LEVEL]
+
+For more information, try '--help'.
+
+$ mdd -f human at fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd at <PATH> <LINE> [LEVEL]
+
+For more information, try '--help'.
+
+$ mdd -f agent at fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd at <PATH> <LINE> [LEVEL]
+
+For more information, try '--help'.
+
+$ mdd -f json at fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd at <PATH> <LINE> [LEVEL]
+
+For more information, try '--help'.
+
+$ mdd -f human at fixtures/simple.md xyz
+exit: 2
+--- stdout
+--- stderr
+error: invalid value 'xyz' for '<LINE>': invalid digit found in string
+
+For more information, try '--help'.
+
+$ mdd -f agent at fixtures/simple.md xyz
+exit: 2
+--- stdout
+--- stderr
+error: invalid value 'xyz' for '<LINE>': invalid digit found in string
+
+For more information, try '--help'.
+
+$ mdd -f json at fixtures/simple.md xyz
+exit: 2
+--- stdout
+--- stderr
+error: invalid value 'xyz' for '<LINE>': invalid digit found in string
+
+For more information, try '--help'.
+
+$ mdd -f human at fixtures/service-doc.md 10
+exit: 0
+--- stdout
+## Overview
+
+Receives upstream events from message queues and transforms them into document records.
+Publishes completion notifications downstream for indexing consumers.
+
+In one sentence: Queue consumer to document store plus event fanout.
+--- stderr
+[[34mNexus Ingestion Pipeline > Overview[39m]
+
+$ mdd -f agent at fixtures/service-doc.md 10
+exit: 0
+--- stdout
+[fixtures/service-doc.md:9,7] ## Overview
+## Overview
+
+Receives upstream events from message queues and transforms them into document records.
+Publishes completion notifications downstream for indexing consumers.
+
+In one sentence: Queue consumer to document store plus event fanout.
+--- stderr
+
+$ mdd -f json at fixtures/service-doc.md 10
+exit: 0
+--- stdout
+{
+  "breadcrumb": [
+    "Nexus Ingestion Pipeline",
+    "Overview"
+  ],
+  "content": "## Overview\n\nReceives upstream events from message queues and transforms them into document records.\nPublishes completion notifications downstream for indexing consumers.\n\nIn one sentence: Queue consumer to document store plus event fanout.\n",
+  "path": "fixtures/service-doc.md",
+  "section": {
+    "features": {
+      "code_languages": [],
+      "has_code_block": false,
+      "has_list": false,
+      "has_table": false,
+      "link_count": 0,
+      "list_item_count": 0,
+      "word_count": 30
+    },
+    "level": 2,
+    "limit": 7,
+    "offset": 9,
+    "title": "Overview"
+  }
+}
+--- stderr
+
+$ mdd -f human at fixtures/service-doc.md 30
+exit: 0
+--- stdout
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+--- stderr
+[[34mNexus Ingestion Pipeline > Architecture > Queue Bindings[39m]
+
+$ mdd -f agent at fixtures/service-doc.md 30
+exit: 0
+--- stdout
+[fixtures/service-doc.md:23,9] ### Queue Bindings
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+--- stderr
+
+$ mdd -f json at fixtures/service-doc.md 30
+exit: 0
+--- stdout
+{
+  "breadcrumb": [
+    "Nexus Ingestion Pipeline",
+    "Architecture",
+    "Queue Bindings"
+  ],
+  "content": "### Queue Bindings\n\n| Queue | Entity Type | Priority |\n|-------|------------|----------|\n| entity-alpha-p1 | alpha | 1 |\n| entity-alpha-p2 | alpha | 2 |\n| entity-beta-p1 | beta | 1 |\n| entity-beta-p2 | beta | 2 |\n",
+  "path": "fixtures/service-doc.md",
+  "section": {
+    "features": {
+      "code_languages": [],
+      "has_code_block": false,
+      "has_list": false,
+      "has_table": true,
+      "link_count": 0,
+      "list_item_count": 0,
+      "word_count": 16
+    },
+    "level": 3,
+    "limit": 9,
+    "offset": 23,
+    "title": "Queue Bindings"
+  }
+}
+--- stderr
+
+$ mdd -f human at fixtures/multipart-lrn.md 22
+exit: 0
+--- stdout
+### Thread Pool Utilization
+
+- Threads used: 8 of 10 max (vs 5 previously)
+- Object read: 2300 items in 2.1s
+- Transform: 0.1s
+- Bulk POST: 4.1s
+--- stderr
+[[34mThread Pool Utilization[39m]
+
+$ mdd -f agent at fixtures/multipart-lrn.md 22
+exit: 0
+--- stdout
+[fixtures/multipart-lrn.md:21,7] ### Thread Pool Utilization
+### Thread Pool Utilization
+
+- Threads used: 8 of 10 max (vs 5 previously)
+- Object read: 2300 items in 2.1s
+- Transform: 0.1s
+- Bulk POST: 4.1s
+--- stderr
+
+$ mdd -f json at fixtures/multipart-lrn.md 22
+exit: 0
+--- stdout
+{
+  "breadcrumb": [
+    "Thread Pool Utilization"
+  ],
+  "content": "### Thread Pool Utilization\n\n- Threads used: 8 of 10 max (vs 5 previously)\n- Object read: 2300 items in 2.1s\n- Transform: 0.1s\n- Bulk POST: 4.1s\n",
+  "path": "fixtures/multipart-lrn.md",
+  "section": {
+    "features": {
+      "code_languages": [],
+      "has_code_block": false,
+      "has_list": true,
+      "has_table": false,
+      "link_count": 0,
+      "list_item_count": 4,
+      "word_count": 20
+    },
+    "level": 3,
+    "limit": 7,
+    "offset": 21,
+    "title": "Thread Pool Utilization"
+  }
+}
+--- stderr
+
+$ mdd -f human at fixtures/service-doc.md 9999
+exit: 2
+--- stdout
+--- stderr
+mdd: error[line_out_of_range]: line 9999 is out of range (file has 61 lines)
+
+$ mdd -f agent at fixtures/service-doc.md 9999
+exit: 2
+--- stdout
+--- stderr
+mdd: error[line_out_of_range]: line 9999 is out of range (file has 61 lines)
+
+$ mdd -f json at fixtures/service-doc.md 9999
+exit: 2
+--- stdout
+--- stderr
+mdd: error[line_out_of_range]: line 9999 is out of range (file has 61 lines)
+
+$ mdd -f human at fixtures/simple.md 0
+exit: 2
+--- stdout
+--- stderr
+mdd: error[line_out_of_range]: line 0 is out of range (file has 35 lines)
+
+$ mdd -f agent at fixtures/simple.md 0
+exit: 2
+--- stdout
+--- stderr
+mdd: error[line_out_of_range]: line 0 is out of range (file has 35 lines)
+
+$ mdd -f json at fixtures/simple.md 0
+exit: 2
+--- stdout
+--- stderr
+mdd: error[line_out_of_range]: line 0 is out of range (file has 35 lines)
+
+$ mdd -f human at --help
+exit: 0
+--- stdout
+Find the section containing a given line number. Prints breadcrumb path to stderr
+
+Usage: mdd at [OPTIONS] <PATH> <LINE> [LEVEL]
+
+Arguments:
+  <PATH>
+          File path
+
+  <LINE>
+          Line number (1-based)
+
+  [LEVEL]
+          Levels to climb up from innermost section (0 = innermost)
+          
+          [default: 0]
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent at --help
+exit: 0
+--- stdout
+Find the section containing a given line number. Prints breadcrumb path to stderr
+
+Usage: mdd at [OPTIONS] <PATH> <LINE> [LEVEL]
+
+Arguments:
+  <PATH>
+          File path
+
+  <LINE>
+          Line number (1-based)
+
+  [LEVEL]
+          Levels to climb up from innermost section (0 = innermost)
+          
+          [default: 0]
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json at --help
+exit: 0
+--- stdout
+Find the section containing a given line number. Prints breadcrumb path to stderr
+
+Usage: mdd at [OPTIONS] <PATH> <LINE> [LEVEL]
+
+Arguments:
+  <PATH>
+          File path
+
+  <LINE>
+          Line number (1-based)
+
+  [LEVEL]
+          Levels to climb up from innermost section (0 = innermost)
+          
+          [default: 0]
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr

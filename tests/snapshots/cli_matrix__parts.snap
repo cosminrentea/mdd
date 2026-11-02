@@ -1,0 +1,543 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (parts))
+---
+$ mdd -f human parts edge12/badfm.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=1, limit=6)[0m  {# Broken fm, ## Sub}
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+1 entries shown (of 1 total)
+
+$ mdd -f agent parts edge12/badfm.md
+exit: 0
+--- stdout
+[badfm.md:1,6] Entry 1:  {# Broken fm, ## Sub}
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+1 entries shown (of 1 total)
+
+$ mdd -f json parts edge12/badfm.md
+exit: 0
+--- stdout
+{"frontmatter":"","headings":["Broken fm","Sub"],"index":1,"limit":6,"offset":1}
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+1 entries shown (of 1 total)
+
+$ mdd -f human parts fixtures/simple.md --filter type=zzz
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: 0 entries shown (of 1 total)
+
+$ mdd -f agent parts fixtures/simple.md --filter type=zzz
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: 0 entries shown (of 1 total)
+
+$ mdd -f json parts fixtures/simple.md --filter type=zzz
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: 0 entries shown (of 1 total)
+
+$ mdd -f human parts fixtures/simple.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=1, limit=35)[0m topic=testing, type=reference {# Simple Test Document, ## Section One, ## Section Two}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f agent parts fixtures/simple.md
+exit: 0
+--- stdout
+[simple.md:1,35] Entry 1: topic=testing, type=reference {# Simple Test Document, ## Section One, ## Section Two}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f json parts fixtures/simple.md
+exit: 0
+--- stdout
+{"frontmatter":"topic=testing, type=reference","headings":["Simple Test Document","Section One","Section Two"],"index":1,"limit":35,"offset":1}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f human parts edge11/multi.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=3, limit=7)[0m type=a {# First}
+[1mEntry 2[0m [2m(offset=10, limit=6)[0m type=b {# Second}
+--- stderr
+2 entries shown (of 2 total)
+
+$ mdd -f agent parts edge11/multi.md
+exit: 0
+--- stdout
+[multi.md:3,7] Entry 1: type=a {# First}
+[multi.md:10,6] Entry 2: type=b {# Second}
+--- stderr
+2 entries shown (of 2 total)
+
+$ mdd -f json parts edge11/multi.md
+exit: 0
+--- stdout
+{"frontmatter":"type=a","headings":["First"],"index":1,"limit":7,"offset":3}
+{"frontmatter":"type=b","headings":["Second"],"index":2,"limit":6,"offset":10}
+--- stderr
+2 entries shown (of 2 total)
+
+$ mdd -f human parts -h
+exit: 0
+--- stdout
+List/filter entries in multi-frontmatter documents
+
+Usage: mdd parts [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  File path
+
+Options:
+      --filter <FILTER>  Filter entries by frontmatter field (key=value)
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f agent parts -h
+exit: 0
+--- stdout
+List/filter entries in multi-frontmatter documents
+
+Usage: mdd parts [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  File path
+
+Options:
+      --filter <FILTER>  Filter entries by frontmatter field (key=value)
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f json parts -h
+exit: 0
+--- stdout
+List/filter entries in multi-frontmatter documents
+
+Usage: mdd parts [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  File path
+
+Options:
+      --filter <FILTER>  Filter entries by frontmatter field (key=value)
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f human parts
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd parts <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent parts
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd parts <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json parts
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd parts <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human parts fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd parts <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent parts fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd parts <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json parts fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd parts <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human parts edge/yaml.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=1, limit=39)[0m alias=shared, anchor=shared, big=Number(12345678901234567890), count=Number(3), date=2026-11-01, empty=Null, flag=Bool(true), folded=folded text more
+, hex=Number(31), inf=Number(.inf), multi=line one
+line two
+, nan=Number(.nan), neg=Number(-7), nested=Mapping {"k": String("v"), "list": Sequence [Number(1), Number(2)]}, no_str=no, nothing=Null, oct=Number(15), off=Bool(false), on_str=on, quoted=x: y, single=it's, tagged=TaggedValue { tag: !custom, value: String("value") }, tags=Sequence [String("a"), String("b"), String("c d")], topic=yaml types, type=reference, unicode=héllo ☃, yes_str=yes {# Yaml types}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f agent parts edge/yaml.md
+exit: 0
+--- stdout
+[yaml.md:1,39] Entry 1: alias=shared, anchor=shared, big=Number(12345678901234567890), count=Number(3), date=2026-11-01, empty=Null, flag=Bool(true), folded=folded text more
+, hex=Number(31), inf=Number(.inf), multi=line one
+line two
+, nan=Number(.nan), neg=Number(-7), nested=Mapping {"k": String("v"), "list": Sequence [Number(1), Number(2)]}, no_str=no, nothing=Null, oct=Number(15), off=Bool(false), on_str=on, quoted=x: y, single=it's, tagged=TaggedValue { tag: !custom, value: String("value") }, tags=Sequence [String("a"), String("b"), String("c d")], topic=yaml types, type=reference, unicode=héllo ☃, yes_str=yes {# Yaml types}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f json parts edge/yaml.md
+exit: 0
+--- stdout
+{"frontmatter":"alias=shared, anchor=shared, big=Number(12345678901234567890), count=Number(3), date=2026-11-01, empty=Null, flag=Bool(true), folded=folded text more\n, hex=Number(31), inf=Number(.inf), multi=line one\nline two\n, nan=Number(.nan), neg=Number(-7), nested=Mapping {\"k\": String(\"v\"), \"list\": Sequence [Number(1), Number(2)]}, no_str=no, nothing=Null, oct=Number(15), off=Bool(false), on_str=on, quoted=x: y, single=it's, tagged=TaggedValue { tag: !custom, value: String(\"value\") }, tags=Sequence [String(\"a\"), String(\"b\"), String(\"c d\")], topic=yaml types, type=reference, unicode=héllo ☃, yes_str=yes","headings":["Yaml types"],"index":1,"limit":39,"offset":1}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f human parts edge/dup.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=1, limit=5)[0m k=Number(2) {# Dup keys}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f agent parts edge/dup.md
+exit: 0
+--- stdout
+[dup.md:1,5] Entry 1: k=Number(2) {# Dup keys}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f json parts edge/dup.md
+exit: 0
+--- stdout
+{"frontmatter":"k=Number(2)","headings":["Dup keys"],"index":1,"limit":5,"offset":1}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f human parts edge/list.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=1, limit=5)[0m  {# List frontmatter}
+--- stderr
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 entries shown (of 1 total)
+
+$ mdd -f agent parts edge/list.md
+exit: 0
+--- stdout
+[list.md:1,5] Entry 1:  {# List frontmatter}
+--- stderr
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 entries shown (of 1 total)
+
+$ mdd -f json parts edge/list.md
+exit: 0
+--- stdout
+{"frontmatter":"","headings":["List frontmatter"],"index":1,"limit":5,"offset":1}
+--- stderr
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 entries shown (of 1 total)
+
+$ mdd -f human parts edge/empty.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=1, limit=3)[0m  {# Empty frontmatter}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f agent parts edge/empty.md
+exit: 0
+--- stdout
+[empty.md:1,3] Entry 1:  {# Empty frontmatter}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f json parts edge/empty.md
+exit: 0
+--- stdout
+{"frontmatter":"","headings":["Empty frontmatter"],"index":1,"limit":3,"offset":1}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f human parts edge/keys.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=1, limit=5)[0m 1=numeric key, true=bool key {# Non-string keys}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f agent parts edge/keys.md
+exit: 0
+--- stdout
+[keys.md:1,5] Entry 1: 1=numeric key, true=bool key {# Non-string keys}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f json parts edge/keys.md
+exit: 0
+--- stdout
+{"frontmatter":"1=numeric key, true=bool key","headings":["Non-string keys"],"index":1,"limit":5,"offset":1}
+--- stderr
+1 entries shown (of 1 total)
+
+$ mdd -f human parts edge/bad.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=1, limit=4)[0m  {# Bad yaml}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+1 entries shown (of 1 total)
+
+$ mdd -f agent parts edge/bad.md
+exit: 0
+--- stdout
+[bad.md:1,4] Entry 1:  {# Bad yaml}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+1 entries shown (of 1 total)
+
+$ mdd -f json parts edge/bad.md
+exit: 0
+--- stdout
+{"frontmatter":"","headings":["Bad yaml"],"index":1,"limit":4,"offset":1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+1 entries shown (of 1 total)
+
+$ mdd -f human parts fixtures/multipart-lrn.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=3, limit=25)[0m level=project, topic=performance tuning, type=reference {### HTTP Client Bulk Throughput Improvement, ### Thread Pool Utilization}
+[1mEntry 2[0m [2m(offset=28, limit=17)[0m level=personal, topic=message broker configuration, type=note {### Consumer Library Broker 3.9 Incompatibility}
+[1mEntry 3[0m [2m(offset=45, limit=18)[0m level=team, topic=deployment, type=reference {### Notification Service Authentication}
+--- stderr
+3 entries shown (of 3 total)
+
+$ mdd -f agent parts fixtures/multipart-lrn.md
+exit: 0
+--- stdout
+[multipart-lrn.md:3,25] Entry 1: level=project, topic=performance tuning, type=reference {### HTTP Client Bulk Throughput Improvement, ### Thread Pool Utilization}
+[multipart-lrn.md:28,17] Entry 2: level=personal, topic=message broker configuration, type=note {### Consumer Library Broker 3.9 Incompatibility}
+[multipart-lrn.md:45,18] Entry 3: level=team, topic=deployment, type=reference {### Notification Service Authentication}
+--- stderr
+3 entries shown (of 3 total)
+
+$ mdd -f json parts fixtures/multipart-lrn.md
+exit: 0
+--- stdout
+{"frontmatter":"level=project, topic=performance tuning, type=reference","headings":["HTTP Client Bulk Throughput Improvement","Thread Pool Utilization"],"index":1,"limit":25,"offset":3}
+{"frontmatter":"level=personal, topic=message broker configuration, type=note","headings":["Consumer Library Broker 3.9 Incompatibility"],"index":2,"limit":17,"offset":28}
+{"frontmatter":"level=team, topic=deployment, type=reference","headings":["Notification Service Authentication"],"index":3,"limit":18,"offset":45}
+--- stderr
+3 entries shown (of 3 total)
+
+$ mdd -f human parts fixtures/lrn-two-entries.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=3, limit=10)[0m topic=testing, type=reference {### First Entry}
+[1mEntry 2[0m [2m(offset=13, limit=9)[0m topic=parser, type=note {### Second Entry}
+--- stderr
+2 entries shown (of 2 total)
+
+$ mdd -f agent parts fixtures/lrn-two-entries.md
+exit: 0
+--- stdout
+[lrn-two-entries.md:3,10] Entry 1: topic=testing, type=reference {### First Entry}
+[lrn-two-entries.md:13,9] Entry 2: topic=parser, type=note {### Second Entry}
+--- stderr
+2 entries shown (of 2 total)
+
+$ mdd -f json parts fixtures/lrn-two-entries.md
+exit: 0
+--- stdout
+{"frontmatter":"topic=testing, type=reference","headings":["First Entry"],"index":1,"limit":10,"offset":3}
+{"frontmatter":"topic=parser, type=note","headings":["Second Entry"],"index":2,"limit":9,"offset":13}
+--- stderr
+2 entries shown (of 2 total)
+
+$ mdd -f human parts edge/multi.md
+exit: 0
+--- stdout
+[1mEntry 1[0m [2m(offset=1, limit=8)[0m topic=t, type=ref {# Doc}
+[1mEntry 2[0m [2m(offset=9, limit=4)[0m type=note {## Two}
+--- stderr
+2 entries shown (of 2 total)
+
+$ mdd -f agent parts edge/multi.md
+exit: 0
+--- stdout
+[multi.md:1,8] Entry 1: topic=t, type=ref {# Doc}
+[multi.md:9,4] Entry 2: type=note {## Two}
+--- stderr
+2 entries shown (of 2 total)
+
+$ mdd -f json parts edge/multi.md
+exit: 0
+--- stdout
+{"frontmatter":"topic=t, type=ref","headings":["Doc"],"index":1,"limit":8,"offset":1}
+{"frontmatter":"type=note","headings":["Two"],"index":2,"limit":4,"offset":9}
+--- stderr
+2 entries shown (of 2 total)
+
+$ mdd -f human parts nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f agent parts nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f json parts nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f human parts --help
+exit: 0
+--- stdout
+List/filter entries in multi-frontmatter documents
+
+Usage: mdd parts [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File path
+
+Options:
+      --filter <FILTER>
+          Filter entries by frontmatter field (key=value)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent parts --help
+exit: 0
+--- stdout
+List/filter entries in multi-frontmatter documents
+
+Usage: mdd parts [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File path
+
+Options:
+      --filter <FILTER>
+          Filter entries by frontmatter field (key=value)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json parts --help
+exit: 0
+--- stdout
+List/filter entries in multi-frontmatter documents
+
+Usage: mdd parts [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File path
+
+Options:
+      --filter <FILTER>
+          Filter entries by frontmatter field (key=value)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr

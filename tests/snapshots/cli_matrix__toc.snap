@@ -1,0 +1,1725 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (toc))
+---
+$ mdd -f human --strict toc edge12/badfm.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f agent --strict toc edge12/badfm.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f json --strict toc edge12/badfm.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f human toc edge12
+exit: 0
+--- stdout
+[1mbadfm.md[0m [2m(6 lines, 43B)[0m -- [32mBroken fm[39m
+    Sub
+[1mfine.md[0m [2m(4 lines, 24B)[0m -- [32mFine[39m
+[1msub/listfm.md[0m [2m(4 lines, 22B)[0m -- [32mList fm[39m
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+[2m3 files[0m
+
+$ mdd -f agent toc edge12
+exit: 0
+--- stdout
+[badfm.md] (6 lines, 43B) Broken fm
+    Sub
+[fine.md] (4 lines, 24B) Fine
+[sub/listfm.md] (4 lines, 22B) List fm
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+3 files
+
+$ mdd -f json toc edge12
+exit: 0
+--- stdout
+{
+  "entries": [
+    {
+      "byte_size": 43,
+      "first_heading": "Broken fm",
+      "path": "badfm.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 1,
+          "offset": 6,
+          "title": "Sub"
+        }
+      ],
+      "total_lines": 6
+    },
+    {
+      "byte_size": 24,
+      "first_heading": "Fine",
+      "path": "fine.md",
+      "sub_headings": [],
+      "total_lines": 4
+    },
+    {
+      "byte_size": 22,
+      "first_heading": "List fm",
+      "path": "sub/listfm.md",
+      "sub_headings": [],
+      "total_lines": 4
+    }
+  ],
+  "total_files": 3
+}
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human --all-files toc edge
+exit: 0
+--- stdout
+[1mAGENTS.md[0m [2m(6 lines, 45B)[0m -- [32mAgents[39m
+    Rules
+[1mREADME.md[0m [2m(7 lines, 80B)[0m -- [32mReadme[39m
+[1mbad.md[0m [2m(4 lines, 34B)[0m -- [32mBad yaml[39m
+[1mcode.md[0m [2m(21 lines, 150B)[0m -- [32mCode Case[39m
+    No Lang
+    Table
+[1mdup.md[0m [2m(5 lines, 29B)[0m -- [32mDup keys[39m
+[1mempty.md[0m [2m(3 lines, 28B)[0m -- [32mEmpty frontmatter[39m
+[1mkeys.md[0m [2m(5 lines, 56B)[0m -- [32mNon-string keys[39m
+[1mlist.md[0m [2m(5 lines, 35B)[0m -- [32mList frontmatter[39m
+[1mmulti.md[0m [2m(12 lines, 66B)[0m -- [32mDoc[39m
+    Two
+[1mplain.md[0m [2m(10 lines, 73B)[0m -- [32mA[39m
+    B
+[1municode.md[0m [2m(7 lines, 63B)[0m -- [32mÜber Größe[39m
+[1myaml.md[0m [2m(39 lines, 467B)[0m -- [32mYaml types[39m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+[2m12 files[0m
+
+$ mdd -f agent --all-files toc edge
+exit: 0
+--- stdout
+[AGENTS.md] (6 lines, 45B) Agents
+    Rules
+[README.md] (7 lines, 80B) Readme
+[bad.md] (4 lines, 34B) Bad yaml
+[code.md] (21 lines, 150B) Code Case
+    No Lang
+    Table
+[dup.md] (5 lines, 29B) Dup keys
+[empty.md] (3 lines, 28B) Empty frontmatter
+[keys.md] (5 lines, 56B) Non-string keys
+[list.md] (5 lines, 35B) List frontmatter
+[multi.md] (12 lines, 66B) Doc
+    Two
+[plain.md] (10 lines, 73B) A
+    B
+[unicode.md] (7 lines, 63B) Über Größe
+[yaml.md] (39 lines, 467B) Yaml types
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+12 files
+
+$ mdd -f json --all-files toc edge
+exit: 0
+--- stdout
+{
+  "entries": [
+    {
+      "byte_size": 45,
+      "first_heading": "Agents",
+      "path": "AGENTS.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 1,
+          "offset": 6,
+          "title": "Rules"
+        }
+      ],
+      "total_lines": 6
+    },
+    {
+      "byte_size": 80,
+      "first_heading": "Readme",
+      "path": "README.md",
+      "sub_headings": [],
+      "total_lines": 7
+    },
+    {
+      "byte_size": 34,
+      "first_heading": "Bad yaml",
+      "path": "bad.md",
+      "sub_headings": [],
+      "total_lines": 4
+    },
+    {
+      "byte_size": 150,
+      "first_heading": "Code Case",
+      "path": "code.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 6,
+          "offset": 11,
+          "title": "No Lang"
+        },
+        {
+          "level": 2,
+          "limit": 5,
+          "offset": 17,
+          "title": "Table"
+        }
+      ],
+      "total_lines": 21
+    },
+    {
+      "byte_size": 29,
+      "first_heading": "Dup keys",
+      "path": "dup.md",
+      "sub_headings": [],
+      "total_lines": 5
+    },
+    {
+      "byte_size": 28,
+      "first_heading": "Empty frontmatter",
+      "path": "empty.md",
+      "sub_headings": [],
+      "total_lines": 3
+    },
+    {
+      "byte_size": 56,
+      "first_heading": "Non-string keys",
+      "path": "keys.md",
+      "sub_headings": [],
+      "total_lines": 5
+    },
+    {
+      "byte_size": 35,
+      "first_heading": "List frontmatter",
+      "path": "list.md",
+      "sub_headings": [],
+      "total_lines": 5
+    },
+    {
+      "byte_size": 66,
+      "first_heading": "Doc",
+      "path": "multi.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 1,
+          "offset": 12,
+          "title": "Two"
+        }
+      ],
+      "total_lines": 12
+    },
+    {
+      "byte_size": 73,
+      "first_heading": "A",
+      "path": "plain.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 6,
+          "offset": 5,
+          "title": "B"
+        }
+      ],
+      "total_lines": 10
+    },
+    {
+      "byte_size": 63,
+      "first_heading": "Über Größe",
+      "path": "unicode.md",
+      "sub_headings": [],
+      "total_lines": 7
+    },
+    {
+      "byte_size": 467,
+      "first_heading": "Yaml types",
+      "path": "yaml.md",
+      "sub_headings": [],
+      "total_lines": 39
+    }
+  ],
+  "total_files": 12
+}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human toc edge/plain.md
+exit: 0
+--- stdout
+[2m-[0m [1mA[0m [2m(offset=1, limit=10)[0m
+  [2m-[0m [1mB[0m [2m(offset=5, limit=6)[0m
+--- stderr
+
+$ mdd -f agent toc edge/plain.md
+exit: 0
+--- stdout
+[edge/plain.md:1,10] # A {words:1}
+  [edge/plain.md:5,6] ## B {lists:2, words:4, links:2}
+--- stderr
+
+$ mdd -f json toc edge/plain.md
+exit: 0
+--- stdout
+{
+  "path": "edge/plain.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 1
+      },
+      "level": 1,
+      "limit": 10,
+      "offset": 1,
+      "title": "A"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 2,
+        "list_item_count": 2,
+        "word_count": 4
+      },
+      "level": 2,
+      "limit": 6,
+      "offset": 5,
+      "title": "B"
+    }
+  ]
+}
+--- stderr
+
+$ mdd -f human toc edge11/multi.md
+exit: 0
+--- stdout
+[2m-[0m [1mFirst[0m [2m(offset=6, limit=4)[0m
+[2m-[0m [1mSecond[0m [2m(offset=13, limit=3)[0m
+--- stderr
+
+$ mdd -f agent toc edge11/multi.md
+exit: 0
+--- stdout
+[edge11/multi.md:6,4] # First {words:1, links:1}
+[edge11/multi.md:13,3] # Second {words:3, links:2}
+--- stderr
+
+$ mdd -f json toc edge11/multi.md
+exit: 0
+--- stdout
+{
+  "path": "edge11/multi.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 1,
+        "list_item_count": 0,
+        "word_count": 1
+      },
+      "level": 1,
+      "limit": 4,
+      "offset": 6,
+      "title": "First"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 2,
+        "list_item_count": 0,
+        "word_count": 3
+      },
+      "level": 1,
+      "limit": 3,
+      "offset": 13,
+      "title": "Second"
+    }
+  ]
+}
+--- stderr
+
+$ mdd -f human toc edge11/lists.md
+exit: 0
+--- stdout
+[2m-[0m [1mLists[0m [2m(offset=1, limit=16)[0m
+  [2m-[0m [1mFlat[0m [2m(offset=13, limit=4)[0m
+--- stderr
+
+$ mdd -f agent toc edge11/lists.md
+exit: 0
+--- stdout
+[edge11/lists.md:1,16] # Lists {lists:8, words:8}
+  [edge11/lists.md:13,4] ## Flat {lists:2, words:2}
+--- stderr
+
+$ mdd -f json toc edge11/lists.md
+exit: 0
+--- stdout
+{
+  "path": "edge11/lists.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 8,
+        "word_count": 8
+      },
+      "level": 1,
+      "limit": 16,
+      "offset": 1,
+      "title": "Lists"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 2,
+        "word_count": 2
+      },
+      "level": 2,
+      "limit": 4,
+      "offset": 13,
+      "title": "Flat"
+    }
+  ]
+}
+--- stderr
+
+$ mdd -f human toc edge11/probe.md
+exit: 0
+--- stdout
+[2m-[0m [1mProbe[0m [2m(offset=5, limit=24)[0m
+--- stderr
+
+$ mdd -f agent toc edge11/probe.md
+exit: 0
+--- stdout
+[edge11/probe.md:5,24] # Probe {code:md, lists:4, words:39, links:10}
+--- stderr
+
+$ mdd -f json toc edge11/probe.md
+exit: 0
+--- stdout
+{
+  "path": "edge11/probe.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [
+          "md"
+        ],
+        "has_code_block": true,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 10,
+        "list_item_count": 4,
+        "word_count": 39
+      },
+      "level": 1,
+      "limit": 24,
+      "offset": 5,
+      "title": "Probe"
+    }
+  ]
+}
+--- stderr
+
+$ mdd -f human toc edge/README.md
+exit: 0
+--- stdout
+[2m-[0m [1mReadme[0m [2m(offset=5, limit=3)[0m
+--- stderr
+
+$ mdd -f agent toc edge/README.md
+exit: 0
+--- stdout
+[edge/README.md:5,3] # Readme {words:3, links:1}
+--- stderr
+
+$ mdd -f json toc edge/README.md
+exit: 0
+--- stdout
+{
+  "path": "edge/README.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 1,
+        "list_item_count": 0,
+        "word_count": 3
+      },
+      "level": 1,
+      "limit": 3,
+      "offset": 5,
+      "title": "Readme"
+    }
+  ]
+}
+--- stderr
+
+$ mdd -f human toc -h
+exit: 0
+--- stdout
+Table of contents with offset/limit annotations. Works on single files and directories
+
+Usage: mdd toc [OPTIONS] <PATH> [PATTERN]
+
+Arguments:
+  <PATH>     File or directory path
+  [PATTERN]  Optional pattern to filter headings (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f agent toc -h
+exit: 0
+--- stdout
+Table of contents with offset/limit annotations. Works on single files and directories
+
+Usage: mdd toc [OPTIONS] <PATH> [PATTERN]
+
+Arguments:
+  <PATH>     File or directory path
+  [PATTERN]  Optional pattern to filter headings (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f json toc -h
+exit: 0
+--- stdout
+Table of contents with offset/limit annotations. Works on single files and directories
+
+Usage: mdd toc [OPTIONS] <PATH> [PATTERN]
+
+Arguments:
+  <PATH>     File or directory path
+  [PATTERN]  Optional pattern to filter headings (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f human toc
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd toc <PATH> [PATTERN]
+
+For more information, try '--help'.
+
+$ mdd -f agent toc
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd toc <PATH> [PATTERN]
+
+For more information, try '--help'.
+
+$ mdd -f json toc
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd toc <PATH> [PATTERN]
+
+For more information, try '--help'.
+
+$ mdd -f human toc fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd toc <PATH> [PATTERN]
+
+For more information, try '--help'.
+
+$ mdd -f agent toc fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd toc <PATH> [PATTERN]
+
+For more information, try '--help'.
+
+$ mdd -f json toc fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd toc <PATH> [PATTERN]
+
+For more information, try '--help'.
+
+$ mdd -f human toc fixtures
+exit: 0
+--- stdout
+[1mcross-refs.md[0m [2m(18 lines, 462B)[0m -- [32mService Dependencies[39m
+    Internal Links
+    External Resources
+[1mfeedback-entry.md[0m [2m(32 lines, 662B)[0m -- [32mIntegration Tests Must Use Real Dependencies[39m
+    Examples
+[1mlinks-test.md[0m [2m(18 lines, 289B)[0m -- [32mLinks Test Document[39m
+    Standard Links
+    Anchors
+[1mlrn-agents.md[0m [2m(29 lines, 2K)[0m -- [32mReading (for agents)[39m
+[1mlrn-multipart.md[0m [2m(23 lines, 1K)[0m -- [32mPES PB WebClient Refactoring: 4.1x Bulk POST Throughput[39m
+[1mlrn-two-entries.md[0m [2m(21 lines, 211B)[0m -- [32mFirst Entry[39m
+  Second Entry
+[1mmemory-index.md[0m [2m(84 lines, 9K)[0m -- [32mAgent Memory Index[39m
+    Pre-Task Rules
+    User
+    Feedback
+    Reference — Infrastructure & Ops
+    Reference — Services & Domain
+    Reference — PES (Product Export Service)
+    Reference — Shell & Local Dev
+    Reference — Knowledge Management
+    Reference — Tooling
+    Reference — Load Testing
+    Project
+    Domain Knowledge
+  Unimported learnings
+[1mmultipart-lrn.md[0m [2m(62 lines, 1K)[0m -- [32mHTTP Client Bulk Throughput Improvement[39m
+  Thread Pool Utilization
+  Consumer Library Broker 3.9 Incompatibility
+  Notification Service Authentication
+[1mno-frontmatter.md[0m [2m(9 lines, 109B)[0m -- [32mDocument Without Frontmatter[39m
+    First Heading
+    Second Heading
+[1mservice-doc.md[0m [2m(61 lines, 1K)[0m -- [32mNexus Ingestion Pipeline[39m
+    Overview
+    Architecture
+    Deployment
+    Troubleshooting
+[1msimple.md[0m [2m(35 lines, 420B)[0m -- [32mSimple Test Document[39m
+    Section One
+    Section Two
+    Section Three
+--- stderr
+
+[2m11 files[0m
+
+$ mdd -f agent toc fixtures
+exit: 0
+--- stdout
+[cross-refs.md] (18 lines, 462B) Service Dependencies
+    Internal Links
+    External Resources
+[feedback-entry.md] (32 lines, 662B) Integration Tests Must Use Real Dependencies
+    Examples
+[links-test.md] (18 lines, 289B) Links Test Document
+    Standard Links
+    Anchors
+[lrn-agents.md] (29 lines, 2K) Reading (for agents)
+[lrn-multipart.md] (23 lines, 1K) PES PB WebClient Refactoring: 4.1x Bulk POST Throughput
+[lrn-two-entries.md] (21 lines, 211B) First Entry
+  Second Entry
+[memory-index.md] (84 lines, 9K) Agent Memory Index
+    Pre-Task Rules
+    User
+    Feedback
+    Reference — Infrastructure & Ops
+    Reference — Services & Domain
+    Reference — PES (Product Export Service)
+    Reference — Shell & Local Dev
+    Reference — Knowledge Management
+    Reference — Tooling
+    Reference — Load Testing
+    Project
+    Domain Knowledge
+  Unimported learnings
+[multipart-lrn.md] (62 lines, 1K) HTTP Client Bulk Throughput Improvement
+  Thread Pool Utilization
+  Consumer Library Broker 3.9 Incompatibility
+  Notification Service Authentication
+[no-frontmatter.md] (9 lines, 109B) Document Without Frontmatter
+    First Heading
+    Second Heading
+[service-doc.md] (61 lines, 1K) Nexus Ingestion Pipeline
+    Overview
+    Architecture
+    Deployment
+    Troubleshooting
+[simple.md] (35 lines, 420B) Simple Test Document
+    Section One
+    Section Two
+    Section Three
+--- stderr
+
+11 files
+
+$ mdd -f json toc fixtures
+exit: 0
+--- stdout
+{
+  "entries": [
+    {
+      "byte_size": 462,
+      "first_heading": "Service Dependencies",
+      "path": "cross-refs.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 6,
+          "offset": 8,
+          "title": "Internal Links"
+        },
+        {
+          "level": 2,
+          "limit": 5,
+          "offset": 14,
+          "title": "External Resources"
+        }
+      ],
+      "total_lines": 18
+    },
+    {
+      "byte_size": 662,
+      "first_heading": "Integration Tests Must Use Real Dependencies",
+      "path": "feedback-entry.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 19,
+          "offset": 14,
+          "title": "Examples"
+        }
+      ],
+      "total_lines": 32
+    },
+    {
+      "byte_size": 289,
+      "first_heading": "Links Test Document",
+      "path": "links-test.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 8,
+          "offset": 8,
+          "title": "Standard Links"
+        },
+        {
+          "level": 2,
+          "limit": 3,
+          "offset": 16,
+          "title": "Anchors"
+        }
+      ],
+      "total_lines": 18
+    },
+    {
+      "byte_size": 2213,
+      "first_heading": "Reading (for agents)",
+      "path": "lrn-agents.md",
+      "sub_headings": [],
+      "total_lines": 29
+    },
+    {
+      "byte_size": 1077,
+      "first_heading": "PES PB WebClient Refactoring: 4.1x Bulk POST Throughput",
+      "path": "lrn-multipart.md",
+      "sub_headings": [],
+      "total_lines": 23
+    },
+    {
+      "byte_size": 211,
+      "first_heading": "First Entry",
+      "path": "lrn-two-entries.md",
+      "sub_headings": [
+        {
+          "level": 3,
+          "limit": 3,
+          "offset": 19,
+          "title": "Second Entry"
+        }
+      ],
+      "total_lines": 21
+    },
+    {
+      "byte_size": 9612,
+      "first_heading": "Agent Memory Index",
+      "path": "memory-index.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 3,
+          "offset": 3,
+          "title": "Pre-Task Rules"
+        },
+        {
+          "level": 2,
+          "limit": 3,
+          "offset": 6,
+          "title": "User"
+        },
+        {
+          "level": 2,
+          "limit": 8,
+          "offset": 9,
+          "title": "Feedback"
+        },
+        {
+          "level": 2,
+          "limit": 15,
+          "offset": 17,
+          "title": "Reference — Infrastructure & Ops"
+        },
+        {
+          "level": 2,
+          "limit": 15,
+          "offset": 32,
+          "title": "Reference — Services & Domain"
+        },
+        {
+          "level": 2,
+          "limit": 7,
+          "offset": 47,
+          "title": "Reference — PES (Product Export Service)"
+        },
+        {
+          "level": 2,
+          "limit": 3,
+          "offset": 54,
+          "title": "Reference — Shell & Local Dev"
+        },
+        {
+          "level": 2,
+          "limit": 3,
+          "offset": 57,
+          "title": "Reference — Knowledge Management"
+        },
+        {
+          "level": 2,
+          "limit": 13,
+          "offset": 60,
+          "title": "Reference — Tooling"
+        },
+        {
+          "level": 2,
+          "limit": 3,
+          "offset": 73,
+          "title": "Reference — Load Testing"
+        },
+        {
+          "level": 2,
+          "limit": 3,
+          "offset": 76,
+          "title": "Project"
+        },
+        {
+          "level": 2,
+          "limit": 3,
+          "offset": 79,
+          "title": "Domain Knowledge"
+        },
+        {
+          "level": 1,
+          "limit": 3,
+          "offset": 82,
+          "title": "Unimported learnings"
+        }
+      ],
+      "total_lines": 84
+    },
+    {
+      "byte_size": 1551,
+      "first_heading": "HTTP Client Bulk Throughput Improvement",
+      "path": "multipart-lrn.md",
+      "sub_headings": [
+        {
+          "level": 3,
+          "limit": 7,
+          "offset": 21,
+          "title": "Thread Pool Utilization"
+        },
+        {
+          "level": 3,
+          "limit": 8,
+          "offset": 37,
+          "title": "Consumer Library Broker 3.9 Incompatibility"
+        },
+        {
+          "level": 3,
+          "limit": 9,
+          "offset": 54,
+          "title": "Notification Service Authentication"
+        }
+      ],
+      "total_lines": 62
+    },
+    {
+      "byte_size": 109,
+      "first_heading": "Document Without Frontmatter",
+      "path": "no-frontmatter.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 4,
+          "offset": 3,
+          "title": "First Heading"
+        },
+        {
+          "level": 2,
+          "limit": 3,
+          "offset": 7,
+          "title": "Second Heading"
+        }
+      ],
+      "total_lines": 9
+    },
+    {
+      "byte_size": 1407,
+      "first_heading": "Nexus Ingestion Pipeline",
+      "path": "service-doc.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 7,
+          "offset": 9,
+          "title": "Overview"
+        },
+        {
+          "level": 2,
+          "limit": 22,
+          "offset": 16,
+          "title": "Architecture"
+        },
+        {
+          "level": 2,
+          "limit": 12,
+          "offset": 38,
+          "title": "Deployment"
+        },
+        {
+          "level": 2,
+          "limit": 12,
+          "offset": 50,
+          "title": "Troubleshooting"
+        }
+      ],
+      "total_lines": 61
+    },
+    {
+      "byte_size": 420,
+      "first_heading": "Simple Test Document",
+      "path": "simple.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 8,
+          "offset": 8,
+          "title": "Section One"
+        },
+        {
+          "level": 2,
+          "limit": 10,
+          "offset": 16,
+          "title": "Section Two"
+        },
+        {
+          "level": 2,
+          "limit": 10,
+          "offset": 26,
+          "title": "Section Three"
+        }
+      ],
+      "total_lines": 35
+    }
+  ],
+  "total_files": 11
+}
+--- stderr
+
+$ mdd -f human toc fixtures/service-doc.md
+exit: 0
+--- stdout
+[2m-[0m [1mNexus Ingestion Pipeline[0m [2m(offset=7, limit=55)[0m
+  [2m-[0m [1mOverview[0m [2m(offset=9, limit=7)[0m
+  [2m-[0m [1mArchitecture[0m [2m(offset=16, limit=22)[0m
+    [2m-[0m [1mQueue Bindings[0m [2m(offset=23, limit=9)[0m
+    [2m-[0m [1mDocument Collections[0m [2m(offset=32, limit=6)[0m
+  [2m-[0m [1mDeployment[0m [2m(offset=38, limit=12)[0m
+    [2m-[0m [1mEnvironment Variables[0m [2m(offset=42, limit=8)[0m
+  [2m-[0m [1mTroubleshooting[0m [2m(offset=50, limit=12)[0m
+    [2m-[0m [1mHigh Queue Backlog[0m [2m(offset=52, limit=5)[0m
+    [2m-[0m [1mStore Timeout[0m [2m(offset=57, limit=5)[0m
+--- stderr
+
+$ mdd -f agent toc fixtures/service-doc.md
+exit: 0
+--- stdout
+[fixtures/service-doc.md:7,55] # Nexus Ingestion Pipeline
+  [fixtures/service-doc.md:9,7] ## Overview {words:30}
+  [fixtures/service-doc.md:16,22] ## Architecture {code:1, words:10}
+    [fixtures/service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+    [fixtures/service-doc.md:32,6] ### Document Collections {lists:3, words:14}
+  [fixtures/service-doc.md:38,12] ## Deployment {words:9}
+    [fixtures/service-doc.md:42,8] ### Environment Variables {code:yaml, words:6}
+  [fixtures/service-doc.md:50,12] ## Troubleshooting
+    [fixtures/service-doc.md:52,5] ### High Queue Backlog {words:12}
+    [fixtures/service-doc.md:57,5] ### Store Timeout {lists:2, words:11}
+--- stderr
+
+$ mdd -f json toc fixtures/service-doc.md
+exit: 0
+--- stdout
+{
+  "path": "fixtures/service-doc.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 0
+      },
+      "level": 1,
+      "limit": 55,
+      "offset": 7,
+      "title": "Nexus Ingestion Pipeline"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 30
+      },
+      "level": 2,
+      "limit": 7,
+      "offset": 9,
+      "title": "Overview"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": true,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 10
+      },
+      "level": 2,
+      "limit": 22,
+      "offset": 16,
+      "title": "Architecture"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": true,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 16
+      },
+      "level": 3,
+      "limit": 9,
+      "offset": 23,
+      "title": "Queue Bindings"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 3,
+        "word_count": 14
+      },
+      "level": 3,
+      "limit": 6,
+      "offset": 32,
+      "title": "Document Collections"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 9
+      },
+      "level": 2,
+      "limit": 12,
+      "offset": 38,
+      "title": "Deployment"
+    },
+    {
+      "features": {
+        "code_languages": [
+          "yaml"
+        ],
+        "has_code_block": true,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 6
+      },
+      "level": 3,
+      "limit": 8,
+      "offset": 42,
+      "title": "Environment Variables"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 0
+      },
+      "level": 2,
+      "limit": 12,
+      "offset": 50,
+      "title": "Troubleshooting"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 12
+      },
+      "level": 3,
+      "limit": 5,
+      "offset": 52,
+      "title": "High Queue Backlog"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 2,
+        "word_count": 11
+      },
+      "level": 3,
+      "limit": 5,
+      "offset": 57,
+      "title": "Store Timeout"
+    }
+  ]
+}
+--- stderr
+
+$ mdd -f human toc fixtures/service-doc.md Queue
+exit: 0
+--- stdout
+[2m-[0m [1mQueue Bindings[0m [2m(offset=23, limit=9)[0m
+[2m-[0m [1mHigh Queue Backlog[0m [2m(offset=52, limit=5)[0m
+--- stderr
+
+$ mdd -f agent toc fixtures/service-doc.md Queue
+exit: 0
+--- stdout
+[fixtures/service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+[fixtures/service-doc.md:52,5] ### High Queue Backlog {words:12}
+--- stderr
+
+$ mdd -f json toc fixtures/service-doc.md Queue
+exit: 0
+--- stdout
+{
+  "path": "fixtures/service-doc.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": true,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 16
+      },
+      "level": 3,
+      "limit": 9,
+      "offset": 23,
+      "title": "Queue Bindings"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 12
+      },
+      "level": 3,
+      "limit": 5,
+      "offset": 52,
+      "title": "High Queue Backlog"
+    }
+  ]
+}
+--- stderr
+
+$ mdd -f human toc fixtures/multipart-lrn.md
+exit: 0
+--- stdout
+[2m-[0m [1mHTTP Client Bulk Throughput Improvement[0m [2m(offset=12, limit=9)[0m
+[2m-[0m [1mThread Pool Utilization[0m [2m(offset=21, limit=7)[0m
+[2m-[0m [1mConsumer Library Broker 3.9 Incompatibility[0m [2m(offset=37, limit=8)[0m
+[2m-[0m [1mNotification Service Authentication[0m [2m(offset=54, limit=9)[0m
+--- stderr
+
+$ mdd -f agent toc fixtures/multipart-lrn.md
+exit: 0
+--- stdout
+[fixtures/multipart-lrn.md:12,9] ### HTTP Client Bulk Throughput Improvement {lists:3, words:36}
+[fixtures/multipart-lrn.md:21,7] ### Thread Pool Utilization {lists:4, words:20}
+[fixtures/multipart-lrn.md:37,8] ### Consumer Library Broker 3.9 Incompatibility {words:23}
+[fixtures/multipart-lrn.md:54,9] ### Notification Service Authentication {lists:3, words:33}
+--- stderr
+
+$ mdd -f json toc fixtures/multipart-lrn.md
+exit: 0
+--- stdout
+{
+  "path": "fixtures/multipart-lrn.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 3,
+        "word_count": 36
+      },
+      "level": 3,
+      "limit": 9,
+      "offset": 12,
+      "title": "HTTP Client Bulk Throughput Improvement"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 4,
+        "word_count": 20
+      },
+      "level": 3,
+      "limit": 7,
+      "offset": 21,
+      "title": "Thread Pool Utilization"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 23
+      },
+      "level": 3,
+      "limit": 8,
+      "offset": 37,
+      "title": "Consumer Library Broker 3.9 Incompatibility"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 3,
+        "word_count": 33
+      },
+      "level": 3,
+      "limit": 9,
+      "offset": 54,
+      "title": "Notification Service Authentication"
+    }
+  ]
+}
+--- stderr
+
+$ mdd -f human toc edge
+exit: 0
+--- stdout
+[1mbad.md[0m [2m(4 lines, 34B)[0m -- [32mBad yaml[39m
+[1mcode.md[0m [2m(21 lines, 150B)[0m -- [32mCode Case[39m
+    No Lang
+    Table
+[1mdup.md[0m [2m(5 lines, 29B)[0m -- [32mDup keys[39m
+[1mempty.md[0m [2m(3 lines, 28B)[0m -- [32mEmpty frontmatter[39m
+[1mkeys.md[0m [2m(5 lines, 56B)[0m -- [32mNon-string keys[39m
+[1mlist.md[0m [2m(5 lines, 35B)[0m -- [32mList frontmatter[39m
+[1mmulti.md[0m [2m(12 lines, 66B)[0m -- [32mDoc[39m
+    Two
+[1mplain.md[0m [2m(10 lines, 73B)[0m -- [32mA[39m
+    B
+[1municode.md[0m [2m(7 lines, 63B)[0m -- [32mÜber Größe[39m
+[1myaml.md[0m [2m(39 lines, 467B)[0m -- [32mYaml types[39m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+[2m10 files[0m
+
+$ mdd -f agent toc edge
+exit: 0
+--- stdout
+[bad.md] (4 lines, 34B) Bad yaml
+[code.md] (21 lines, 150B) Code Case
+    No Lang
+    Table
+[dup.md] (5 lines, 29B) Dup keys
+[empty.md] (3 lines, 28B) Empty frontmatter
+[keys.md] (5 lines, 56B) Non-string keys
+[list.md] (5 lines, 35B) List frontmatter
+[multi.md] (12 lines, 66B) Doc
+    Two
+[plain.md] (10 lines, 73B) A
+    B
+[unicode.md] (7 lines, 63B) Über Größe
+[yaml.md] (39 lines, 467B) Yaml types
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+10 files
+
+$ mdd -f json toc edge
+exit: 0
+--- stdout
+{
+  "entries": [
+    {
+      "byte_size": 34,
+      "first_heading": "Bad yaml",
+      "path": "bad.md",
+      "sub_headings": [],
+      "total_lines": 4
+    },
+    {
+      "byte_size": 150,
+      "first_heading": "Code Case",
+      "path": "code.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 6,
+          "offset": 11,
+          "title": "No Lang"
+        },
+        {
+          "level": 2,
+          "limit": 5,
+          "offset": 17,
+          "title": "Table"
+        }
+      ],
+      "total_lines": 21
+    },
+    {
+      "byte_size": 29,
+      "first_heading": "Dup keys",
+      "path": "dup.md",
+      "sub_headings": [],
+      "total_lines": 5
+    },
+    {
+      "byte_size": 28,
+      "first_heading": "Empty frontmatter",
+      "path": "empty.md",
+      "sub_headings": [],
+      "total_lines": 3
+    },
+    {
+      "byte_size": 56,
+      "first_heading": "Non-string keys",
+      "path": "keys.md",
+      "sub_headings": [],
+      "total_lines": 5
+    },
+    {
+      "byte_size": 35,
+      "first_heading": "List frontmatter",
+      "path": "list.md",
+      "sub_headings": [],
+      "total_lines": 5
+    },
+    {
+      "byte_size": 66,
+      "first_heading": "Doc",
+      "path": "multi.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 1,
+          "offset": 12,
+          "title": "Two"
+        }
+      ],
+      "total_lines": 12
+    },
+    {
+      "byte_size": 73,
+      "first_heading": "A",
+      "path": "plain.md",
+      "sub_headings": [
+        {
+          "level": 2,
+          "limit": 6,
+          "offset": 5,
+          "title": "B"
+        }
+      ],
+      "total_lines": 10
+    },
+    {
+      "byte_size": 63,
+      "first_heading": "Über Größe",
+      "path": "unicode.md",
+      "sub_headings": [],
+      "total_lines": 7
+    },
+    {
+      "byte_size": 467,
+      "first_heading": "Yaml types",
+      "path": "yaml.md",
+      "sub_headings": [],
+      "total_lines": 39
+    }
+  ],
+  "total_files": 10
+}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human toc edge/plain.md
+exit: 0
+--- stdout
+[2m-[0m [1mA[0m [2m(offset=1, limit=10)[0m
+  [2m-[0m [1mB[0m [2m(offset=5, limit=6)[0m
+--- stderr
+
+$ mdd -f agent toc edge/plain.md
+exit: 0
+--- stdout
+[edge/plain.md:1,10] # A {words:1}
+  [edge/plain.md:5,6] ## B {lists:2, words:4, links:2}
+--- stderr
+
+$ mdd -f json toc edge/plain.md
+exit: 0
+--- stdout
+{
+  "path": "edge/plain.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 1
+      },
+      "level": 1,
+      "limit": 10,
+      "offset": 1,
+      "title": "A"
+    },
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": true,
+        "has_table": false,
+        "link_count": 2,
+        "list_item_count": 2,
+        "word_count": 4
+      },
+      "level": 2,
+      "limit": 6,
+      "offset": 5,
+      "title": "B"
+    }
+  ]
+}
+--- stderr
+
+$ mdd -f human toc edge/yaml.md
+exit: 0
+--- stdout
+[2m-[0m [1mYaml types[0m [2m(offset=37, limit=3)[0m
+--- stderr
+
+$ mdd -f agent toc edge/yaml.md
+exit: 0
+--- stdout
+[edge/yaml.md:37,3] # Yaml types {words:1}
+--- stderr
+
+$ mdd -f json toc edge/yaml.md
+exit: 0
+--- stdout
+{
+  "path": "edge/yaml.md",
+  "sections": [
+    {
+      "features": {
+        "code_languages": [],
+        "has_code_block": false,
+        "has_list": false,
+        "has_table": false,
+        "link_count": 0,
+        "list_item_count": 0,
+        "word_count": 1
+      },
+      "level": 1,
+      "limit": 3,
+      "offset": 37,
+      "title": "Yaml types"
+    }
+  ]
+}
+--- stderr
+
+$ mdd -f human toc nonexistent.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent.md
+
+$ mdd -f agent toc nonexistent.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent.md
+
+$ mdd -f json toc nonexistent.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent.md
+
+$ mdd -f human toc fixtures NOPE_XYZ
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no matching sections for pattern: NOPE_XYZ
+
+$ mdd -f agent toc fixtures NOPE_XYZ
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no matching sections for pattern: NOPE_XYZ
+
+$ mdd -f json toc fixtures NOPE_XYZ
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no matching sections for pattern: NOPE_XYZ
+
+$ mdd -f human toc --help
+exit: 0
+--- stdout
+Table of contents with offset/limit annotations. Works on single files and directories
+
+Usage: mdd toc [OPTIONS] <PATH> [PATTERN]
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERN]
+          Optional pattern to filter headings (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent toc --help
+exit: 0
+--- stdout
+Table of contents with offset/limit annotations. Works on single files and directories
+
+Usage: mdd toc [OPTIONS] <PATH> [PATTERN]
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERN]
+          Optional pattern to filter headings (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json toc --help
+exit: 0
+--- stdout
+Table of contents with offset/limit annotations. Works on single files and directories
+
+Usage: mdd toc [OPTIONS] <PATH> [PATTERN]
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERN]
+          Optional pattern to filter headings (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr

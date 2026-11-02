@@ -1,0 +1,1311 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (links))
+---
+$ mdd -f human links fixtures --check
+exit: 1
+--- stdout
+[cross-refs.md:10] -> ./service-doc.md (Markdown, OK)
+[cross-refs.md:11] -> ./feedback-entry.md (Markdown, OK)
+[cross-refs.md:12] -> ./removed-service.md (Markdown, BROKEN)
+[cross-refs.md:16] -> https://wiki.example.com/display/ENG (Markdown, External)
+[cross-refs.md:17] -> https://dash.example.com/d/ingestion (Markdown, External)
+[cross-refs.md:18] -> https://issues.example.com/browse/PROJ (Markdown, External)
+[links-test.md:10] -> ./simple.md (Markdown, OK)
+[links-test.md:12] -> ./does-not-exist.md (Markdown, BROKEN)
+[links-test.md:14] -> https://example.com (Markdown, External)
+[memory-index.md:4] -> feedback-read-claude-local.md (Markdown, BROKEN)
+[memory-index.md:7] -> user-profile.md (Markdown, BROKEN)
+[memory-index.md:10] -> jenkins-itc-migration.md (Markdown, BROKEN)
+[memory-index.md:11] -> cilium-eks-pathfinder-dns.md (Markdown, BROKEN)
+[memory-index.md:12] -> feedback-agent-guidance.md (Markdown, BROKEN)
+[memory-index.md:13] -> feedback-git-hooks.md (Markdown, BROKEN)
+[memory-index.md:14] -> feedback-obs-structure.md (Markdown, BROKEN)
+[memory-index.md:15] -> feedback-playwright-cli.md (Markdown, BROKEN)
+[memory-index.md:18] -> reference-aws-cost-access.md (Markdown, BROKEN)
+[memory-index.md:19] -> ref-jenkins-ops.md (Markdown, BROKEN)
+[memory-index.md:20] -> ref-flex-argocd.md (Markdown, BROKEN)
+[memory-index.md:21] -> ref-infrastructure.md (Markdown, BROKEN)
+[memory-index.md:22] -> ref-splunk.md (Markdown, BROKEN)
+[memory-index.md:23] -> ref-splunk-cell.md (Markdown, BROKEN)
+[memory-index.md:24] -> ref-github-auth.md (Markdown, BROKEN)
+[memory-index.md:25] -> k8s-access-limitations.md (Markdown, BROKEN)
+[memory-index.md:26] -> ref-k8s-naming.md (Markdown, BROKEN)
+[memory-index.md:27] -> ref-vpn-protocol-blocks.md (Markdown, BROKEN)
+[memory-index.md:28] -> ref-cross-cluster-networking.md (Markdown, BROKEN)
+[memory-index.md:29] -> slack-pr-channel.md (Markdown, BROKEN)
+[memory-index.md:30] -> ref-cortex-access.md (Markdown, BROKEN)
+[memory-index.md:33] -> ref-magento-domain.md (Markdown, BROKEN)
+[memory-index.md:34] -> ref-productbus.md (Markdown, BROKEN)
+[memory-index.md:35] -> ref-scoping-service.md (Markdown, BROKEN)
+[memory-index.md:36] -> ref-tiers-calculator.md (Markdown, BROKEN)
+[memory-index.md:37] -> ref-catalog-service-sync.md (Markdown, BROKEN)
+[memory-index.md:38] -> ref-events-service.md (Markdown, BROKEN)
+[memory-index.md:39] -> ref-cleanup-flow.md (Markdown, BROKEN)
+[memory-index.md:40] -> ref-mongodb-patterns.md (Markdown, BROKEN)
+[memory-index.md:41] -> ref-kafka-patterns.md (Markdown, BROKEN)
+[memory-index.md:42] -> ref-asr-spring.md (Markdown, BROKEN)
+[memory-index.md:43] -> ref-stateful-job-patterns.md (Markdown, BROKEN)
+[memory-index.md:44] -> ref-ccm-addons.md (Markdown, BROKEN)
+[memory-index.md:45] -> ref-cps-architecture.md (Markdown, BROKEN)
+[memory-index.md:48] -> pes-details.md (Markdown, BROKEN)
+[memory-index.md:49] -> ref-pes-architecture.md (Markdown, BROKEN)
+[memory-index.md:50] -> ref-flink-poppie.md (Markdown, BROKEN)
+[memory-index.md:51] -> ref-poppie-endpoints.md (Markdown, BROKEN)
+[memory-index.md:52] -> ref-gmc-validation-apis.md (Markdown, BROKEN)
+[memory-index.md:55] -> reference-zsh-sourced-scripts.md (Markdown, BROKEN)
+[memory-index.md:58] -> ref-distill-graduation.md (Markdown, BROKEN)
+[memory-index.md:61] -> ref-github-copilot-reviewer.md (Markdown, BROKEN)
+[memory-index.md:62] -> ref-commerce-mcp-tools.md (Markdown, BROKEN)
+[memory-index.md:63] -> ref-agent-browser.md (Markdown, BROKEN)
+[memory-index.md:64] -> ref-shopping-buddy.md (Markdown, BROKEN)
+[memory-index.md:65] -> ref-claude-mem.md (Markdown, BROKEN)
+[memory-index.md:66] -> ref-fluffyjaws.md (Markdown, BROKEN)
+[memory-index.md:67] -> ref-serena-mcp.md (Markdown, BROKEN)
+[memory-index.md:68] -> ref-scout-setup.md (Markdown, BROKEN)
+[memory-index.md:69] -> ref-scout-vs-socraticode.md (Markdown, BROKEN)
+[memory-index.md:70] -> ref-mq-patterns.md (Markdown, BROKEN)
+[memory-index.md:71] -> reference-qmd-upgrade.md (Markdown, BROKEN)
+[memory-index.md:74] -> reference-load-testing-stg-na1.md (Markdown, BROKEN)
+[memory-index.md:77] -> project-infra-status.md (Markdown, BROKEN)
+[memory-index.md:80] -> domain-knowledge.md (Markdown, BROKEN)
+--- stderr
+
+64 links total, 57 broken
+
+$ mdd -f agent links fixtures --check
+exit: 1
+--- stdout
+[cross-refs.md:10] -> ./service-doc.md (Markdown, OK)
+[cross-refs.md:11] -> ./feedback-entry.md (Markdown, OK)
+[cross-refs.md:12] -> ./removed-service.md (Markdown, BROKEN)
+[cross-refs.md:16] -> https://wiki.example.com/display/ENG (Markdown, External)
+[cross-refs.md:17] -> https://dash.example.com/d/ingestion (Markdown, External)
+[cross-refs.md:18] -> https://issues.example.com/browse/PROJ (Markdown, External)
+[links-test.md:10] -> ./simple.md (Markdown, OK)
+[links-test.md:12] -> ./does-not-exist.md (Markdown, BROKEN)
+[links-test.md:14] -> https://example.com (Markdown, External)
+[memory-index.md:4] -> feedback-read-claude-local.md (Markdown, BROKEN)
+[memory-index.md:7] -> user-profile.md (Markdown, BROKEN)
+[memory-index.md:10] -> jenkins-itc-migration.md (Markdown, BROKEN)
+[memory-index.md:11] -> cilium-eks-pathfinder-dns.md (Markdown, BROKEN)
+[memory-index.md:12] -> feedback-agent-guidance.md (Markdown, BROKEN)
+[memory-index.md:13] -> feedback-git-hooks.md (Markdown, BROKEN)
+[memory-index.md:14] -> feedback-obs-structure.md (Markdown, BROKEN)
+[memory-index.md:15] -> feedback-playwright-cli.md (Markdown, BROKEN)
+[memory-index.md:18] -> reference-aws-cost-access.md (Markdown, BROKEN)
+[memory-index.md:19] -> ref-jenkins-ops.md (Markdown, BROKEN)
+[memory-index.md:20] -> ref-flex-argocd.md (Markdown, BROKEN)
+[memory-index.md:21] -> ref-infrastructure.md (Markdown, BROKEN)
+[memory-index.md:22] -> ref-splunk.md (Markdown, BROKEN)
+[memory-index.md:23] -> ref-splunk-cell.md (Markdown, BROKEN)
+[memory-index.md:24] -> ref-github-auth.md (Markdown, BROKEN)
+[memory-index.md:25] -> k8s-access-limitations.md (Markdown, BROKEN)
+[memory-index.md:26] -> ref-k8s-naming.md (Markdown, BROKEN)
+[memory-index.md:27] -> ref-vpn-protocol-blocks.md (Markdown, BROKEN)
+[memory-index.md:28] -> ref-cross-cluster-networking.md (Markdown, BROKEN)
+[memory-index.md:29] -> slack-pr-channel.md (Markdown, BROKEN)
+[memory-index.md:30] -> ref-cortex-access.md (Markdown, BROKEN)
+[memory-index.md:33] -> ref-magento-domain.md (Markdown, BROKEN)
+[memory-index.md:34] -> ref-productbus.md (Markdown, BROKEN)
+[memory-index.md:35] -> ref-scoping-service.md (Markdown, BROKEN)
+[memory-index.md:36] -> ref-tiers-calculator.md (Markdown, BROKEN)
+[memory-index.md:37] -> ref-catalog-service-sync.md (Markdown, BROKEN)
+[memory-index.md:38] -> ref-events-service.md (Markdown, BROKEN)
+[memory-index.md:39] -> ref-cleanup-flow.md (Markdown, BROKEN)
+[memory-index.md:40] -> ref-mongodb-patterns.md (Markdown, BROKEN)
+[memory-index.md:41] -> ref-kafka-patterns.md (Markdown, BROKEN)
+[memory-index.md:42] -> ref-asr-spring.md (Markdown, BROKEN)
+[memory-index.md:43] -> ref-stateful-job-patterns.md (Markdown, BROKEN)
+[memory-index.md:44] -> ref-ccm-addons.md (Markdown, BROKEN)
+[memory-index.md:45] -> ref-cps-architecture.md (Markdown, BROKEN)
+[memory-index.md:48] -> pes-details.md (Markdown, BROKEN)
+[memory-index.md:49] -> ref-pes-architecture.md (Markdown, BROKEN)
+[memory-index.md:50] -> ref-flink-poppie.md (Markdown, BROKEN)
+[memory-index.md:51] -> ref-poppie-endpoints.md (Markdown, BROKEN)
+[memory-index.md:52] -> ref-gmc-validation-apis.md (Markdown, BROKEN)
+[memory-index.md:55] -> reference-zsh-sourced-scripts.md (Markdown, BROKEN)
+[memory-index.md:58] -> ref-distill-graduation.md (Markdown, BROKEN)
+[memory-index.md:61] -> ref-github-copilot-reviewer.md (Markdown, BROKEN)
+[memory-index.md:62] -> ref-commerce-mcp-tools.md (Markdown, BROKEN)
+[memory-index.md:63] -> ref-agent-browser.md (Markdown, BROKEN)
+[memory-index.md:64] -> ref-shopping-buddy.md (Markdown, BROKEN)
+[memory-index.md:65] -> ref-claude-mem.md (Markdown, BROKEN)
+[memory-index.md:66] -> ref-fluffyjaws.md (Markdown, BROKEN)
+[memory-index.md:67] -> ref-serena-mcp.md (Markdown, BROKEN)
+[memory-index.md:68] -> ref-scout-setup.md (Markdown, BROKEN)
+[memory-index.md:69] -> ref-scout-vs-socraticode.md (Markdown, BROKEN)
+[memory-index.md:70] -> ref-mq-patterns.md (Markdown, BROKEN)
+[memory-index.md:71] -> reference-qmd-upgrade.md (Markdown, BROKEN)
+[memory-index.md:74] -> reference-load-testing-stg-na1.md (Markdown, BROKEN)
+[memory-index.md:77] -> project-infra-status.md (Markdown, BROKEN)
+[memory-index.md:80] -> domain-knowledge.md (Markdown, BROKEN)
+--- stderr
+
+64 links total, 57 broken
+
+$ mdd -f json links fixtures --check
+exit: 1
+--- stdout
+{"file":"cross-refs.md","kind":"Markdown","line":10,"status":"OK","target":"./service-doc.md"}
+{"file":"cross-refs.md","kind":"Markdown","line":11,"status":"OK","target":"./feedback-entry.md"}
+{"file":"cross-refs.md","kind":"Markdown","line":12,"status":"BROKEN","target":"./removed-service.md"}
+{"file":"cross-refs.md","kind":"Markdown","line":16,"status":"External","target":"https://wiki.example.com/display/ENG"}
+{"file":"cross-refs.md","kind":"Markdown","line":17,"status":"External","target":"https://dash.example.com/d/ingestion"}
+{"file":"cross-refs.md","kind":"Markdown","line":18,"status":"External","target":"https://issues.example.com/browse/PROJ"}
+{"file":"links-test.md","kind":"Markdown","line":10,"status":"OK","target":"./simple.md"}
+{"file":"links-test.md","kind":"Markdown","line":12,"status":"BROKEN","target":"./does-not-exist.md"}
+{"file":"links-test.md","kind":"Markdown","line":14,"status":"External","target":"https://example.com"}
+{"file":"memory-index.md","kind":"Markdown","line":4,"status":"BROKEN","target":"feedback-read-claude-local.md"}
+{"file":"memory-index.md","kind":"Markdown","line":7,"status":"BROKEN","target":"user-profile.md"}
+{"file":"memory-index.md","kind":"Markdown","line":10,"status":"BROKEN","target":"jenkins-itc-migration.md"}
+{"file":"memory-index.md","kind":"Markdown","line":11,"status":"BROKEN","target":"cilium-eks-pathfinder-dns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":12,"status":"BROKEN","target":"feedback-agent-guidance.md"}
+{"file":"memory-index.md","kind":"Markdown","line":13,"status":"BROKEN","target":"feedback-git-hooks.md"}
+{"file":"memory-index.md","kind":"Markdown","line":14,"status":"BROKEN","target":"feedback-obs-structure.md"}
+{"file":"memory-index.md","kind":"Markdown","line":15,"status":"BROKEN","target":"feedback-playwright-cli.md"}
+{"file":"memory-index.md","kind":"Markdown","line":18,"status":"BROKEN","target":"reference-aws-cost-access.md"}
+{"file":"memory-index.md","kind":"Markdown","line":19,"status":"BROKEN","target":"ref-jenkins-ops.md"}
+{"file":"memory-index.md","kind":"Markdown","line":20,"status":"BROKEN","target":"ref-flex-argocd.md"}
+{"file":"memory-index.md","kind":"Markdown","line":21,"status":"BROKEN","target":"ref-infrastructure.md"}
+{"file":"memory-index.md","kind":"Markdown","line":22,"status":"BROKEN","target":"ref-splunk.md"}
+{"file":"memory-index.md","kind":"Markdown","line":23,"status":"BROKEN","target":"ref-splunk-cell.md"}
+{"file":"memory-index.md","kind":"Markdown","line":24,"status":"BROKEN","target":"ref-github-auth.md"}
+{"file":"memory-index.md","kind":"Markdown","line":25,"status":"BROKEN","target":"k8s-access-limitations.md"}
+{"file":"memory-index.md","kind":"Markdown","line":26,"status":"BROKEN","target":"ref-k8s-naming.md"}
+{"file":"memory-index.md","kind":"Markdown","line":27,"status":"BROKEN","target":"ref-vpn-protocol-blocks.md"}
+{"file":"memory-index.md","kind":"Markdown","line":28,"status":"BROKEN","target":"ref-cross-cluster-networking.md"}
+{"file":"memory-index.md","kind":"Markdown","line":29,"status":"BROKEN","target":"slack-pr-channel.md"}
+{"file":"memory-index.md","kind":"Markdown","line":30,"status":"BROKEN","target":"ref-cortex-access.md"}
+{"file":"memory-index.md","kind":"Markdown","line":33,"status":"BROKEN","target":"ref-magento-domain.md"}
+{"file":"memory-index.md","kind":"Markdown","line":34,"status":"BROKEN","target":"ref-productbus.md"}
+{"file":"memory-index.md","kind":"Markdown","line":35,"status":"BROKEN","target":"ref-scoping-service.md"}
+{"file":"memory-index.md","kind":"Markdown","line":36,"status":"BROKEN","target":"ref-tiers-calculator.md"}
+{"file":"memory-index.md","kind":"Markdown","line":37,"status":"BROKEN","target":"ref-catalog-service-sync.md"}
+{"file":"memory-index.md","kind":"Markdown","line":38,"status":"BROKEN","target":"ref-events-service.md"}
+{"file":"memory-index.md","kind":"Markdown","line":39,"status":"BROKEN","target":"ref-cleanup-flow.md"}
+{"file":"memory-index.md","kind":"Markdown","line":40,"status":"BROKEN","target":"ref-mongodb-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":41,"status":"BROKEN","target":"ref-kafka-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":42,"status":"BROKEN","target":"ref-asr-spring.md"}
+{"file":"memory-index.md","kind":"Markdown","line":43,"status":"BROKEN","target":"ref-stateful-job-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":44,"status":"BROKEN","target":"ref-ccm-addons.md"}
+{"file":"memory-index.md","kind":"Markdown","line":45,"status":"BROKEN","target":"ref-cps-architecture.md"}
+{"file":"memory-index.md","kind":"Markdown","line":48,"status":"BROKEN","target":"pes-details.md"}
+{"file":"memory-index.md","kind":"Markdown","line":49,"status":"BROKEN","target":"ref-pes-architecture.md"}
+{"file":"memory-index.md","kind":"Markdown","line":50,"status":"BROKEN","target":"ref-flink-poppie.md"}
+{"file":"memory-index.md","kind":"Markdown","line":51,"status":"BROKEN","target":"ref-poppie-endpoints.md"}
+{"file":"memory-index.md","kind":"Markdown","line":52,"status":"BROKEN","target":"ref-gmc-validation-apis.md"}
+{"file":"memory-index.md","kind":"Markdown","line":55,"status":"BROKEN","target":"reference-zsh-sourced-scripts.md"}
+{"file":"memory-index.md","kind":"Markdown","line":58,"status":"BROKEN","target":"ref-distill-graduation.md"}
+{"file":"memory-index.md","kind":"Markdown","line":61,"status":"BROKEN","target":"ref-github-copilot-reviewer.md"}
+{"file":"memory-index.md","kind":"Markdown","line":62,"status":"BROKEN","target":"ref-commerce-mcp-tools.md"}
+{"file":"memory-index.md","kind":"Markdown","line":63,"status":"BROKEN","target":"ref-agent-browser.md"}
+{"file":"memory-index.md","kind":"Markdown","line":64,"status":"BROKEN","target":"ref-shopping-buddy.md"}
+{"file":"memory-index.md","kind":"Markdown","line":65,"status":"BROKEN","target":"ref-claude-mem.md"}
+{"file":"memory-index.md","kind":"Markdown","line":66,"status":"BROKEN","target":"ref-fluffyjaws.md"}
+{"file":"memory-index.md","kind":"Markdown","line":67,"status":"BROKEN","target":"ref-serena-mcp.md"}
+{"file":"memory-index.md","kind":"Markdown","line":68,"status":"BROKEN","target":"ref-scout-setup.md"}
+{"file":"memory-index.md","kind":"Markdown","line":69,"status":"BROKEN","target":"ref-scout-vs-socraticode.md"}
+{"file":"memory-index.md","kind":"Markdown","line":70,"status":"BROKEN","target":"ref-mq-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":71,"status":"BROKEN","target":"reference-qmd-upgrade.md"}
+{"file":"memory-index.md","kind":"Markdown","line":74,"status":"BROKEN","target":"reference-load-testing-stg-na1.md"}
+{"file":"memory-index.md","kind":"Markdown","line":77,"status":"BROKEN","target":"project-infra-status.md"}
+{"file":"memory-index.md","kind":"Markdown","line":80,"status":"BROKEN","target":"domain-knowledge.md"}
+--- stderr
+
+64 links total, 57 broken
+
+$ mdd -f human links edge11
+exit: 0
+--- stdout
+[multi.md:1] -> exists.md (Markdown)
+[multi.md:8] -> exists.md (Markdown)
+[multi.md:15] -> exists.md (Markdown)
+[multi.md:15] -> nope2.md (Markdown)
+[odd.md:3] -> x_(1).md (Markdown)
+[odd.md:3] -> a_b.md (Markdown)
+[odd.md:3] -> a%20b.md (Markdown)
+[odd.md:3] -> exists.md (Markdown)
+[places.md:1] -> exists.md (Markdown)
+[places.md:5] -> exists.md (Markdown)
+[places.md:7] -> exists.md (Markdown)
+[places.md:10] -> exists.md (Markdown)
+[places.md:16] -> my file.md (Markdown)
+[probe.md:7] -> exists.md (Markdown)
+[probe.md:7] -> exists.md (Markdown)
+[probe.md:7] -> exists.md (Markdown)
+[probe.md:15] -> exists.md (Markdown)
+[probe.md:15] -> missing-ref.md (Markdown)
+[probe.md:15] -> exists.md (Markdown)
+[probe.md:19] -> https://x.y (Markdown)
+--- stderr
+
+20 links total
+
+$ mdd -f agent links edge11
+exit: 0
+--- stdout
+[multi.md:1] -> exists.md (Markdown)
+[multi.md:8] -> exists.md (Markdown)
+[multi.md:15] -> exists.md (Markdown)
+[multi.md:15] -> nope2.md (Markdown)
+[odd.md:3] -> x_(1).md (Markdown)
+[odd.md:3] -> a_b.md (Markdown)
+[odd.md:3] -> a%20b.md (Markdown)
+[odd.md:3] -> exists.md (Markdown)
+[places.md:1] -> exists.md (Markdown)
+[places.md:5] -> exists.md (Markdown)
+[places.md:7] -> exists.md (Markdown)
+[places.md:10] -> exists.md (Markdown)
+[places.md:16] -> my file.md (Markdown)
+[probe.md:7] -> exists.md (Markdown)
+[probe.md:7] -> exists.md (Markdown)
+[probe.md:7] -> exists.md (Markdown)
+[probe.md:15] -> exists.md (Markdown)
+[probe.md:15] -> missing-ref.md (Markdown)
+[probe.md:15] -> exists.md (Markdown)
+[probe.md:19] -> https://x.y (Markdown)
+--- stderr
+
+20 links total
+
+$ mdd -f json links edge11
+exit: 0
+--- stdout
+{"file":"multi.md","kind":"Markdown","line":1,"status":"","target":"exists.md"}
+{"file":"multi.md","kind":"Markdown","line":8,"status":"","target":"exists.md"}
+{"file":"multi.md","kind":"Markdown","line":15,"status":"","target":"exists.md"}
+{"file":"multi.md","kind":"Markdown","line":15,"status":"","target":"nope2.md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"","target":"x_(1).md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"","target":"a_b.md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"","target":"a%20b.md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":1,"status":"","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":5,"status":"","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":7,"status":"","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":10,"status":"","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":16,"status":"","target":"my file.md"}
+{"file":"probe.md","kind":"Markdown","line":7,"status":"","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":7,"status":"","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":7,"status":"","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":15,"status":"","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":15,"status":"","target":"missing-ref.md"}
+{"file":"probe.md","kind":"Markdown","line":15,"status":"","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":19,"status":"","target":"https://x.y"}
+--- stderr
+
+20 links total
+
+$ mdd -f human links edge11 --check
+exit: 1
+--- stdout
+[multi.md:1] -> exists.md (Markdown, OK)
+[multi.md:8] -> exists.md (Markdown, OK)
+[multi.md:15] -> exists.md (Markdown, OK)
+[multi.md:15] -> nope2.md (Markdown, BROKEN)
+[odd.md:3] -> x_(1).md (Markdown, BROKEN)
+[odd.md:3] -> a_b.md (Markdown, BROKEN)
+[odd.md:3] -> a%20b.md (Markdown, BROKEN)
+[odd.md:3] -> exists.md (Markdown, OK)
+[places.md:1] -> exists.md (Markdown, OK)
+[places.md:5] -> exists.md (Markdown, OK)
+[places.md:7] -> exists.md (Markdown, OK)
+[places.md:10] -> exists.md (Markdown, OK)
+[places.md:16] -> my file.md (Markdown, BROKEN)
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:15] -> exists.md (Markdown, OK)
+[probe.md:15] -> missing-ref.md (Markdown, BROKEN)
+[probe.md:15] -> exists.md (Markdown, OK)
+[probe.md:19] -> https://x.y (Markdown, External)
+--- stderr
+
+20 links total, 6 broken
+
+$ mdd -f agent links edge11 --check
+exit: 1
+--- stdout
+[multi.md:1] -> exists.md (Markdown, OK)
+[multi.md:8] -> exists.md (Markdown, OK)
+[multi.md:15] -> exists.md (Markdown, OK)
+[multi.md:15] -> nope2.md (Markdown, BROKEN)
+[odd.md:3] -> x_(1).md (Markdown, BROKEN)
+[odd.md:3] -> a_b.md (Markdown, BROKEN)
+[odd.md:3] -> a%20b.md (Markdown, BROKEN)
+[odd.md:3] -> exists.md (Markdown, OK)
+[places.md:1] -> exists.md (Markdown, OK)
+[places.md:5] -> exists.md (Markdown, OK)
+[places.md:7] -> exists.md (Markdown, OK)
+[places.md:10] -> exists.md (Markdown, OK)
+[places.md:16] -> my file.md (Markdown, BROKEN)
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:15] -> exists.md (Markdown, OK)
+[probe.md:15] -> missing-ref.md (Markdown, BROKEN)
+[probe.md:15] -> exists.md (Markdown, OK)
+[probe.md:19] -> https://x.y (Markdown, External)
+--- stderr
+
+20 links total, 6 broken
+
+$ mdd -f json links edge11 --check
+exit: 1
+--- stdout
+{"file":"multi.md","kind":"Markdown","line":1,"status":"OK","target":"exists.md"}
+{"file":"multi.md","kind":"Markdown","line":8,"status":"OK","target":"exists.md"}
+{"file":"multi.md","kind":"Markdown","line":15,"status":"OK","target":"exists.md"}
+{"file":"multi.md","kind":"Markdown","line":15,"status":"BROKEN","target":"nope2.md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"BROKEN","target":"x_(1).md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"BROKEN","target":"a_b.md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"BROKEN","target":"a%20b.md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"OK","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":1,"status":"OK","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":5,"status":"OK","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":7,"status":"OK","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":10,"status":"OK","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":16,"status":"BROKEN","target":"my file.md"}
+{"file":"probe.md","kind":"Markdown","line":7,"status":"OK","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":7,"status":"OK","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":7,"status":"OK","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":15,"status":"OK","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":15,"status":"BROKEN","target":"missing-ref.md"}
+{"file":"probe.md","kind":"Markdown","line":15,"status":"OK","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":19,"status":"External","target":"https://x.y"}
+--- stderr
+
+20 links total, 6 broken
+
+$ mdd -f human links edge11 --broken
+exit: 1
+--- stdout
+[multi.md:15] -> nope2.md (Markdown, BROKEN)
+[odd.md:3] -> x_(1).md (Markdown, BROKEN)
+[odd.md:3] -> a_b.md (Markdown, BROKEN)
+[odd.md:3] -> a%20b.md (Markdown, BROKEN)
+[places.md:16] -> my file.md (Markdown, BROKEN)
+[probe.md:15] -> missing-ref.md (Markdown, BROKEN)
+--- stderr
+
+20 links total, 6 broken
+
+$ mdd -f agent links edge11 --broken
+exit: 1
+--- stdout
+[multi.md:15] -> nope2.md (Markdown, BROKEN)
+[odd.md:3] -> x_(1).md (Markdown, BROKEN)
+[odd.md:3] -> a_b.md (Markdown, BROKEN)
+[odd.md:3] -> a%20b.md (Markdown, BROKEN)
+[places.md:16] -> my file.md (Markdown, BROKEN)
+[probe.md:15] -> missing-ref.md (Markdown, BROKEN)
+--- stderr
+
+20 links total, 6 broken
+
+$ mdd -f json links edge11 --broken
+exit: 1
+--- stdout
+{"file":"multi.md","kind":"Markdown","line":15,"status":"BROKEN","target":"nope2.md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"BROKEN","target":"x_(1).md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"BROKEN","target":"a_b.md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"BROKEN","target":"a%20b.md"}
+{"file":"places.md","kind":"Markdown","line":16,"status":"BROKEN","target":"my file.md"}
+{"file":"probe.md","kind":"Markdown","line":15,"status":"BROKEN","target":"missing-ref.md"}
+--- stderr
+
+20 links total, 6 broken
+
+$ mdd -f human links edge11/probe.md --check
+exit: 1
+--- stdout
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:15] -> exists.md (Markdown, OK)
+[probe.md:15] -> missing-ref.md (Markdown, BROKEN)
+[probe.md:15] -> exists.md (Markdown, OK)
+[probe.md:19] -> https://x.y (Markdown, External)
+--- stderr
+
+7 links total, 1 broken
+
+$ mdd -f agent links edge11/probe.md --check
+exit: 1
+--- stdout
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:7] -> exists.md (Markdown, OK)
+[probe.md:15] -> exists.md (Markdown, OK)
+[probe.md:15] -> missing-ref.md (Markdown, BROKEN)
+[probe.md:15] -> exists.md (Markdown, OK)
+[probe.md:19] -> https://x.y (Markdown, External)
+--- stderr
+
+7 links total, 1 broken
+
+$ mdd -f json links edge11/probe.md --check
+exit: 1
+--- stdout
+{"file":"probe.md","kind":"Markdown","line":7,"status":"OK","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":7,"status":"OK","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":7,"status":"OK","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":15,"status":"OK","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":15,"status":"BROKEN","target":"missing-ref.md"}
+{"file":"probe.md","kind":"Markdown","line":15,"status":"OK","target":"exists.md"}
+{"file":"probe.md","kind":"Markdown","line":19,"status":"External","target":"https://x.y"}
+--- stderr
+
+7 links total, 1 broken
+
+$ mdd -f human links edge11/odd.md --check
+exit: 1
+--- stdout
+[odd.md:3] -> x_(1).md (Markdown, BROKEN)
+[odd.md:3] -> a_b.md (Markdown, BROKEN)
+[odd.md:3] -> a%20b.md (Markdown, BROKEN)
+[odd.md:3] -> exists.md (Markdown, OK)
+--- stderr
+
+4 links total, 3 broken
+
+$ mdd -f agent links edge11/odd.md --check
+exit: 1
+--- stdout
+[odd.md:3] -> x_(1).md (Markdown, BROKEN)
+[odd.md:3] -> a_b.md (Markdown, BROKEN)
+[odd.md:3] -> a%20b.md (Markdown, BROKEN)
+[odd.md:3] -> exists.md (Markdown, OK)
+--- stderr
+
+4 links total, 3 broken
+
+$ mdd -f json links edge11/odd.md --check
+exit: 1
+--- stdout
+{"file":"odd.md","kind":"Markdown","line":3,"status":"BROKEN","target":"x_(1).md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"BROKEN","target":"a_b.md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"BROKEN","target":"a%20b.md"}
+{"file":"odd.md","kind":"Markdown","line":3,"status":"OK","target":"exists.md"}
+--- stderr
+
+4 links total, 3 broken
+
+$ mdd -f human links edge11/places.md --check
+exit: 1
+--- stdout
+[places.md:1] -> exists.md (Markdown, OK)
+[places.md:5] -> exists.md (Markdown, OK)
+[places.md:7] -> exists.md (Markdown, OK)
+[places.md:10] -> exists.md (Markdown, OK)
+[places.md:16] -> my file.md (Markdown, BROKEN)
+--- stderr
+
+5 links total, 1 broken
+
+$ mdd -f agent links edge11/places.md --check
+exit: 1
+--- stdout
+[places.md:1] -> exists.md (Markdown, OK)
+[places.md:5] -> exists.md (Markdown, OK)
+[places.md:7] -> exists.md (Markdown, OK)
+[places.md:10] -> exists.md (Markdown, OK)
+[places.md:16] -> my file.md (Markdown, BROKEN)
+--- stderr
+
+5 links total, 1 broken
+
+$ mdd -f json links edge11/places.md --check
+exit: 1
+--- stdout
+{"file":"places.md","kind":"Markdown","line":1,"status":"OK","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":5,"status":"OK","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":7,"status":"OK","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":10,"status":"OK","target":"exists.md"}
+{"file":"places.md","kind":"Markdown","line":16,"status":"BROKEN","target":"my file.md"}
+--- stderr
+
+5 links total, 1 broken
+
+$ mdd -f human links edge11/multi.md --check
+exit: 1
+--- stdout
+[multi.md:1] -> exists.md (Markdown, OK)
+[multi.md:8] -> exists.md (Markdown, OK)
+[multi.md:15] -> exists.md (Markdown, OK)
+[multi.md:15] -> nope2.md (Markdown, BROKEN)
+--- stderr
+
+4 links total, 1 broken
+
+$ mdd -f agent links edge11/multi.md --check
+exit: 1
+--- stdout
+[multi.md:1] -> exists.md (Markdown, OK)
+[multi.md:8] -> exists.md (Markdown, OK)
+[multi.md:15] -> exists.md (Markdown, OK)
+[multi.md:15] -> nope2.md (Markdown, BROKEN)
+--- stderr
+
+4 links total, 1 broken
+
+$ mdd -f json links edge11/multi.md --check
+exit: 1
+--- stdout
+{"file":"multi.md","kind":"Markdown","line":1,"status":"OK","target":"exists.md"}
+{"file":"multi.md","kind":"Markdown","line":8,"status":"OK","target":"exists.md"}
+{"file":"multi.md","kind":"Markdown","line":15,"status":"OK","target":"exists.md"}
+{"file":"multi.md","kind":"Markdown","line":15,"status":"BROKEN","target":"nope2.md"}
+--- stderr
+
+4 links total, 1 broken
+
+$ mdd -f human links edge --broken
+exit: 1
+--- stdout
+[plain.md:10] -> ./nope.md (Markdown, BROKEN)
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 links total, 1 broken
+
+$ mdd -f agent links edge --broken
+exit: 1
+--- stdout
+[plain.md:10] -> ./nope.md (Markdown, BROKEN)
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 links total, 1 broken
+
+$ mdd -f json links edge --broken
+exit: 1
+--- stdout
+{"file":"plain.md","kind":"Markdown","line":10,"status":"BROKEN","target":"./nope.md"}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 links total, 1 broken
+
+$ mdd -f human links -h
+exit: 0
+--- stdout
+Link graph extraction and validation
+
+Usage: mdd links [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  File or directory path
+
+Options:
+      --check            Check all links for validity (resolve paths)
+      --broken           Show only broken links
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f agent links -h
+exit: 0
+--- stdout
+Link graph extraction and validation
+
+Usage: mdd links [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  File or directory path
+
+Options:
+      --check            Check all links for validity (resolve paths)
+      --broken           Show only broken links
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f json links -h
+exit: 0
+--- stdout
+Link graph extraction and validation
+
+Usage: mdd links [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  File or directory path
+
+Options:
+      --check            Check all links for validity (resolve paths)
+      --broken           Show only broken links
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f human links
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd links <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent links
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd links <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json links
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd links <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human links fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd links <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent links fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd links <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json links fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd links <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human links fixtures
+exit: 0
+--- stdout
+[cross-refs.md:10] -> ./service-doc.md (Markdown)
+[cross-refs.md:11] -> ./feedback-entry.md (Markdown)
+[cross-refs.md:12] -> ./removed-service.md (Markdown)
+[cross-refs.md:16] -> https://wiki.example.com/display/ENG (Markdown)
+[cross-refs.md:17] -> https://dash.example.com/d/ingestion (Markdown)
+[cross-refs.md:18] -> https://issues.example.com/browse/PROJ (Markdown)
+[links-test.md:10] -> ./simple.md (Markdown)
+[links-test.md:12] -> ./does-not-exist.md (Markdown)
+[links-test.md:14] -> https://example.com (Markdown)
+[memory-index.md:4] -> feedback-read-claude-local.md (Markdown)
+[memory-index.md:7] -> user-profile.md (Markdown)
+[memory-index.md:10] -> jenkins-itc-migration.md (Markdown)
+[memory-index.md:11] -> cilium-eks-pathfinder-dns.md (Markdown)
+[memory-index.md:12] -> feedback-agent-guidance.md (Markdown)
+[memory-index.md:13] -> feedback-git-hooks.md (Markdown)
+[memory-index.md:14] -> feedback-obs-structure.md (Markdown)
+[memory-index.md:15] -> feedback-playwright-cli.md (Markdown)
+[memory-index.md:18] -> reference-aws-cost-access.md (Markdown)
+[memory-index.md:19] -> ref-jenkins-ops.md (Markdown)
+[memory-index.md:20] -> ref-flex-argocd.md (Markdown)
+[memory-index.md:21] -> ref-infrastructure.md (Markdown)
+[memory-index.md:22] -> ref-splunk.md (Markdown)
+[memory-index.md:23] -> ref-splunk-cell.md (Markdown)
+[memory-index.md:24] -> ref-github-auth.md (Markdown)
+[memory-index.md:25] -> k8s-access-limitations.md (Markdown)
+[memory-index.md:26] -> ref-k8s-naming.md (Markdown)
+[memory-index.md:27] -> ref-vpn-protocol-blocks.md (Markdown)
+[memory-index.md:28] -> ref-cross-cluster-networking.md (Markdown)
+[memory-index.md:29] -> slack-pr-channel.md (Markdown)
+[memory-index.md:30] -> ref-cortex-access.md (Markdown)
+[memory-index.md:33] -> ref-magento-domain.md (Markdown)
+[memory-index.md:34] -> ref-productbus.md (Markdown)
+[memory-index.md:35] -> ref-scoping-service.md (Markdown)
+[memory-index.md:36] -> ref-tiers-calculator.md (Markdown)
+[memory-index.md:37] -> ref-catalog-service-sync.md (Markdown)
+[memory-index.md:38] -> ref-events-service.md (Markdown)
+[memory-index.md:39] -> ref-cleanup-flow.md (Markdown)
+[memory-index.md:40] -> ref-mongodb-patterns.md (Markdown)
+[memory-index.md:41] -> ref-kafka-patterns.md (Markdown)
+[memory-index.md:42] -> ref-asr-spring.md (Markdown)
+[memory-index.md:43] -> ref-stateful-job-patterns.md (Markdown)
+[memory-index.md:44] -> ref-ccm-addons.md (Markdown)
+[memory-index.md:45] -> ref-cps-architecture.md (Markdown)
+[memory-index.md:48] -> pes-details.md (Markdown)
+[memory-index.md:49] -> ref-pes-architecture.md (Markdown)
+[memory-index.md:50] -> ref-flink-poppie.md (Markdown)
+[memory-index.md:51] -> ref-poppie-endpoints.md (Markdown)
+[memory-index.md:52] -> ref-gmc-validation-apis.md (Markdown)
+[memory-index.md:55] -> reference-zsh-sourced-scripts.md (Markdown)
+[memory-index.md:58] -> ref-distill-graduation.md (Markdown)
+[memory-index.md:61] -> ref-github-copilot-reviewer.md (Markdown)
+[memory-index.md:62] -> ref-commerce-mcp-tools.md (Markdown)
+[memory-index.md:63] -> ref-agent-browser.md (Markdown)
+[memory-index.md:64] -> ref-shopping-buddy.md (Markdown)
+[memory-index.md:65] -> ref-claude-mem.md (Markdown)
+[memory-index.md:66] -> ref-fluffyjaws.md (Markdown)
+[memory-index.md:67] -> ref-serena-mcp.md (Markdown)
+[memory-index.md:68] -> ref-scout-setup.md (Markdown)
+[memory-index.md:69] -> ref-scout-vs-socraticode.md (Markdown)
+[memory-index.md:70] -> ref-mq-patterns.md (Markdown)
+[memory-index.md:71] -> reference-qmd-upgrade.md (Markdown)
+[memory-index.md:74] -> reference-load-testing-stg-na1.md (Markdown)
+[memory-index.md:77] -> project-infra-status.md (Markdown)
+[memory-index.md:80] -> domain-knowledge.md (Markdown)
+--- stderr
+
+64 links total
+
+$ mdd -f agent links fixtures
+exit: 0
+--- stdout
+[cross-refs.md:10] -> ./service-doc.md (Markdown)
+[cross-refs.md:11] -> ./feedback-entry.md (Markdown)
+[cross-refs.md:12] -> ./removed-service.md (Markdown)
+[cross-refs.md:16] -> https://wiki.example.com/display/ENG (Markdown)
+[cross-refs.md:17] -> https://dash.example.com/d/ingestion (Markdown)
+[cross-refs.md:18] -> https://issues.example.com/browse/PROJ (Markdown)
+[links-test.md:10] -> ./simple.md (Markdown)
+[links-test.md:12] -> ./does-not-exist.md (Markdown)
+[links-test.md:14] -> https://example.com (Markdown)
+[memory-index.md:4] -> feedback-read-claude-local.md (Markdown)
+[memory-index.md:7] -> user-profile.md (Markdown)
+[memory-index.md:10] -> jenkins-itc-migration.md (Markdown)
+[memory-index.md:11] -> cilium-eks-pathfinder-dns.md (Markdown)
+[memory-index.md:12] -> feedback-agent-guidance.md (Markdown)
+[memory-index.md:13] -> feedback-git-hooks.md (Markdown)
+[memory-index.md:14] -> feedback-obs-structure.md (Markdown)
+[memory-index.md:15] -> feedback-playwright-cli.md (Markdown)
+[memory-index.md:18] -> reference-aws-cost-access.md (Markdown)
+[memory-index.md:19] -> ref-jenkins-ops.md (Markdown)
+[memory-index.md:20] -> ref-flex-argocd.md (Markdown)
+[memory-index.md:21] -> ref-infrastructure.md (Markdown)
+[memory-index.md:22] -> ref-splunk.md (Markdown)
+[memory-index.md:23] -> ref-splunk-cell.md (Markdown)
+[memory-index.md:24] -> ref-github-auth.md (Markdown)
+[memory-index.md:25] -> k8s-access-limitations.md (Markdown)
+[memory-index.md:26] -> ref-k8s-naming.md (Markdown)
+[memory-index.md:27] -> ref-vpn-protocol-blocks.md (Markdown)
+[memory-index.md:28] -> ref-cross-cluster-networking.md (Markdown)
+[memory-index.md:29] -> slack-pr-channel.md (Markdown)
+[memory-index.md:30] -> ref-cortex-access.md (Markdown)
+[memory-index.md:33] -> ref-magento-domain.md (Markdown)
+[memory-index.md:34] -> ref-productbus.md (Markdown)
+[memory-index.md:35] -> ref-scoping-service.md (Markdown)
+[memory-index.md:36] -> ref-tiers-calculator.md (Markdown)
+[memory-index.md:37] -> ref-catalog-service-sync.md (Markdown)
+[memory-index.md:38] -> ref-events-service.md (Markdown)
+[memory-index.md:39] -> ref-cleanup-flow.md (Markdown)
+[memory-index.md:40] -> ref-mongodb-patterns.md (Markdown)
+[memory-index.md:41] -> ref-kafka-patterns.md (Markdown)
+[memory-index.md:42] -> ref-asr-spring.md (Markdown)
+[memory-index.md:43] -> ref-stateful-job-patterns.md (Markdown)
+[memory-index.md:44] -> ref-ccm-addons.md (Markdown)
+[memory-index.md:45] -> ref-cps-architecture.md (Markdown)
+[memory-index.md:48] -> pes-details.md (Markdown)
+[memory-index.md:49] -> ref-pes-architecture.md (Markdown)
+[memory-index.md:50] -> ref-flink-poppie.md (Markdown)
+[memory-index.md:51] -> ref-poppie-endpoints.md (Markdown)
+[memory-index.md:52] -> ref-gmc-validation-apis.md (Markdown)
+[memory-index.md:55] -> reference-zsh-sourced-scripts.md (Markdown)
+[memory-index.md:58] -> ref-distill-graduation.md (Markdown)
+[memory-index.md:61] -> ref-github-copilot-reviewer.md (Markdown)
+[memory-index.md:62] -> ref-commerce-mcp-tools.md (Markdown)
+[memory-index.md:63] -> ref-agent-browser.md (Markdown)
+[memory-index.md:64] -> ref-shopping-buddy.md (Markdown)
+[memory-index.md:65] -> ref-claude-mem.md (Markdown)
+[memory-index.md:66] -> ref-fluffyjaws.md (Markdown)
+[memory-index.md:67] -> ref-serena-mcp.md (Markdown)
+[memory-index.md:68] -> ref-scout-setup.md (Markdown)
+[memory-index.md:69] -> ref-scout-vs-socraticode.md (Markdown)
+[memory-index.md:70] -> ref-mq-patterns.md (Markdown)
+[memory-index.md:71] -> reference-qmd-upgrade.md (Markdown)
+[memory-index.md:74] -> reference-load-testing-stg-na1.md (Markdown)
+[memory-index.md:77] -> project-infra-status.md (Markdown)
+[memory-index.md:80] -> domain-knowledge.md (Markdown)
+--- stderr
+
+64 links total
+
+$ mdd -f json links fixtures
+exit: 0
+--- stdout
+{"file":"cross-refs.md","kind":"Markdown","line":10,"status":"","target":"./service-doc.md"}
+{"file":"cross-refs.md","kind":"Markdown","line":11,"status":"","target":"./feedback-entry.md"}
+{"file":"cross-refs.md","kind":"Markdown","line":12,"status":"","target":"./removed-service.md"}
+{"file":"cross-refs.md","kind":"Markdown","line":16,"status":"","target":"https://wiki.example.com/display/ENG"}
+{"file":"cross-refs.md","kind":"Markdown","line":17,"status":"","target":"https://dash.example.com/d/ingestion"}
+{"file":"cross-refs.md","kind":"Markdown","line":18,"status":"","target":"https://issues.example.com/browse/PROJ"}
+{"file":"links-test.md","kind":"Markdown","line":10,"status":"","target":"./simple.md"}
+{"file":"links-test.md","kind":"Markdown","line":12,"status":"","target":"./does-not-exist.md"}
+{"file":"links-test.md","kind":"Markdown","line":14,"status":"","target":"https://example.com"}
+{"file":"memory-index.md","kind":"Markdown","line":4,"status":"","target":"feedback-read-claude-local.md"}
+{"file":"memory-index.md","kind":"Markdown","line":7,"status":"","target":"user-profile.md"}
+{"file":"memory-index.md","kind":"Markdown","line":10,"status":"","target":"jenkins-itc-migration.md"}
+{"file":"memory-index.md","kind":"Markdown","line":11,"status":"","target":"cilium-eks-pathfinder-dns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":12,"status":"","target":"feedback-agent-guidance.md"}
+{"file":"memory-index.md","kind":"Markdown","line":13,"status":"","target":"feedback-git-hooks.md"}
+{"file":"memory-index.md","kind":"Markdown","line":14,"status":"","target":"feedback-obs-structure.md"}
+{"file":"memory-index.md","kind":"Markdown","line":15,"status":"","target":"feedback-playwright-cli.md"}
+{"file":"memory-index.md","kind":"Markdown","line":18,"status":"","target":"reference-aws-cost-access.md"}
+{"file":"memory-index.md","kind":"Markdown","line":19,"status":"","target":"ref-jenkins-ops.md"}
+{"file":"memory-index.md","kind":"Markdown","line":20,"status":"","target":"ref-flex-argocd.md"}
+{"file":"memory-index.md","kind":"Markdown","line":21,"status":"","target":"ref-infrastructure.md"}
+{"file":"memory-index.md","kind":"Markdown","line":22,"status":"","target":"ref-splunk.md"}
+{"file":"memory-index.md","kind":"Markdown","line":23,"status":"","target":"ref-splunk-cell.md"}
+{"file":"memory-index.md","kind":"Markdown","line":24,"status":"","target":"ref-github-auth.md"}
+{"file":"memory-index.md","kind":"Markdown","line":25,"status":"","target":"k8s-access-limitations.md"}
+{"file":"memory-index.md","kind":"Markdown","line":26,"status":"","target":"ref-k8s-naming.md"}
+{"file":"memory-index.md","kind":"Markdown","line":27,"status":"","target":"ref-vpn-protocol-blocks.md"}
+{"file":"memory-index.md","kind":"Markdown","line":28,"status":"","target":"ref-cross-cluster-networking.md"}
+{"file":"memory-index.md","kind":"Markdown","line":29,"status":"","target":"slack-pr-channel.md"}
+{"file":"memory-index.md","kind":"Markdown","line":30,"status":"","target":"ref-cortex-access.md"}
+{"file":"memory-index.md","kind":"Markdown","line":33,"status":"","target":"ref-magento-domain.md"}
+{"file":"memory-index.md","kind":"Markdown","line":34,"status":"","target":"ref-productbus.md"}
+{"file":"memory-index.md","kind":"Markdown","line":35,"status":"","target":"ref-scoping-service.md"}
+{"file":"memory-index.md","kind":"Markdown","line":36,"status":"","target":"ref-tiers-calculator.md"}
+{"file":"memory-index.md","kind":"Markdown","line":37,"status":"","target":"ref-catalog-service-sync.md"}
+{"file":"memory-index.md","kind":"Markdown","line":38,"status":"","target":"ref-events-service.md"}
+{"file":"memory-index.md","kind":"Markdown","line":39,"status":"","target":"ref-cleanup-flow.md"}
+{"file":"memory-index.md","kind":"Markdown","line":40,"status":"","target":"ref-mongodb-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":41,"status":"","target":"ref-kafka-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":42,"status":"","target":"ref-asr-spring.md"}
+{"file":"memory-index.md","kind":"Markdown","line":43,"status":"","target":"ref-stateful-job-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":44,"status":"","target":"ref-ccm-addons.md"}
+{"file":"memory-index.md","kind":"Markdown","line":45,"status":"","target":"ref-cps-architecture.md"}
+{"file":"memory-index.md","kind":"Markdown","line":48,"status":"","target":"pes-details.md"}
+{"file":"memory-index.md","kind":"Markdown","line":49,"status":"","target":"ref-pes-architecture.md"}
+{"file":"memory-index.md","kind":"Markdown","line":50,"status":"","target":"ref-flink-poppie.md"}
+{"file":"memory-index.md","kind":"Markdown","line":51,"status":"","target":"ref-poppie-endpoints.md"}
+{"file":"memory-index.md","kind":"Markdown","line":52,"status":"","target":"ref-gmc-validation-apis.md"}
+{"file":"memory-index.md","kind":"Markdown","line":55,"status":"","target":"reference-zsh-sourced-scripts.md"}
+{"file":"memory-index.md","kind":"Markdown","line":58,"status":"","target":"ref-distill-graduation.md"}
+{"file":"memory-index.md","kind":"Markdown","line":61,"status":"","target":"ref-github-copilot-reviewer.md"}
+{"file":"memory-index.md","kind":"Markdown","line":62,"status":"","target":"ref-commerce-mcp-tools.md"}
+{"file":"memory-index.md","kind":"Markdown","line":63,"status":"","target":"ref-agent-browser.md"}
+{"file":"memory-index.md","kind":"Markdown","line":64,"status":"","target":"ref-shopping-buddy.md"}
+{"file":"memory-index.md","kind":"Markdown","line":65,"status":"","target":"ref-claude-mem.md"}
+{"file":"memory-index.md","kind":"Markdown","line":66,"status":"","target":"ref-fluffyjaws.md"}
+{"file":"memory-index.md","kind":"Markdown","line":67,"status":"","target":"ref-serena-mcp.md"}
+{"file":"memory-index.md","kind":"Markdown","line":68,"status":"","target":"ref-scout-setup.md"}
+{"file":"memory-index.md","kind":"Markdown","line":69,"status":"","target":"ref-scout-vs-socraticode.md"}
+{"file":"memory-index.md","kind":"Markdown","line":70,"status":"","target":"ref-mq-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":71,"status":"","target":"reference-qmd-upgrade.md"}
+{"file":"memory-index.md","kind":"Markdown","line":74,"status":"","target":"reference-load-testing-stg-na1.md"}
+{"file":"memory-index.md","kind":"Markdown","line":77,"status":"","target":"project-infra-status.md"}
+{"file":"memory-index.md","kind":"Markdown","line":80,"status":"","target":"domain-knowledge.md"}
+--- stderr
+
+64 links total
+
+$ mdd -f human links fixtures/links-test.md
+exit: 0
+--- stdout
+[links-test.md:10] -> ./simple.md (Markdown)
+[links-test.md:12] -> ./does-not-exist.md (Markdown)
+[links-test.md:14] -> https://example.com (Markdown)
+--- stderr
+
+3 links total
+
+$ mdd -f agent links fixtures/links-test.md
+exit: 0
+--- stdout
+[links-test.md:10] -> ./simple.md (Markdown)
+[links-test.md:12] -> ./does-not-exist.md (Markdown)
+[links-test.md:14] -> https://example.com (Markdown)
+--- stderr
+
+3 links total
+
+$ mdd -f json links fixtures/links-test.md
+exit: 0
+--- stdout
+{"file":"links-test.md","kind":"Markdown","line":10,"status":"","target":"./simple.md"}
+{"file":"links-test.md","kind":"Markdown","line":12,"status":"","target":"./does-not-exist.md"}
+{"file":"links-test.md","kind":"Markdown","line":14,"status":"","target":"https://example.com"}
+--- stderr
+
+3 links total
+
+$ mdd -f human links fixtures --broken
+exit: 1
+--- stdout
+[cross-refs.md:12] -> ./removed-service.md (Markdown, BROKEN)
+[links-test.md:12] -> ./does-not-exist.md (Markdown, BROKEN)
+[memory-index.md:4] -> feedback-read-claude-local.md (Markdown, BROKEN)
+[memory-index.md:7] -> user-profile.md (Markdown, BROKEN)
+[memory-index.md:10] -> jenkins-itc-migration.md (Markdown, BROKEN)
+[memory-index.md:11] -> cilium-eks-pathfinder-dns.md (Markdown, BROKEN)
+[memory-index.md:12] -> feedback-agent-guidance.md (Markdown, BROKEN)
+[memory-index.md:13] -> feedback-git-hooks.md (Markdown, BROKEN)
+[memory-index.md:14] -> feedback-obs-structure.md (Markdown, BROKEN)
+[memory-index.md:15] -> feedback-playwright-cli.md (Markdown, BROKEN)
+[memory-index.md:18] -> reference-aws-cost-access.md (Markdown, BROKEN)
+[memory-index.md:19] -> ref-jenkins-ops.md (Markdown, BROKEN)
+[memory-index.md:20] -> ref-flex-argocd.md (Markdown, BROKEN)
+[memory-index.md:21] -> ref-infrastructure.md (Markdown, BROKEN)
+[memory-index.md:22] -> ref-splunk.md (Markdown, BROKEN)
+[memory-index.md:23] -> ref-splunk-cell.md (Markdown, BROKEN)
+[memory-index.md:24] -> ref-github-auth.md (Markdown, BROKEN)
+[memory-index.md:25] -> k8s-access-limitations.md (Markdown, BROKEN)
+[memory-index.md:26] -> ref-k8s-naming.md (Markdown, BROKEN)
+[memory-index.md:27] -> ref-vpn-protocol-blocks.md (Markdown, BROKEN)
+[memory-index.md:28] -> ref-cross-cluster-networking.md (Markdown, BROKEN)
+[memory-index.md:29] -> slack-pr-channel.md (Markdown, BROKEN)
+[memory-index.md:30] -> ref-cortex-access.md (Markdown, BROKEN)
+[memory-index.md:33] -> ref-magento-domain.md (Markdown, BROKEN)
+[memory-index.md:34] -> ref-productbus.md (Markdown, BROKEN)
+[memory-index.md:35] -> ref-scoping-service.md (Markdown, BROKEN)
+[memory-index.md:36] -> ref-tiers-calculator.md (Markdown, BROKEN)
+[memory-index.md:37] -> ref-catalog-service-sync.md (Markdown, BROKEN)
+[memory-index.md:38] -> ref-events-service.md (Markdown, BROKEN)
+[memory-index.md:39] -> ref-cleanup-flow.md (Markdown, BROKEN)
+[memory-index.md:40] -> ref-mongodb-patterns.md (Markdown, BROKEN)
+[memory-index.md:41] -> ref-kafka-patterns.md (Markdown, BROKEN)
+[memory-index.md:42] -> ref-asr-spring.md (Markdown, BROKEN)
+[memory-index.md:43] -> ref-stateful-job-patterns.md (Markdown, BROKEN)
+[memory-index.md:44] -> ref-ccm-addons.md (Markdown, BROKEN)
+[memory-index.md:45] -> ref-cps-architecture.md (Markdown, BROKEN)
+[memory-index.md:48] -> pes-details.md (Markdown, BROKEN)
+[memory-index.md:49] -> ref-pes-architecture.md (Markdown, BROKEN)
+[memory-index.md:50] -> ref-flink-poppie.md (Markdown, BROKEN)
+[memory-index.md:51] -> ref-poppie-endpoints.md (Markdown, BROKEN)
+[memory-index.md:52] -> ref-gmc-validation-apis.md (Markdown, BROKEN)
+[memory-index.md:55] -> reference-zsh-sourced-scripts.md (Markdown, BROKEN)
+[memory-index.md:58] -> ref-distill-graduation.md (Markdown, BROKEN)
+[memory-index.md:61] -> ref-github-copilot-reviewer.md (Markdown, BROKEN)
+[memory-index.md:62] -> ref-commerce-mcp-tools.md (Markdown, BROKEN)
+[memory-index.md:63] -> ref-agent-browser.md (Markdown, BROKEN)
+[memory-index.md:64] -> ref-shopping-buddy.md (Markdown, BROKEN)
+[memory-index.md:65] -> ref-claude-mem.md (Markdown, BROKEN)
+[memory-index.md:66] -> ref-fluffyjaws.md (Markdown, BROKEN)
+[memory-index.md:67] -> ref-serena-mcp.md (Markdown, BROKEN)
+[memory-index.md:68] -> ref-scout-setup.md (Markdown, BROKEN)
+[memory-index.md:69] -> ref-scout-vs-socraticode.md (Markdown, BROKEN)
+[memory-index.md:70] -> ref-mq-patterns.md (Markdown, BROKEN)
+[memory-index.md:71] -> reference-qmd-upgrade.md (Markdown, BROKEN)
+[memory-index.md:74] -> reference-load-testing-stg-na1.md (Markdown, BROKEN)
+[memory-index.md:77] -> project-infra-status.md (Markdown, BROKEN)
+[memory-index.md:80] -> domain-knowledge.md (Markdown, BROKEN)
+--- stderr
+
+64 links total, 57 broken
+
+$ mdd -f agent links fixtures --broken
+exit: 1
+--- stdout
+[cross-refs.md:12] -> ./removed-service.md (Markdown, BROKEN)
+[links-test.md:12] -> ./does-not-exist.md (Markdown, BROKEN)
+[memory-index.md:4] -> feedback-read-claude-local.md (Markdown, BROKEN)
+[memory-index.md:7] -> user-profile.md (Markdown, BROKEN)
+[memory-index.md:10] -> jenkins-itc-migration.md (Markdown, BROKEN)
+[memory-index.md:11] -> cilium-eks-pathfinder-dns.md (Markdown, BROKEN)
+[memory-index.md:12] -> feedback-agent-guidance.md (Markdown, BROKEN)
+[memory-index.md:13] -> feedback-git-hooks.md (Markdown, BROKEN)
+[memory-index.md:14] -> feedback-obs-structure.md (Markdown, BROKEN)
+[memory-index.md:15] -> feedback-playwright-cli.md (Markdown, BROKEN)
+[memory-index.md:18] -> reference-aws-cost-access.md (Markdown, BROKEN)
+[memory-index.md:19] -> ref-jenkins-ops.md (Markdown, BROKEN)
+[memory-index.md:20] -> ref-flex-argocd.md (Markdown, BROKEN)
+[memory-index.md:21] -> ref-infrastructure.md (Markdown, BROKEN)
+[memory-index.md:22] -> ref-splunk.md (Markdown, BROKEN)
+[memory-index.md:23] -> ref-splunk-cell.md (Markdown, BROKEN)
+[memory-index.md:24] -> ref-github-auth.md (Markdown, BROKEN)
+[memory-index.md:25] -> k8s-access-limitations.md (Markdown, BROKEN)
+[memory-index.md:26] -> ref-k8s-naming.md (Markdown, BROKEN)
+[memory-index.md:27] -> ref-vpn-protocol-blocks.md (Markdown, BROKEN)
+[memory-index.md:28] -> ref-cross-cluster-networking.md (Markdown, BROKEN)
+[memory-index.md:29] -> slack-pr-channel.md (Markdown, BROKEN)
+[memory-index.md:30] -> ref-cortex-access.md (Markdown, BROKEN)
+[memory-index.md:33] -> ref-magento-domain.md (Markdown, BROKEN)
+[memory-index.md:34] -> ref-productbus.md (Markdown, BROKEN)
+[memory-index.md:35] -> ref-scoping-service.md (Markdown, BROKEN)
+[memory-index.md:36] -> ref-tiers-calculator.md (Markdown, BROKEN)
+[memory-index.md:37] -> ref-catalog-service-sync.md (Markdown, BROKEN)
+[memory-index.md:38] -> ref-events-service.md (Markdown, BROKEN)
+[memory-index.md:39] -> ref-cleanup-flow.md (Markdown, BROKEN)
+[memory-index.md:40] -> ref-mongodb-patterns.md (Markdown, BROKEN)
+[memory-index.md:41] -> ref-kafka-patterns.md (Markdown, BROKEN)
+[memory-index.md:42] -> ref-asr-spring.md (Markdown, BROKEN)
+[memory-index.md:43] -> ref-stateful-job-patterns.md (Markdown, BROKEN)
+[memory-index.md:44] -> ref-ccm-addons.md (Markdown, BROKEN)
+[memory-index.md:45] -> ref-cps-architecture.md (Markdown, BROKEN)
+[memory-index.md:48] -> pes-details.md (Markdown, BROKEN)
+[memory-index.md:49] -> ref-pes-architecture.md (Markdown, BROKEN)
+[memory-index.md:50] -> ref-flink-poppie.md (Markdown, BROKEN)
+[memory-index.md:51] -> ref-poppie-endpoints.md (Markdown, BROKEN)
+[memory-index.md:52] -> ref-gmc-validation-apis.md (Markdown, BROKEN)
+[memory-index.md:55] -> reference-zsh-sourced-scripts.md (Markdown, BROKEN)
+[memory-index.md:58] -> ref-distill-graduation.md (Markdown, BROKEN)
+[memory-index.md:61] -> ref-github-copilot-reviewer.md (Markdown, BROKEN)
+[memory-index.md:62] -> ref-commerce-mcp-tools.md (Markdown, BROKEN)
+[memory-index.md:63] -> ref-agent-browser.md (Markdown, BROKEN)
+[memory-index.md:64] -> ref-shopping-buddy.md (Markdown, BROKEN)
+[memory-index.md:65] -> ref-claude-mem.md (Markdown, BROKEN)
+[memory-index.md:66] -> ref-fluffyjaws.md (Markdown, BROKEN)
+[memory-index.md:67] -> ref-serena-mcp.md (Markdown, BROKEN)
+[memory-index.md:68] -> ref-scout-setup.md (Markdown, BROKEN)
+[memory-index.md:69] -> ref-scout-vs-socraticode.md (Markdown, BROKEN)
+[memory-index.md:70] -> ref-mq-patterns.md (Markdown, BROKEN)
+[memory-index.md:71] -> reference-qmd-upgrade.md (Markdown, BROKEN)
+[memory-index.md:74] -> reference-load-testing-stg-na1.md (Markdown, BROKEN)
+[memory-index.md:77] -> project-infra-status.md (Markdown, BROKEN)
+[memory-index.md:80] -> domain-knowledge.md (Markdown, BROKEN)
+--- stderr
+
+64 links total, 57 broken
+
+$ mdd -f json links fixtures --broken
+exit: 1
+--- stdout
+{"file":"cross-refs.md","kind":"Markdown","line":12,"status":"BROKEN","target":"./removed-service.md"}
+{"file":"links-test.md","kind":"Markdown","line":12,"status":"BROKEN","target":"./does-not-exist.md"}
+{"file":"memory-index.md","kind":"Markdown","line":4,"status":"BROKEN","target":"feedback-read-claude-local.md"}
+{"file":"memory-index.md","kind":"Markdown","line":7,"status":"BROKEN","target":"user-profile.md"}
+{"file":"memory-index.md","kind":"Markdown","line":10,"status":"BROKEN","target":"jenkins-itc-migration.md"}
+{"file":"memory-index.md","kind":"Markdown","line":11,"status":"BROKEN","target":"cilium-eks-pathfinder-dns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":12,"status":"BROKEN","target":"feedback-agent-guidance.md"}
+{"file":"memory-index.md","kind":"Markdown","line":13,"status":"BROKEN","target":"feedback-git-hooks.md"}
+{"file":"memory-index.md","kind":"Markdown","line":14,"status":"BROKEN","target":"feedback-obs-structure.md"}
+{"file":"memory-index.md","kind":"Markdown","line":15,"status":"BROKEN","target":"feedback-playwright-cli.md"}
+{"file":"memory-index.md","kind":"Markdown","line":18,"status":"BROKEN","target":"reference-aws-cost-access.md"}
+{"file":"memory-index.md","kind":"Markdown","line":19,"status":"BROKEN","target":"ref-jenkins-ops.md"}
+{"file":"memory-index.md","kind":"Markdown","line":20,"status":"BROKEN","target":"ref-flex-argocd.md"}
+{"file":"memory-index.md","kind":"Markdown","line":21,"status":"BROKEN","target":"ref-infrastructure.md"}
+{"file":"memory-index.md","kind":"Markdown","line":22,"status":"BROKEN","target":"ref-splunk.md"}
+{"file":"memory-index.md","kind":"Markdown","line":23,"status":"BROKEN","target":"ref-splunk-cell.md"}
+{"file":"memory-index.md","kind":"Markdown","line":24,"status":"BROKEN","target":"ref-github-auth.md"}
+{"file":"memory-index.md","kind":"Markdown","line":25,"status":"BROKEN","target":"k8s-access-limitations.md"}
+{"file":"memory-index.md","kind":"Markdown","line":26,"status":"BROKEN","target":"ref-k8s-naming.md"}
+{"file":"memory-index.md","kind":"Markdown","line":27,"status":"BROKEN","target":"ref-vpn-protocol-blocks.md"}
+{"file":"memory-index.md","kind":"Markdown","line":28,"status":"BROKEN","target":"ref-cross-cluster-networking.md"}
+{"file":"memory-index.md","kind":"Markdown","line":29,"status":"BROKEN","target":"slack-pr-channel.md"}
+{"file":"memory-index.md","kind":"Markdown","line":30,"status":"BROKEN","target":"ref-cortex-access.md"}
+{"file":"memory-index.md","kind":"Markdown","line":33,"status":"BROKEN","target":"ref-magento-domain.md"}
+{"file":"memory-index.md","kind":"Markdown","line":34,"status":"BROKEN","target":"ref-productbus.md"}
+{"file":"memory-index.md","kind":"Markdown","line":35,"status":"BROKEN","target":"ref-scoping-service.md"}
+{"file":"memory-index.md","kind":"Markdown","line":36,"status":"BROKEN","target":"ref-tiers-calculator.md"}
+{"file":"memory-index.md","kind":"Markdown","line":37,"status":"BROKEN","target":"ref-catalog-service-sync.md"}
+{"file":"memory-index.md","kind":"Markdown","line":38,"status":"BROKEN","target":"ref-events-service.md"}
+{"file":"memory-index.md","kind":"Markdown","line":39,"status":"BROKEN","target":"ref-cleanup-flow.md"}
+{"file":"memory-index.md","kind":"Markdown","line":40,"status":"BROKEN","target":"ref-mongodb-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":41,"status":"BROKEN","target":"ref-kafka-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":42,"status":"BROKEN","target":"ref-asr-spring.md"}
+{"file":"memory-index.md","kind":"Markdown","line":43,"status":"BROKEN","target":"ref-stateful-job-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":44,"status":"BROKEN","target":"ref-ccm-addons.md"}
+{"file":"memory-index.md","kind":"Markdown","line":45,"status":"BROKEN","target":"ref-cps-architecture.md"}
+{"file":"memory-index.md","kind":"Markdown","line":48,"status":"BROKEN","target":"pes-details.md"}
+{"file":"memory-index.md","kind":"Markdown","line":49,"status":"BROKEN","target":"ref-pes-architecture.md"}
+{"file":"memory-index.md","kind":"Markdown","line":50,"status":"BROKEN","target":"ref-flink-poppie.md"}
+{"file":"memory-index.md","kind":"Markdown","line":51,"status":"BROKEN","target":"ref-poppie-endpoints.md"}
+{"file":"memory-index.md","kind":"Markdown","line":52,"status":"BROKEN","target":"ref-gmc-validation-apis.md"}
+{"file":"memory-index.md","kind":"Markdown","line":55,"status":"BROKEN","target":"reference-zsh-sourced-scripts.md"}
+{"file":"memory-index.md","kind":"Markdown","line":58,"status":"BROKEN","target":"ref-distill-graduation.md"}
+{"file":"memory-index.md","kind":"Markdown","line":61,"status":"BROKEN","target":"ref-github-copilot-reviewer.md"}
+{"file":"memory-index.md","kind":"Markdown","line":62,"status":"BROKEN","target":"ref-commerce-mcp-tools.md"}
+{"file":"memory-index.md","kind":"Markdown","line":63,"status":"BROKEN","target":"ref-agent-browser.md"}
+{"file":"memory-index.md","kind":"Markdown","line":64,"status":"BROKEN","target":"ref-shopping-buddy.md"}
+{"file":"memory-index.md","kind":"Markdown","line":65,"status":"BROKEN","target":"ref-claude-mem.md"}
+{"file":"memory-index.md","kind":"Markdown","line":66,"status":"BROKEN","target":"ref-fluffyjaws.md"}
+{"file":"memory-index.md","kind":"Markdown","line":67,"status":"BROKEN","target":"ref-serena-mcp.md"}
+{"file":"memory-index.md","kind":"Markdown","line":68,"status":"BROKEN","target":"ref-scout-setup.md"}
+{"file":"memory-index.md","kind":"Markdown","line":69,"status":"BROKEN","target":"ref-scout-vs-socraticode.md"}
+{"file":"memory-index.md","kind":"Markdown","line":70,"status":"BROKEN","target":"ref-mq-patterns.md"}
+{"file":"memory-index.md","kind":"Markdown","line":71,"status":"BROKEN","target":"reference-qmd-upgrade.md"}
+{"file":"memory-index.md","kind":"Markdown","line":74,"status":"BROKEN","target":"reference-load-testing-stg-na1.md"}
+{"file":"memory-index.md","kind":"Markdown","line":77,"status":"BROKEN","target":"project-infra-status.md"}
+{"file":"memory-index.md","kind":"Markdown","line":80,"status":"BROKEN","target":"domain-knowledge.md"}
+--- stderr
+
+64 links total, 57 broken
+
+$ mdd -f human links edge
+exit: 0
+--- stdout
+[plain.md:10] -> ../fixtures/simple.md (Markdown)
+[plain.md:10] -> ./nope.md (Markdown)
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 links total
+
+$ mdd -f agent links edge
+exit: 0
+--- stdout
+[plain.md:10] -> ../fixtures/simple.md (Markdown)
+[plain.md:10] -> ./nope.md (Markdown)
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 links total
+
+$ mdd -f json links edge
+exit: 0
+--- stdout
+{"file":"plain.md","kind":"Markdown","line":10,"status":"","target":"../fixtures/simple.md"}
+{"file":"plain.md","kind":"Markdown","line":10,"status":"","target":"./nope.md"}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 links total
+
+$ mdd -f human links nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f agent links nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f json links nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f human links --help
+exit: 0
+--- stdout
+Link graph extraction and validation
+
+Usage: mdd links [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File or directory path
+
+Options:
+      --check
+          Check all links for validity (resolve paths)
+
+      --broken
+          Show only broken links
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent links --help
+exit: 0
+--- stdout
+Link graph extraction and validation
+
+Usage: mdd links [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File or directory path
+
+Options:
+      --check
+          Check all links for validity (resolve paths)
+
+      --broken
+          Show only broken links
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json links --help
+exit: 0
+--- stdout
+Link graph extraction and validation
+
+Usage: mdd links [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File or directory path
+
+Options:
+      --check
+          Check all links for validity (resolve paths)
+
+      --broken
+          Show only broken links
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
