@@ -1,12 +1,13 @@
 use std::path::PathBuf;
 
+use super::Outcome;
 use crate::cli::{LinksArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::parse::Link;
 use crate::parse::markdown::parse_file;
 use crate::query;
 
-pub fn run(args: &LinksArgs, format: OutputFormat) -> Result<()> {
+pub fn run(args: &LinksArgs, format: OutputFormat) -> Result<Outcome> {
     let LinksArgs {
         path,
         check,
@@ -107,7 +108,10 @@ pub fn run(args: &LinksArgs, format: OutputFormat) -> Result<()> {
         eprintln!("\n{total} links total");
     }
 
-    Ok(())
+    if broken_count > 0 {
+        return Ok(Outcome::BrokenLinks);
+    }
+    Ok(Outcome::Found)
 }
 
 enum LinkStatus {

@@ -11,6 +11,7 @@ mod parse;
 mod query;
 
 use cli::{Cli, Command};
+use commands::Outcome;
 use error::MddError;
 
 fn main() -> ExitCode {
@@ -43,10 +44,15 @@ fn main() -> ExitCode {
     };
 
     match result {
-        Ok(()) => ExitCode::SUCCESS,
+        Ok(Outcome::Found) => ExitCode::SUCCESS,
+        Ok(Outcome::NothingFound(detail)) => {
+            eprintln!("mdd: no match: {detail}");
+            ExitCode::from(1)
+        }
+        Ok(Outcome::BrokenLinks) => ExitCode::from(1),
         Err(err) => {
             report(&err);
-            ExitCode::FAILURE
+            ExitCode::from(2)
         }
     }
 }

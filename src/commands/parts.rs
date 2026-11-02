@@ -1,9 +1,10 @@
+use super::Outcome;
 use crate::cli::{OutputFormat, PartsArgs};
 use crate::error::{MddError, Result};
 use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
 
-pub fn run(args: &PartsArgs, format: OutputFormat) -> Result<()> {
+pub fn run(args: &PartsArgs, format: OutputFormat) -> Result<Outcome> {
     let PartsArgs { path, filter } = args;
     if !path.exists() {
         return Err(MddError::FileNotFound { path: path.clone() });
@@ -12,8 +13,10 @@ pub fn run(args: &PartsArgs, format: OutputFormat) -> Result<()> {
     let md = parse_file(path)?;
 
     if md.entries.is_empty() {
-        eprintln!("No entries found in {}", path.display());
-        return Ok(());
+        return Ok(Outcome::NothingFound(format!(
+            "no entries found in {}",
+            path.display()
+        )));
     }
 
     // Parse filter: "key=value"
@@ -125,6 +128,12 @@ pub fn run(args: &PartsArgs, format: OutputFormat) -> Result<()> {
         }
     }
 
+    if shown == 0 {
+        return Ok(Outcome::NothingFound(format!(
+            "0 entries shown (of {} total)",
+            md.entries.len()
+        )));
+    }
     eprintln!("{} entries shown (of {} total)", shown, md.entries.len());
-    Ok(())
+    Ok(Outcome::Found)
 }

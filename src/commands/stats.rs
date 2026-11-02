@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use super::Outcome;
 use crate::cli::StatsArgs;
 use crate::error::{MddError, Result};
 use crate::output::fmt_size;
@@ -7,17 +8,22 @@ use crate::parse::frontmatter::field_as_string;
 use crate::query;
 
 #[allow(clippy::cast_possible_truncation, reason = "file sizes fit in usize")]
-pub fn run(args: &StatsArgs) -> Result<()> {
+pub fn run(args: &StatsArgs) -> Result<Outcome> {
     let dir = &args.dir;
-    if !dir.exists() || !dir.is_dir() {
+    if !dir.exists() {
         return Err(MddError::FileNotFound { path: dir.clone() });
+    }
+    if !dir.is_dir() {
+        return Err(MddError::NotADirectory { path: dir.clone() });
     }
 
     let parsed = query::walk_and_parse(dir);
 
     if parsed.is_empty() {
-        eprintln!("No markdown files found in {}", dir.display());
-        return Ok(());
+        return Ok(Outcome::NothingFound(format!(
+            "no Markdown files in {}",
+            dir.display()
+        )));
     }
 
     let mut total_lines = 0usize;
@@ -107,7 +113,7 @@ pub fn run(args: &StatsArgs) -> Result<()> {
     println!("Content: {with_tables} with tables, {with_code} with code, {with_lists} with lists");
     println!("Headings: avg {avg_sections:.1}/file, max depth {max_depth}");
 
-    Ok(())
+    Ok(Outcome::Found)
 }
 
 fn format_number(n: usize) -> String {

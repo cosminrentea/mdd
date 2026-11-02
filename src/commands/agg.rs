@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use std::time::SystemTime;
 
+use super::Outcome;
 use crate::cli::{AggArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::output::format_signature;
@@ -18,7 +19,7 @@ struct AggMatch {
     mtime: SystemTime,
 }
 
-pub fn run(args: &AggArgs, format: OutputFormat) -> Result<()> {
+pub fn run(args: &AggArgs, format: OutputFormat) -> Result<Outcome> {
     let dir = &args.dir;
     let budget = args.budget;
     if !dir.exists() {
@@ -63,8 +64,9 @@ pub fn run(args: &AggArgs, format: OutputFormat) -> Result<()> {
     }
 
     if matches.is_empty() {
-        eprintln!("No sections matched the given filters.");
-        return Ok(());
+        return Ok(Outcome::NothingFound(
+            "no sections matched the given filters".to_owned(),
+        ));
     }
 
     // Sort: freshest files first, then shorter sections first (more focused)
@@ -144,5 +146,5 @@ pub fn run(args: &AggArgs, format: OutputFormat) -> Result<()> {
 
     eprintln!("{emitted} sections emitted ({lines_used} lines)");
 
-    Ok(())
+    Ok(Outcome::Found)
 }

@@ -234,12 +234,12 @@ fn parser_handles_empty_file() {
     let file = dir.path().join("empty.md");
     std::fs::write(&file, "").unwrap();
 
-    // Empty file has no headings -> toc returns error (graceful, not panic)
+    // Empty file has no headings -> toc reports no match (graceful, not panic)
     Command::cargo_bin("mdd")
         .unwrap()
         .args(["-f", "json", "toc", file.to_str().unwrap()])
         .assert()
-        .failure()
+        .code(1)
         .stderr(predicate::str::contains("no headings"));
 }
 
@@ -249,12 +249,12 @@ fn parser_handles_only_frontmatter() {
     let file = dir.path().join("fm-only.md");
     std::fs::write(&file, "---\ntype: note\n---\n").unwrap();
 
-    // Frontmatter-only file has no headings -> toc returns error
+    // Frontmatter-only file has no headings -> toc reports no match
     Command::cargo_bin("mdd")
         .unwrap()
         .args(["-f", "json", "toc", file.to_str().unwrap()])
         .assert()
-        .failure()
+        .code(1)
         .stderr(predicate::str::contains("no headings"));
 }
 

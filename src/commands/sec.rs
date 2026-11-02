@@ -1,10 +1,11 @@
+use super::Outcome;
 use crate::cli::{OutputFormat, SecArgs};
 use crate::error::{MddError, Result};
 use crate::output::{self, SecMatch, SecOutput};
 use crate::parse::Section;
 use crate::parse::markdown::parse_file;
 
-pub fn run(args: &SecArgs, format: OutputFormat) -> Result<()> {
+pub fn run(args: &SecArgs, format: OutputFormat) -> Result<Outcome> {
     let SecArgs { path, patterns } = args;
     if !path.exists() {
         return Err(MddError::FileNotFound { path: path.clone() });
@@ -41,13 +42,14 @@ pub fn run(args: &SecArgs, format: OutputFormat) -> Result<()> {
     }
 
     if all_matches.is_empty() {
-        return Err(MddError::NoMatch {
-            pattern: patterns.join(", "),
-        });
+        return Ok(Outcome::NothingFound(format!(
+            "no matching sections for pattern: {}",
+            patterns.join(", ")
+        )));
     }
 
     if !unmatched.is_empty() {
-        eprintln!("warning: no match for: {}", unmatched.join(", "));
+        eprintln!("mdd: warning: no match for: {}", unmatched.join(", "));
     }
 
     output::render_sec(
@@ -58,7 +60,7 @@ pub fn run(args: &SecArgs, format: OutputFormat) -> Result<()> {
         },
     );
 
-    Ok(())
+    Ok(Outcome::Found)
 }
 
 pub(super) fn clean_pattern(pat: &str) -> String {
