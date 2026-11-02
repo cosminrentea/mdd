@@ -29,9 +29,7 @@ pub fn run(args: &SecArgs, format: OutputFormat) -> Result<()> {
             unmatched.push(pattern);
         } else {
             for section in matched {
-                let start = section.offset - 1;
-                let end = (start + section.limit).min(lines.len());
-                let section_content = lines[start..end].join("\n");
+                let section_content = section.slice(&lines);
                 all_matches.push(SecMatch {
                     title: section.title.clone(),
                     offset: section.offset,

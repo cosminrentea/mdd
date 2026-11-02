@@ -70,6 +70,17 @@ pub struct Section {
     pub features: ContentFeatures,
 }
 
+impl Section {
+    /// The section's lines joined with `\n`, taken from `lines` (the file's
+    /// `str::lines()`, split once by the caller): `limit` lines starting at the
+    /// 1-based `offset`, cut at the end of the file.
+    pub fn slice(&self, lines: &[&str]) -> String {
+        let start = self.offset - 1;
+        let end = (start + self.limit).min(lines.len());
+        lines[start..end].join("\n")
+    }
+}
+
 /// Summary of section content -- lets agents decide whether to drill in.
 #[derive(Debug, Clone, Default)]
 pub struct ContentFeatures {
@@ -90,4 +101,39 @@ pub struct Link {
     pub resolved_path: Option<PathBuf>,
     /// Line where the link appears (1-based).
     pub line: usize,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn section(offset: usize, limit: usize) -> Section {
+        Section {
+            level: 1,
+            title: String::new(),
+            offset,
+            limit,
+            features: ContentFeatures::default(),
+        }
+    }
+
+    #[test]
+    fn slice_takes_limit_lines_from_the_one_based_offset() {
+        let lines = ["# A", "a1", "## B", "b1", "b2"];
+        assert_eq!(section(1, 2).slice(&lines), "# A\na1");
+        assert_eq!(section(3, 1).slice(&lines), "## B");
+    }
+
+    #[test]
+    fn slice_of_the_last_section_ends_at_end_of_file() {
+        let lines = ["# A", "a1", "## B", "b1", "b2"];
+        assert_eq!(section(3, 3).slice(&lines), "## B\nb1\nb2");
+    }
+
+    #[test]
+    fn slice_with_limit_past_the_end_is_cut_at_end_of_file() {
+        let lines = ["# A", "a1"];
+        assert_eq!(section(1, 99).slice(&lines), "# A\na1");
+        assert_eq!(section(2, 99).slice(&lines), "a1");
+    }
 }

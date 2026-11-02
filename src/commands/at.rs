@@ -55,9 +55,7 @@ pub fn run(args: &AtArgs, format: OutputFormat) -> Result<()> {
 
     let lines_vec: Vec<&str> = md.source.lines().collect();
 
-    let start = target.offset - 1;
-    let end = (start + target.limit).min(lines_vec.len());
-    let section_content = lines_vec[start..end].join("\n");
+    let section_content = target.slice(&lines_vec);
 
     output::render_at(
         format,
