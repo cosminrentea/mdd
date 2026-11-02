@@ -1,3 +1,4 @@
+use super::sec::clean_pattern;
 use crate::cli::{OutputFormat, TocArgs};
 use crate::error::{MddError, Result};
 use crate::output::{self, TocDirEntry, TocDirOutput, TocFileOutput};
@@ -24,7 +25,7 @@ fn run_file(path: &std::path::Path, pattern: Option<&str>, format: OutputFormat)
     }
 
     let filtered: Vec<&Section> = if let Some(pat) = pattern {
-        let pat_lower = clean_toc_pattern(pat).to_lowercase();
+        let pat_lower = clean_pattern(pat).to_lowercase();
         let matches: Vec<&Section> = all_sections
             .into_iter()
             .filter(|s| s.title.to_lowercase().contains(&pat_lower))
@@ -62,7 +63,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -
 
     let files = walk_md_files(dir);
 
-    let pat_lower = pattern.map(|p| clean_toc_pattern(p).to_lowercase());
+    let pat_lower = pattern.map(|p| clean_pattern(p).to_lowercase());
     let mut dir_entries: Vec<TocDirEntry> = Vec::new();
 
     for file_path in &files {
@@ -129,15 +130,4 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -
     );
 
     Ok(())
-}
-
-fn clean_toc_pattern(pat: &str) -> String {
-    let mut s = pat.trim().to_owned();
-    if let Some(stripped) = s.strip_prefix("- ") {
-        s = stripped.to_owned();
-    }
-    if let Some(idx) = s.rfind(" (offset=") {
-        s.truncate(idx);
-    }
-    s
 }

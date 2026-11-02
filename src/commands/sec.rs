@@ -61,7 +61,7 @@ pub fn run(args: &SecArgs, format: OutputFormat) -> Result<()> {
     Ok(())
 }
 
-fn clean_pattern(pat: &str) -> String {
+pub(super) fn clean_pattern(pat: &str) -> String {
     let mut s = pat.trim().to_owned();
     if let Some(stripped) = s.strip_prefix("- ") {
         s = stripped.to_owned();
