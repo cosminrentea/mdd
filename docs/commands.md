@@ -24,19 +24,19 @@ Updated: 2026-10-31
 
 ## Query a directory
 
-Updated: 2026-10-31
+Updated: 2026-11-02
 
 - `mdd find <dir> [filters]` finds matching sections. Combine `-t, --type <value>`, `--topic <value>`, `-H, --heading <pattern>`, `--has-table`, `--has-code <language>`, and `--newer-than <YYYY-MM-DD>`. Filters combine with AND. Type matches exactly, topic and heading match substrings, all case-insensitively. The date uses the file's modification time, compared inclusively at UTC midnight. An invalid date is a usage error (exit code 2).
 - `mdd agg <dir> [-H <pattern>] [-t <type>] [--topic <topic>] [--budget <lines>]` prints matching sections, newest files first, then shorter sections first. The default budget is 500 content lines. The first matching section is emitted even if it exceeds the budget; subsequent sections stop at the first one that would exceed it.
 - `mdd map <dir>` summarizes recent files, directory structure, topics, and content features. Recent means modified in the last three days.
 - `mdd stats <dir>` reports file and line counts, frontmatter coverage, types, content features, and heading depth.
 
-These directory commands and directory `toc` use ignore-aware traversal, follow symlinks, and exclude files named `README.md`, `AGENTS.md`, `CLAUDE.md`, and `CLAUDE.local.md`. Target a README directly with `toc` or `sec` when needed.
+These directory commands, directory `toc`, and directory `fm` use ignore-aware traversal, follow symlinks, and exclude files named `README.md`, `AGENTS.md`, `CLAUDE.md`, and `CLAUDE.local.md`. Target a README directly with `toc` or `sec` when needed.
 
 ## Links and frontmatter
 
-Updated: 2026-11-01
+Updated: 2026-11-02
 
 - `mdd links <path> [--check | --broken]` lists Markdown links. `--check` tests whether local target paths exist; `--broken` implies checking and prints only broken local targets. HTTP, HTTPS, and mail links are labeled external, not fetched. Anchor fragments are not validated, and broken targets do not make the command fail. Directory scans use the exclusions above.
 - `mdd parts <file> [--filter key=value]` lists entries in a multi-frontmatter document. The filter compares the selected frontmatter value case-insensitively.
-- `mdd fm <path>` prints frontmatter fields for a file or coverage for a directory. `--list-values <field>` lists unique values. `--set key=value` previews an edit to a single file; add `--apply` to write it. Only the frontmatter blocks are rewritten, line endings are preserved, and a directory path is an error (exit code 1). Directory `fm` scans do not use the filename exclusions above.
+- `mdd fm <path>` prints frontmatter fields for a file or coverage for a directory. `--list-values <field>` lists unique values. `--set key=value` previews an edit to a single file; add `--apply` to write it. Only the frontmatter blocks are rewritten, line endings are preserved, and a directory path is an error (exit code 1). Directory `fm` scans use the same filename exclusions as the other directory commands.

@@ -9,6 +9,7 @@ use crate::error::{MddError, Result};
 use crate::parse::MdFile;
 use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
+use crate::query::walk_md_files;
 
 pub fn run(args: &MapArgs) -> Result<()> {
     let path = &args.path;
@@ -16,22 +17,7 @@ pub fn run(args: &MapArgs) -> Result<()> {
         return Err(MddError::FileNotFound { path: path.clone() });
     }
 
-    let walker = ignore::WalkBuilder::new(path).follow_links(true).build();
-
-    let mut files: Vec<PathBuf> = walker
-        .filter_map(std::result::Result::ok)
-        .filter(|e| e.path().extension().is_some_and(|ext| ext == "md"))
-        .filter(|e| {
-            let name = e.file_name().to_string_lossy();
-            !matches!(
-                name.as_ref(),
-                "AGENTS.md" | "CLAUDE.local.md" | "CLAUDE.md" | "README.md"
-            )
-        })
-        .map(ignore::DirEntry::into_path)
-        .collect();
-
-    files.sort();
+    let files = walk_md_files(path);
 
     let now = SystemTime::now();
     let three_days_ago = now - Duration::from_secs(3 * 24 * 3600);

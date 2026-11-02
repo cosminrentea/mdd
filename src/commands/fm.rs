@@ -1,10 +1,10 @@
 use std::collections::BTreeSet;
-use std::path::PathBuf;
 
 use crate::cli::FmArgs;
 use crate::error::{MddError, Result};
 use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
+use crate::query::walk_md_files;
 
 pub fn run(args: &FmArgs) -> Result<()> {
     let FmArgs {
@@ -34,13 +34,7 @@ fn list_field_values(path: &std::path::Path, field: &str) -> Result<()> {
     if path.is_file() {
         collect_field_values(path, field, &mut values)?;
     } else {
-        let walker = ignore::WalkBuilder::new(path).follow_links(true).build();
-        let mut files: Vec<PathBuf> = walker
-            .filter_map(std::result::Result::ok)
-            .filter(|e| e.path().extension().is_some_and(|ext| ext == "md"))
-            .map(ignore::DirEntry::into_path)
-            .collect();
-        files.sort();
+        let files = walk_md_files(path);
 
         for file_path in &files {
             let _ = collect_field_values(file_path, field, &mut values);
@@ -86,13 +80,7 @@ fn show_frontmatter(path: &std::path::Path) -> Result<()> {
             }
         }
     } else {
-        let walker = ignore::WalkBuilder::new(path).follow_links(true).build();
-        let mut files: Vec<PathBuf> = walker
-            .filter_map(std::result::Result::ok)
-            .filter(|e| e.path().extension().is_some_and(|ext| ext == "md"))
-            .map(ignore::DirEntry::into_path)
-            .collect();
-        files.sort();
+        let files = walk_md_files(path);
 
         let mut count = 0;
         let mut with_fm = 0;
