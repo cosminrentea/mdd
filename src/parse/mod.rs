@@ -21,7 +21,7 @@ pub struct MdFile {
     pub path: PathBuf,
     /// Each logical entry: single-part files have one entry; multi-part (lrn) have many.
     pub entries: Vec<DocEntry>,
-    /// All links found in the document.
+    /// Inline, reference, collapsed and shortcut links in the body, in document order.
     pub links: Vec<Link>,
     pub total_lines: usize,
     pub byte_size: u64,
