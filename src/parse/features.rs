@@ -4,7 +4,7 @@
 // This is a "builder" pattern: create a mutable FeatureAccumulator, feed it
 // events, then finalize into an immutable ContentFeatures.
 
-use pulldown_cmark::{CodeBlockKind, Event, Tag, TagEnd};
+use pulldown_cmark::{CodeBlockKind, Event, Tag};
 
 use super::ContentFeatures;
 
@@ -21,8 +21,6 @@ pub struct FeatureAccumulator {
     pub list_item_count: u16,
     pub link_count: u16,
     pub word_count: u32,
-    // Internal tracking state
-    in_list: bool,
 }
 
 impl FeatureAccumulator {
@@ -58,12 +56,8 @@ impl FeatureAccumulator {
             // Lists
             Event::Start(Tag::List(_)) => {
                 self.has_list = true;
-                self.in_list = true;
             }
-            Event::End(TagEnd::List(_)) => {
-                self.in_list = false;
-            }
-            Event::Start(Tag::Item) if self.in_list => {
+            Event::Start(Tag::Item) => {
                 self.list_item_count = self.list_item_count.saturating_add(1);
             }
 
@@ -177,6 +171,21 @@ mod tests {
         let f = features_from(md);
         assert!(f.has_list);
         assert_eq!(f.list_item_count, 3);
+    }
+
+    #[test]
+    fn items_after_a_nested_list_are_counted() {
+        let md = "- a\n  - b\n  - c\n- d\n";
+        let f = features_from(md);
+        assert!(f.has_list);
+        assert_eq!(f.list_item_count, 4);
+    }
+
+    #[test]
+    fn ordered_list_with_two_nesting_levels_counts_every_item() {
+        let md = "1. a\n   1. b\n      1. c\n   2. d\n2. e\n3. f\n";
+        let f = features_from(md);
+        assert_eq!(f.list_item_count, 6);
     }
 
     #[test]
