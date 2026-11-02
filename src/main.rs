@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::process::ExitCode;
 
 use clap::Parser;
@@ -10,6 +11,7 @@ mod parse;
 mod query;
 
 use cli::{Cli, Command};
+use error::MddError;
 
 fn main() -> ExitCode {
     #[cfg(unix)]
@@ -43,8 +45,18 @@ fn main() -> ExitCode {
     match result {
         Ok(()) => ExitCode::SUCCESS,
         Err(err) => {
-            eprintln!("{:?}", miette::Report::new(err));
+            report(&err);
             ExitCode::FAILURE
         }
+    }
+}
+
+/// Prints `mdd: error[<code>]: <message>` and one `  caused by: <source>` line per source.
+fn report(err: &MddError) {
+    eprintln!("mdd: error[{}]: {err}", err.code());
+    let mut source = err.source();
+    while let Some(cause) = source {
+        eprintln!("  caused by: {cause}");
+        source = cause.source();
     }
 }

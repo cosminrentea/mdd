@@ -31,12 +31,12 @@ pub fn parse_file(path: &Path) -> Result<MdFile> {
         });
     }
 
-    let content = fs::read_to_string(path).map_err(|e| MddError::IoError {
+    let content = fs::read_to_string(path).map_err(|e| MddError::Io {
         path: path.to_owned(),
         source: e,
     })?;
 
-    let metadata = fs::metadata(path).map_err(|e| MddError::IoError {
+    let metadata = fs::metadata(path).map_err(|e| MddError::Io {
         path: path.to_owned(),
         source: e,
     })?;
