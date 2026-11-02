@@ -4,6 +4,7 @@ use std::fmt::Write;
 use std::path::PathBuf;
 use std::time::{Duration, SystemTime};
 
+use super::Outcome;
 use crate::cli::MapArgs;
 use crate::error::{MddError, Result};
 use crate::parse::MdFile;
@@ -11,10 +12,13 @@ use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
 use crate::query::walk_md_files;
 
-pub fn run(args: &MapArgs) -> Result<()> {
+pub fn run(args: &MapArgs) -> Result<Outcome> {
     let path = &args.path;
-    if !path.exists() || !path.is_dir() {
+    if !path.exists() {
         return Err(MddError::FileNotFound { path: path.clone() });
+    }
+    if !path.is_dir() {
+        return Err(MddError::NotADirectory { path: path.clone() });
     }
 
     let files = walk_md_files(path);
@@ -182,7 +186,13 @@ pub fn run(args: &MapArgs) -> Result<()> {
         total_with_code
     );
 
-    Ok(())
+    if files.is_empty() {
+        return Ok(Outcome::NothingFound(format!(
+            "no Markdown files in {}",
+            path.display()
+        )));
+    }
+    Ok(Outcome::Found)
 }
 
 #[derive(Default)]

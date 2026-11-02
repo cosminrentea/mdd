@@ -1,12 +1,13 @@
 use std::collections::BTreeSet;
 
+use super::Outcome;
 use crate::cli::FmArgs;
 use crate::error::{MddError, Result};
 use crate::parse::frontmatter::field_as_string;
 use crate::parse::markdown::parse_file;
 use crate::query::walk_md_files;
 
-pub fn run(args: &FmArgs) -> Result<()> {
+pub fn run(args: &FmArgs) -> Result<Outcome> {
     let FmArgs { path, list_values } = args;
     if !path.exists() {
         return Err(MddError::FileNotFound { path: path.clone() });
@@ -19,7 +20,7 @@ pub fn run(args: &FmArgs) -> Result<()> {
     show_frontmatter(path)
 }
 
-fn list_field_values(path: &std::path::Path, field: &str) -> Result<()> {
+fn list_field_values(path: &std::path::Path, field: &str) -> Result<Outcome> {
     let mut values = BTreeSet::new();
 
     if path.is_file() {
@@ -33,15 +34,16 @@ fn list_field_values(path: &std::path::Path, field: &str) -> Result<()> {
     }
 
     if values.is_empty() {
-        eprintln!("No values found for field '{field}'");
-    } else {
-        for val in &values {
-            println!("{val}");
-        }
-        eprintln!("\n{} unique values", values.len());
+        return Ok(Outcome::NothingFound(format!(
+            "no values found for field '{field}'"
+        )));
     }
+    for val in &values {
+        println!("{val}");
+    }
+    eprintln!("\n{} unique values", values.len());
 
-    Ok(())
+    Ok(Outcome::Found)
 }
 
 fn collect_field_values(
@@ -60,15 +62,23 @@ fn collect_field_values(
     Ok(())
 }
 
-fn show_frontmatter(path: &std::path::Path) -> Result<()> {
+fn show_frontmatter(path: &std::path::Path) -> Result<Outcome> {
     if path.is_file() {
         let md = parse_file(path)?;
+        let mut printed = 0usize;
         for entry in &md.entries {
             if let Some(ref fm) = entry.frontmatter {
                 for (key, val) in &fm.fields {
                     println!("{}: {}", key, format_yaml_value(val));
+                    printed += 1;
                 }
             }
+        }
+        if printed == 0 {
+            return Ok(Outcome::NothingFound(format!(
+                "no frontmatter in {}",
+                path.display()
+            )));
         }
     } else {
         let files = walk_md_files(path);
@@ -95,8 +105,14 @@ fn show_frontmatter(path: &std::path::Path) -> Result<()> {
                 0.0
             }
         );
+        if files.is_empty() {
+            return Ok(Outcome::NothingFound(format!(
+                "no Markdown files in {}",
+                path.display()
+            )));
+        }
     }
-    Ok(())
+    Ok(Outcome::Found)
 }
 
 fn format_yaml_value(val: &serde_norway::Value) -> String {

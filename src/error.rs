@@ -20,11 +20,8 @@ pub enum MddError {
     #[error("line {line} is out of range (file has {total_lines} lines)")]
     LineOutOfRange { line: usize, total_lines: usize },
 
-    #[error("no headings found in {path}")]
-    NoHeadings { path: PathBuf },
-
-    #[error("no matching sections for pattern: {pattern}")]
-    NoMatch { pattern: String },
+    #[error("not a directory: {path}")]
+    NotADirectory { path: PathBuf },
 }
 
 impl MddError {
@@ -34,8 +31,7 @@ impl MddError {
             Self::FileNotFound { .. } => "file_not_found",
             Self::Io { .. } => "io",
             Self::LineOutOfRange { .. } => "line_out_of_range",
-            Self::NoHeadings { .. } => "no_headings",
-            Self::NoMatch { .. } => "no_match",
+            Self::NotADirectory { .. } => "not_a_directory",
         }
     }
 }
@@ -71,13 +67,7 @@ mod tests {
                 },
                 "line_out_of_range",
             ),
-            (MddError::NoHeadings { path }, "no_headings"),
-            (
-                MddError::NoMatch {
-                    pattern: "x".to_owned(),
-                },
-                "no_match",
-            ),
+            (MddError::NotADirectory { path }, "not_a_directory"),
         ];
         for (err, code) in cases {
             assert_eq!(err.code(), code);

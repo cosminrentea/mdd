@@ -1,5 +1,6 @@
 use chrono::{DateTime, NaiveTime, Utc};
 
+use super::Outcome;
 use crate::cli::{FindArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::output::{fmt_size, format_signature};
@@ -8,7 +9,7 @@ use crate::query;
 use crate::query::filter::Filter;
 
 #[allow(clippy::cast_possible_truncation, reason = "file sizes fit in usize")]
-pub fn run(args: &FindArgs, format: OutputFormat) -> Result<()> {
+pub fn run(args: &FindArgs, format: OutputFormat) -> Result<Outcome> {
     let dir = &args.dir;
     if !dir.exists() {
         return Err(MddError::FileNotFound { path: dir.clone() });
@@ -106,12 +107,13 @@ pub fn run(args: &FindArgs, format: OutputFormat) -> Result<()> {
     }
 
     if match_count == 0 {
-        eprintln!("No files matched the given filters.");
-    } else {
-        eprintln!("\n{match_count} files matched");
+        return Ok(Outcome::NothingFound(
+            "no files matched the given filters".to_owned(),
+        ));
     }
+    eprintln!("\n{match_count} files matched");
 
-    Ok(())
+    Ok(Outcome::Found)
 }
 
 fn find_matching_sections<'a>(md: &'a crate::parse::MdFile, filter: &Filter) -> Vec<&'a Section> {

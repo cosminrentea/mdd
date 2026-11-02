@@ -1,10 +1,11 @@
+use super::Outcome;
 use crate::cli::{AtArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::output::{self, AtOutput};
 use crate::parse::Section;
 use crate::parse::markdown::parse_file;
 
-pub fn run(args: &AtArgs, format: OutputFormat) -> Result<()> {
+pub fn run(args: &AtArgs, format: OutputFormat) -> Result<Outcome> {
     let AtArgs { path, line, level } = args;
     let (line, level) = (*line, *level);
     if !path.exists() {
@@ -32,8 +33,9 @@ pub fn run(args: &AtArgs, format: OutputFormat) -> Result<()> {
         .collect();
 
     let Some(&last) = containing.last() else {
-        eprintln!("Line {line} is before any heading");
-        return Ok(());
+        return Ok(Outcome::NothingFound(format!(
+            "line {line} is before any heading"
+        )));
     };
 
     let mut target = last;
@@ -67,5 +69,5 @@ pub fn run(args: &AtArgs, format: OutputFormat) -> Result<()> {
         },
     );
 
-    Ok(())
+    Ok(Outcome::Found)
 }

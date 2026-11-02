@@ -1,3 +1,4 @@
+use super::Outcome;
 use super::sec::clean_pattern;
 use crate::cli::{OutputFormat, TocArgs};
 use crate::error::{MddError, Result};
@@ -6,7 +7,7 @@ use crate::parse::Section;
 use crate::parse::markdown::{parse_content, parse_file};
 use crate::query::walk_md_files;
 
-pub fn run(args: &TocArgs, format: OutputFormat) -> Result<()> {
+pub fn run(args: &TocArgs, format: OutputFormat) -> Result<Outcome> {
     if args.path.is_dir() {
         run_dir(&args.path, args.pattern.as_deref(), format)
     } else {
@@ -14,14 +15,19 @@ pub fn run(args: &TocArgs, format: OutputFormat) -> Result<()> {
     }
 }
 
-fn run_file(path: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -> Result<()> {
+fn run_file(
+    path: &std::path::Path,
+    pattern: Option<&str>,
+    format: OutputFormat,
+) -> Result<Outcome> {
     let md = parse_file(path)?;
     let all_sections: Vec<&Section> = md.entries.iter().flat_map(|e| &e.sections).collect();
 
     if all_sections.is_empty() {
-        return Err(MddError::NoHeadings {
-            path: path.to_owned(),
-        });
+        return Ok(Outcome::NothingFound(format!(
+            "no headings found in {}",
+            path.display()
+        )));
     }
 
     let filtered: Vec<&Section> = if let Some(pat) = pattern {
@@ -31,9 +37,7 @@ fn run_file(path: &std::path::Path, pattern: Option<&str>, format: OutputFormat)
             .filter(|s| s.title.to_lowercase().contains(&pat_lower))
             .collect();
         if matches.is_empty() {
-            return Err(MddError::NoMatch {
-                pattern: pat.to_owned(),
-            });
+            return Ok(no_matching_sections(pat));
         }
         matches
     } else {
@@ -51,10 +55,14 @@ fn run_file(path: &std::path::Path, pattern: Option<&str>, format: OutputFormat)
         },
     );
 
-    Ok(())
+    Ok(Outcome::Found)
 }
 
-fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -> Result<()> {
+fn no_matching_sections(pattern: &str) -> Outcome {
+    Outcome::NothingFound(format!("no matching sections for pattern: {pattern}"))
+}
+
+fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -> Result<Outcome> {
     if !dir.exists() {
         return Err(MddError::FileNotFound {
             path: dir.to_owned(),
@@ -116,9 +124,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -
     if total_files == 0
         && let Some(pat) = pattern
     {
-        return Err(MddError::NoMatch {
-            pattern: pat.to_owned(),
-        });
+        return Ok(no_matching_sections(pat));
     }
 
     output::render_toc_dir(
@@ -129,5 +135,11 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -
         },
     );
 
-    Ok(())
+    if files.is_empty() {
+        return Ok(Outcome::NothingFound(format!(
+            "no Markdown files in {}",
+            dir.display()
+        )));
+    }
+    Ok(Outcome::Found)
 }

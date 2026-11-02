@@ -1,26 +1,32 @@
 # Command reference
 
-Updated: 2026-10-31
+Updated: 2026-11-02
 
 Run `mdd --help` or `mdd <command> --help` for the installed version's options. This reference describes the repository's 0.2.1 source.
 
 ## Global options and output
 
-Updated: 2026-11-01
+Updated: 2026-11-02
 
 - `-f, --format human|agent|json` selects an output format. Without it, `mdd` selects `human` for a terminal and `agent` otherwise.
 - `-h, --help` and `-V, --version` print help and version information.
 - `--strict` is accepted, but the current implementation does not use it to change error handling. Directory walkers can silently skip unreadable files.
 
+### Exit codes and errors
+
+Updated: 2026-11-02
+
+Exit codes follow `grep`: `0` means something was found or the report succeeded, `1` means nothing was found, and `2` means an error (usage errors from the argument parser also exit 2). When nothing is found, stderr holds exactly one line, `mdd: no match: <detail>`, and stdout is empty (except `map`, `fm <dir>` and `toc <dir>` on a directory without Markdown files, which still print their empty report). `links --check` and `links --broken` also exit 1 when at least one local target is broken; their totals line is unchanged and no extra line is printed. Errors print `mdd: error[<code>]: <message>` plus one `  caused by: <source>` line per underlying error, without colors or blank lines. Codes: `file_not_found`, `io`, `line_out_of_range`, `not_a_directory`. A missing path is `file_not_found`; a path that cannot be read, such as a directory given to `sec`, is `io`; `map` and `stats` given a file are `not_a_directory`.
+
 For supported commands, agent output can contain `[file:offset,limit]`: `offset` is a 1-based line number and `limit` is a line count. Signatures can include table, code, list, word, and link counts. JSON shape varies by command: `find`, `parts`, and `links` emit one JSON object per line, while `agg` emits an array. `map`, `fm`, and `stats` do not honor `--format`.
 
 ## Outline and extract
 
-Updated: 2026-10-31
+Updated: 2026-11-02
 
-- `mdd toc <path> [pattern]` outlines a file or indexes a directory. The optional pattern matches headings case-insensitively; for directories it also matches relative paths. A file with no headings or no matching headings produces an error.
-- `mdd sec <file> <pattern>...` prints all sections whose headings contain each pattern, case-insensitively. A parent section includes nested sections. Multiple patterns can produce duplicate content. An unmatched pattern warns if others match; no matches is an error. Despite the help text, directory input is not supported by this implementation.
-- `mdd at <file> <line> [level]` prints the innermost section containing a 1-based line. `level` climbs to enclosing headings, capped at the outermost heading. A line before the first heading prints a message rather than a section.
+- `mdd toc <path> [pattern]` outlines a file or indexes a directory. The optional pattern matches headings case-insensitively; for directories it also matches relative paths. A file with no headings, or no matching headings, exits 1 (nothing found).
+- `mdd sec <file> <pattern>...` prints all sections whose headings contain each pattern, case-insensitively. A parent section includes nested sections. Multiple patterns can produce duplicate content. An unmatched pattern warns if others match; no matches exits 1. Despite the help text, directory input is not supported by this implementation.
+- `mdd at <file> <line> [level]` prints the innermost section containing a 1-based line. `level` climbs to enclosing headings, capped at the outermost heading. A line before the first heading exits 1 (nothing found); a line past the end of the file is an error.
 
 ## Query a directory
 
@@ -37,6 +43,6 @@ These directory commands, directory `toc`, and directory `fm` use ignore-aware t
 
 Updated: 2026-11-02
 
-- `mdd links <path> [--check | --broken]` lists the inline, reference, collapsed, and shortcut links in a file's Markdown body, with the destination alone as the target (no title or angle brackets). Images, autolinks (`<https://...>`), and links inside code or frontmatter are not reported (see issue #11). `--check` tests whether local target paths exist; `--broken` implies checking and prints only broken local targets. HTTP, HTTPS, and mail links are labeled external, not fetched. Anchor fragments are not validated, and broken targets do not make the command fail. Directory scans use the exclusions above.
+- `mdd links <path> [--check | --broken]` lists the inline, reference, collapsed, and shortcut links in a file's Markdown body, with the destination alone as the target (no title or angle brackets). Images, autolinks (`<https://...>`), and links inside code or frontmatter are not reported (see issue #11). `--check` tests whether local target paths exist; `--broken` implies checking and prints only broken local targets. HTTP, HTTPS, and mail links are labeled external, not fetched. Anchor fragments are not validated, and plain `links` exits 0 even when targets are broken, while `--check` and `--broken` exit 1 when at least one local target is broken. Directory scans use the exclusions above.
 - `mdd parts <file> [--filter key=value]` lists entries in a multi-frontmatter document. The filter compares the selected frontmatter value case-insensitively.
 - `mdd fm <path>` prints frontmatter fields for a file or coverage for a directory. `--list-values <field>` lists unique values. `mdd` is read-only and never writes files. Directory `fm` scans use the same filename exclusions as the other directory commands.

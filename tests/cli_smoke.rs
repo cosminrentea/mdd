@@ -97,7 +97,7 @@ fn sec_no_match_fails() {
         .unwrap()
         .args(["sec", "tests/fixtures/simple.md", "NONEXISTENT"])
         .assert()
-        .failure();
+        .code(1);
 }
 
 #[test]
@@ -230,8 +230,8 @@ fn agg_empty_no_match() {
         .unwrap()
         .args(["agg", "tests/fixtures/", "-H", "NONEXISTENT_HEADING_XYZ"])
         .assert()
-        .success()
-        .stderr(predicate::str::contains("No sections matched"));
+        .code(1)
+        .stderr(predicate::str::contains("no sections matched"));
 }
 
 // ─── links tests ─────────────────────────────────────────────────────────────
@@ -252,7 +252,7 @@ fn links_check_finds_broken() {
         .unwrap()
         .args(["links", "tests/fixtures/links-test.md", "--broken"])
         .assert()
-        .success()
+        .code(1)
         .stdout(predicate::str::contains("BROKEN"));
 }
 
@@ -262,7 +262,7 @@ fn links_skips_pure_anchors() {
         .unwrap()
         .args(["links", "tests/fixtures/links-test.md", "--check"])
         .assert()
-        .success()
+        .code(1)
         .stdout(predicate::str::contains("#standard-links").not());
 }
 
@@ -506,7 +506,7 @@ fn find_nonexistent_dir_fails() {
         .unwrap()
         .args(["find", "tests/fixtures/nonexistent-dir/"])
         .assert()
-        .failure();
+        .code(2);
 }
 
 // ─── map: realistic fixtures ──────────────────────────────────────────
@@ -611,7 +611,7 @@ fn links_resolves_relative_paths() {
         .unwrap()
         .args(["links", "tests/fixtures/cross-refs.md", "--check"])
         .assert()
-        .success()
+        .code(1)
         .stdout(predicate::str::contains("./service-doc.md (Markdown, OK)"))
         .stdout(predicate::str::contains(
             "./feedback-entry.md (Markdown, OK)",
@@ -627,7 +627,7 @@ fn links_external_not_checked() {
         .unwrap()
         .args(["links", "tests/fixtures/cross-refs.md", "--check"])
         .assert()
-        .success()
+        .code(1)
         .stdout(predicate::str::contains("https://wiki.example.com"))
         .stdout(predicate::str::contains("External"));
 }
@@ -638,7 +638,7 @@ fn links_broken_only_shows_broken() {
         .unwrap()
         .args(["links", "tests/fixtures/cross-refs.md", "--broken"])
         .assert()
-        .success()
+        .code(1)
         .stdout(predicate::str::contains("BROKEN"))
         // Verify no OK or External lines (check for ", OK)" and ", External)" to avoid
         // matching "BROKEN" which contains "OK" as substring)
@@ -652,7 +652,7 @@ fn links_directory_mode() {
         .unwrap()
         .args(["links", "tests/fixtures/", "--check"])
         .assert()
-        .success()
+        .code(1)
         .stderr(predicate::str::contains("links total"));
 }
 
@@ -744,7 +744,7 @@ fn parts_no_filter_match() {
             "type=nonexistent",
         ])
         .assert()
-        .success()
+        .code(1)
         .stderr(predicate::str::contains("0 entries shown"));
 }
 
@@ -790,7 +790,7 @@ fn stats_nonexistent_dir_fails() {
         .unwrap()
         .args(["stats", "tests/fixtures/nonexistent-dir/"])
         .assert()
-        .failure();
+        .code(2);
 }
 
 // ─── edge cases ─────────────────────────────────────────────────────────────
@@ -847,7 +847,7 @@ fn sec_multi_pattern_partial_miss() {
         .success()
         .stdout(predicate::str::contains("### Queue Bindings"))
         .stderr(predicate::str::contains(
-            "warning: no match for: NONEXISTENT_HEADING_XYZ",
+            "mdd: warning: no match for: NONEXISTENT_HEADING_XYZ",
         ));
 }
 
@@ -862,7 +862,7 @@ fn sec_multi_pattern_all_miss() {
             "NOPE_TWO",
         ])
         .assert()
-        .failure();
+        .code(1);
 }
 
 #[test]
