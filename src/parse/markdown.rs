@@ -9,11 +9,14 @@ use std::fs;
 use std::path::Path;
 use std::time::SystemTime;
 
-use pulldown_cmark::{Event, HeadingLevel, MetadataBlockKind, Options, Parser, Tag, TagEnd};
+use pulldown_cmark::{
+    Event, HeadingLevel, LinkType, MetadataBlockKind, Options, Parser, Tag, TagEnd,
+};
 
 use super::features::FeatureAccumulator;
 use super::frontmatter::parse_frontmatter;
-use super::{ContentFeatures, DocEntry, Frontmatter, MdFile, Section};
+use super::links::make_link;
+use super::{ContentFeatures, DocEntry, Frontmatter, Link, MdFile, Section};
 use crate::error::{MddError, Result};
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -42,14 +45,12 @@ pub fn parse_file(path: &Path) -> Result<MdFile> {
 
     let byte_size = metadata.len();
 
-    let mut md_file = parse_owned(content);
+    // Links resolve against the file's own directory.
+    let file_dir = path.parent().unwrap_or(Path::new("."));
+    let mut md_file = parse_owned(content, file_dir);
     path.clone_into(&mut md_file.path);
     md_file.byte_size = byte_size;
     md_file.mtime = mtime;
-
-    // Re-extract links with the actual file directory for proper path resolution
-    let file_dir = path.parent().unwrap_or(Path::new("."));
-    md_file.links = super::links::extract_links(&md_file.source, file_dir);
 
     Ok(md_file)
 }
@@ -62,16 +63,17 @@ pub fn parse_file(path: &Path) -> Result<MdFile> {
 /// 3. Detects entry boundaries (`MetadataBlock` events)
 /// 4. Tracks headings and their hierarchical relationships
 /// 5. Accumulates `ContentFeatures` per section
+/// 6. Collects the links (resolved against an empty directory)
 ///
 /// Returns an `MdFile` with path set to an empty `PathBuf` (caller fills it in)
 /// and `source` set to a copy of `content`.
 pub fn parse_content(content: &str) -> MdFile {
-    parse_owned(content.to_owned())
+    parse_owned(content.to_owned(), Path::new(""))
 }
 
 /// `parse_content` for a caller that already owns the text: it is moved into
-/// `MdFile::source` instead of being copied.
-fn parse_owned(source: String) -> MdFile {
+/// `MdFile::source` instead of being copied. Link targets are resolved against `file_dir`.
+fn parse_owned(source: String, file_dir: &Path) -> MdFile {
     let content = source.as_str();
     // Pre-compute a table mapping line numbers to byte offsets.
     // Index 0 = byte offset of line 1's start (always 0).
@@ -124,7 +126,22 @@ fn parse_owned(source: String) -> MdFile {
     // Feature accumulation for the current section
     let mut current_features = FeatureAccumulator::new();
 
+    let mut links: Vec<Link> = Vec::new();
+
     for (event, range) in offset_iter {
+        // Links are recorded before the state machine so that no state (heading,
+        // metadata) can hide one. Images and autolinks are other event kinds.
+        if let Event::Start(Tag::Link {
+            link_type:
+                LinkType::Inline | LinkType::Reference | LinkType::Collapsed | LinkType::Shortcut,
+            ref dest_url,
+            ..
+        }) = event
+        {
+            let line = byte_to_line(&line_starts, range.start);
+            links.extend(make_link(dest_url, line, file_dir));
+        }
+
         match event {
             // ─── MetadataBlock (entry boundary) ───────────────────────────
             Event::Start(Tag::MetadataBlock(MetadataBlockKind::YamlStyle)) => {
@@ -233,7 +250,7 @@ fn parse_owned(source: String) -> MdFile {
     MdFile {
         path: std::path::PathBuf::new(),
         entries,
-        links: super::links::extract_links(content, std::path::Path::new("")),
+        links,
         total_lines,
         byte_size: content.len() as u64,
         mtime: SystemTime::UNIX_EPOCH,
