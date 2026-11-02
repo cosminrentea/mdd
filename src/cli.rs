@@ -53,7 +53,7 @@ pub enum Command {
     /// Cross-file structural query with composable filters.
     Find(FindArgs),
 
-    /// Frontmatter inspection and modification.
+    /// Frontmatter inspection (read-only).
     Fm(FmArgs),
 
     /// Link graph extraction and validation.
