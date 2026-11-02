@@ -1,3 +1,5 @@
+use std::process::ExitCode;
+
 use clap::Parser;
 
 mod cli;
@@ -9,7 +11,7 @@ mod query;
 
 use cli::{Cli, Command};
 
-fn main() {
+fn main() -> ExitCode {
     #[cfg(unix)]
     // SAFETY: restoring the default SIGPIPE disposition before any threads start.
     #[allow(unsafe_code)]
@@ -17,8 +19,6 @@ fn main() {
         libc::signal(libc::SIGPIPE, libc::SIG_DFL);
     }
 
-    // Parse CLI arguments. Clap handles --help, --version, and validation
-    // automatically from the derive macros in cli.rs.
     let Cli {
         command,
         format,
@@ -40,11 +40,11 @@ fn main() {
         Command::Stats(args) => commands::stats::run(&args),
     };
 
-    // Handle errors with miette's fancy reporting.
-    // miette::Report wraps our error and adds the fancy terminal formatting
-    // (colors, source snippets, suggestions) defined in the error variants.
-    if let Err(err) = result {
-        eprintln!("{:?}", miette::Report::new(err));
-        std::process::exit(1);
+    match result {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(err) => {
+            eprintln!("{:?}", miette::Report::new(err));
+            ExitCode::FAILURE
+        }
     }
 }
