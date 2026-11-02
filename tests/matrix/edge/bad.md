@@ -1,0 +1,4 @@
+---
+key: [unclosed
+---
+# Bad yaml
