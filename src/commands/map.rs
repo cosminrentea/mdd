@@ -9,10 +9,9 @@ use crate::cli::MapArgs;
 use crate::error::{MddError, Result};
 use crate::parse::MdFile;
 use crate::parse::frontmatter::field_as_string;
-use crate::parse::markdown::parse_file;
-use crate::query::walk_md_files;
+use crate::query::{self, Options};
 
-pub fn run(args: &MapArgs) -> Result<Outcome> {
+pub fn run(args: &MapArgs, opts: Options) -> Result<Outcome> {
     let path = &args.path;
     if !path.exists() {
         return Err(MddError::FileNotFound { path: path.clone() });
@@ -21,24 +20,21 @@ pub fn run(args: &MapArgs) -> Result<Outcome> {
         return Err(MddError::NotADirectory { path: path.clone() });
     }
 
-    let files = walk_md_files(path);
+    let scan = query::scan(path, opts)?;
 
     let now = SystemTime::now();
     let three_days_ago = now - Duration::from_secs(3 * 24 * 3600);
 
-    let mut parsed: Vec<(PathBuf, MdFile)> = Vec::new();
     let mut total_lines: usize = 0;
     let mut hot_files: Vec<(PathBuf, &MdFile)> = Vec::new();
 
-    for file_path in &files {
-        if let Ok(md) = parse_file(file_path) {
-            total_lines += md.total_lines;
-            parsed.push((file_path.clone(), md));
-        }
+    let parsed = &scan.parsed;
+    for (_, md) in parsed {
+        total_lines += md.total_lines;
     }
 
     // Collect hot files (modified in last 3 days)
-    for (fp, md) in &parsed {
+    for (fp, md) in parsed {
         if md.mtime >= three_days_ago {
             hot_files.push((fp.clone(), md));
         }
@@ -51,7 +47,7 @@ pub fn run(args: &MapArgs) -> Result<Outcome> {
     let mut total_with_tables = 0usize;
     let mut total_with_code = 0usize;
 
-    for (fp, md) in &parsed {
+    for (fp, md) in parsed {
         let rel = fp.strip_prefix(path).unwrap_or(fp);
         let dir_name = rel
             .parent()
@@ -186,7 +182,7 @@ pub fn run(args: &MapArgs) -> Result<Outcome> {
         total_with_code
     );
 
-    if files.is_empty() {
+    if scan.walked == 0 {
         return Ok(Outcome::NothingFound(format!(
             "no Markdown files in {}",
             path.display()

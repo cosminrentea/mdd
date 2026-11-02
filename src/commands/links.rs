@@ -4,10 +4,9 @@ use super::Outcome;
 use crate::cli::{LinksArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::parse::Link;
-use crate::parse::markdown::parse_file;
-use crate::query;
+use crate::query::{self, Options};
 
-pub fn run(args: &LinksArgs, format: OutputFormat) -> Result<Outcome> {
+pub fn run(args: &LinksArgs, format: OutputFormat, opts: Options) -> Result<Outcome> {
     let LinksArgs {
         path,
         check,
@@ -21,7 +20,8 @@ pub fn run(args: &LinksArgs, format: OutputFormat) -> Result<Outcome> {
     let check = check || broken;
 
     let all_links: Vec<(PathBuf, Vec<Link>)> = if path.is_dir() {
-        query::walk_and_parse(path)
+        query::scan(path, opts)?
+            .parsed
             .into_iter()
             .filter(|(_, md)| !md.links.is_empty())
             .map(|(p, md)| {
@@ -30,7 +30,7 @@ pub fn run(args: &LinksArgs, format: OutputFormat) -> Result<Outcome> {
             })
             .collect()
     } else {
-        let md = parse_file(path)?;
+        let md = query::parse_checked(path, opts)?;
         let rel = path.file_name().map_or_else(|| path.clone(), PathBuf::from);
         vec![(rel, md.links)]
     };

@@ -5,7 +5,7 @@ use super::Outcome;
 use crate::cli::{AggArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::output::format_signature;
-use crate::query;
+use crate::query::{self, Options};
 
 /// A matched section ready for output, carrying its content and provenance.
 struct AggMatch {
@@ -19,7 +19,7 @@ struct AggMatch {
     mtime: SystemTime,
 }
 
-pub fn run(args: &AggArgs, format: OutputFormat) -> Result<Outcome> {
+pub fn run(args: &AggArgs, format: OutputFormat, opts: Options) -> Result<Outcome> {
     let dir = &args.dir;
     let budget = args.budget;
     if !dir.exists() {
@@ -27,7 +27,7 @@ pub fn run(args: &AggArgs, format: OutputFormat) -> Result<Outcome> {
     }
 
     let filter = args.filter();
-    let parsed = query::walk_and_parse(dir);
+    let parsed = query::scan(dir, opts)?.parsed;
 
     // Collect all matching sections with their content
     let mut matches: Vec<AggMatch> = Vec::new();

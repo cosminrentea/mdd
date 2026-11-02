@@ -5,27 +5,30 @@
 use std::collections::BTreeMap;
 
 use super::Frontmatter;
+use crate::error::one_line;
 
 /// Parse raw YAML text (the content between `---` delimiters, not including them)
 /// into a Frontmatter struct.
 ///
-/// Returns None if the YAML is empty or cannot be parsed as a mapping.
+/// Returns `Ok(None)` if the YAML is empty and `Err(reason)` (one line) if it
+/// cannot be parsed as a mapping.
 ///
-/// We return Option here (not Result) because malformed frontmatter in a single
-/// file shouldn't abort parsing of the entire document. The caller decides
+/// Malformed frontmatter in a single file shouldn't abort parsing of the
+/// entire document, so the parser records the problem and the caller decides
 /// whether to warn (default) or fail (--strict mode).
-pub fn parse_frontmatter(raw_yaml: &str) -> Option<Frontmatter> {
+pub fn parse_frontmatter(raw_yaml: &str) -> Result<Option<Frontmatter>, String> {
     // Trim the raw YAML -- some files have trailing whitespace after the last field.
     let trimmed = raw_yaml.trim();
     if trimmed.is_empty() {
-        return None;
+        return Ok(None);
     }
 
     // serde_norway::from_str can parse into various types. We want a BTreeMap
     // because it preserves key ordering (alphabetical) for deterministic output.
-    let fields: BTreeMap<String, serde_norway::Value> = serde_norway::from_str(trimmed).ok()?;
+    let fields: BTreeMap<String, serde_norway::Value> =
+        serde_norway::from_str(trimmed).map_err(|e| one_line(&e.to_string()))?;
 
-    Some(Frontmatter { fields })
+    Ok(Some(Frontmatter { fields }))
 }
 
 /// Extract the value of a specific field from frontmatter as a string.
@@ -48,10 +51,31 @@ pub fn field_as_string(fm: &Frontmatter, key: &str) -> Option<String> {
 mod tests {
     use super::*;
 
+    /// The parsed frontmatter, `None` for an empty block and for an invalid one.
+    fn parse(raw: &str) -> Option<Frontmatter> {
+        parse_frontmatter(raw).ok().flatten()
+    }
+
+    #[test]
+    fn empty_block_is_ok_none_and_invalid_yaml_is_an_error() {
+        assert!(matches!(parse_frontmatter(""), Ok(None)));
+        assert!(matches!(parse_frontmatter("  \n "), Ok(None)));
+        for raw in [
+            "key: [unclosed",
+            "- a\n- b",
+            "just a string",
+            "a: 36893488147419103232",
+        ] {
+            let reason = parse_frontmatter(raw).unwrap_err();
+            assert!(!reason.is_empty(), "{raw:?}");
+            assert!(!reason.contains('\n'), "{raw:?}: {reason:?}");
+        }
+    }
+
     #[test]
     fn parses_simple_frontmatter() {
         let yaml = "type: reference\ntopic: testing\nweight: 0.8\n";
-        let fm = parse_frontmatter(yaml).expect("should parse");
+        let fm = parse(yaml).expect("should parse");
 
         assert_eq!(field_as_string(&fm, "type"), Some("reference".to_owned()));
         assert_eq!(field_as_string(&fm, "topic"), Some("testing".to_owned()));
@@ -60,20 +84,20 @@ mod tests {
 
     #[test]
     fn returns_none_for_empty() {
-        assert!(parse_frontmatter("").is_none());
-        assert!(parse_frontmatter("   \n  ").is_none());
+        assert!(parse("").is_none());
+        assert!(parse("   \n  ").is_none());
     }
 
     #[test]
     fn returns_none_for_invalid_yaml() {
         // A bare string isn't a mapping, so from_str::<BTreeMap> fails.
-        assert!(parse_frontmatter("just a string").is_none());
+        assert!(parse("just a string").is_none());
     }
 
     #[test]
     fn handles_multiline_values() {
         let yaml = "type: note\ndescription: |\n  This is a\n  multi-line value\n";
-        let fm = parse_frontmatter(yaml).expect("should parse");
+        let fm = parse(yaml).expect("should parse");
         assert_eq!(field_as_string(&fm, "type"), Some("note".to_owned()));
         // Multi-line strings are still strings in serde_norway
         let desc = field_as_string(&fm, "description").unwrap();
@@ -83,7 +107,7 @@ mod tests {
     #[test]
     fn field_as_string_handles_types() {
         let yaml = "count: 42\nenabled: true\nnull_val: null\n";
-        let fm = parse_frontmatter(yaml).unwrap();
+        let fm = parse(yaml).unwrap();
         assert_eq!(field_as_string(&fm, "count"), Some("42".to_owned()));
         assert_eq!(field_as_string(&fm, "enabled"), Some("true".to_owned()));
         assert_eq!(field_as_string(&fm, "null_val"), Some("null".to_owned()));
@@ -265,7 +289,7 @@ mod tests {
     #[test]
     fn pins_parsed_values() {
         for (name, raw, expected) in PARSE_CASES {
-            let actual = parse_frontmatter(raw).map(|fm| serde_json::to_value(&fm.fields).unwrap());
+            let actual = parse(raw).map(|fm| serde_json::to_value(&fm.fields).unwrap());
             let expected =
                 expected.map(|json| serde_json::from_str::<serde_json::Value>(json).unwrap());
             assert_eq!(actual, expected, "case {name}");
@@ -276,7 +300,7 @@ mod tests {
     fn pins_field_as_string() {
         for (name, key, expected) in SCALAR_CASES {
             let (_, raw, _) = PARSE_CASES.iter().find(|c| c.0 == *name).unwrap();
-            let fm = parse_frontmatter(raw).unwrap();
+            let fm = parse(raw).unwrap();
             assert_eq!(
                 field_as_string(&fm, key).as_deref(),
                 *expected,
@@ -288,25 +312,25 @@ mod tests {
     #[test]
     fn pins_non_finite_floats() {
         for raw in ["a: .inf", "a: .Inf", "a: .INF", "a: +.inf"] {
-            let fm = parse_frontmatter(raw).unwrap();
+            let fm = parse(raw).unwrap();
             let n = fm.fields["a"].as_f64().unwrap_or_else(|| panic!("{raw}"));
             assert!(n.is_infinite() && n.is_sign_positive(), "{raw}");
             assert_eq!(field_as_string(&fm, "a").as_deref(), Some(".inf"), "{raw}");
         }
         for raw in ["a: -.inf", "a: -.Inf"] {
-            let fm = parse_frontmatter(raw).unwrap();
+            let fm = parse(raw).unwrap();
             let n = fm.fields["a"].as_f64().unwrap_or_else(|| panic!("{raw}"));
             assert!(n.is_infinite() && n.is_sign_negative(), "{raw}");
             assert_eq!(field_as_string(&fm, "a").as_deref(), Some("-.inf"), "{raw}");
         }
         for raw in ["a: .nan", "a: .NaN", "a: .NAN"] {
-            let fm = parse_frontmatter(raw).unwrap();
+            let fm = parse(raw).unwrap();
             let n = fm.fields["a"].as_f64().unwrap_or_else(|| panic!("{raw}"));
             assert!(n.is_nan(), "{raw}");
             assert_eq!(field_as_string(&fm, "a").as_deref(), Some(".nan"), "{raw}");
         }
         for raw in ["a: inf", "a: nan", "a: .iNf"] {
-            let fm = parse_frontmatter(raw).unwrap();
+            let fm = parse(raw).unwrap();
             assert!(fm.fields["a"].as_f64().is_none(), "{raw}");
         }
     }
@@ -330,7 +354,7 @@ mod tests {
 
         for raw in [deep_block, deep_flow, bomb] {
             let start = std::time::Instant::now();
-            let _ = parse_frontmatter(&raw);
+            let _ = parse(&raw);
             assert!(start.elapsed() < std::time::Duration::from_secs(10));
         }
     }
@@ -338,7 +362,7 @@ mod tests {
     #[test]
     fn pins_printed_number_text() {
         let raw = "a: 1e3\nb: .5\nc: -0.0\nd: .inf\ne: -.inf\nf: .nan\ng: 18446744073709551615\nh: -9223372036854775808";
-        let fm = parse_frontmatter(raw).unwrap();
+        let fm = parse(raw).unwrap();
         let printed = |key: &str| field_as_string(&fm, key).unwrap();
         assert_eq!(printed("a"), "1000.0");
         assert_eq!(printed("b"), "0.5");

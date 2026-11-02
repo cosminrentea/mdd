@@ -6,10 +6,11 @@ use crate::error::{MddError, Result};
 use crate::output::{fmt_size, format_signature};
 use crate::parse::Section;
 use crate::query;
+use crate::query::Options;
 use crate::query::filter::Filter;
 
 #[allow(clippy::cast_possible_truncation, reason = "file sizes fit in usize")]
-pub fn run(args: &FindArgs, format: OutputFormat) -> Result<Outcome> {
+pub fn run(args: &FindArgs, format: OutputFormat, opts: Options) -> Result<Outcome> {
     let dir = &args.dir;
     if !dir.exists() {
         return Err(MddError::FileNotFound { path: dir.clone() });
@@ -20,7 +21,7 @@ pub fn run(args: &FindArgs, format: OutputFormat) -> Result<Outcome> {
         .map(|d| d.and_time(NaiveTime::MIN).and_utc());
 
     let filter = args.filter();
-    let parsed = query::walk_and_parse(dir);
+    let parsed = query::scan(dir, opts)?.parsed;
     let mut match_count = 0;
 
     for (file_path, md) in &parsed {
