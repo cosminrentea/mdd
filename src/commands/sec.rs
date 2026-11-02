@@ -1,5 +1,3 @@
-use std::fs;
-
 use crate::cli::{OutputFormat, SecArgs};
 use crate::error::{MddError, Result};
 use crate::output::{self, SecMatch, SecOutput};
@@ -15,11 +13,7 @@ pub fn run(args: &SecArgs, format: OutputFormat) -> Result<()> {
     let md = parse_file(path)?;
     let all_sections: Vec<&Section> = md.entries.iter().flat_map(|e| &e.sections).collect();
 
-    let content = fs::read_to_string(path).map_err(|e| MddError::IoError {
-        path: path.clone(),
-        source: e,
-    })?;
-    let lines: Vec<&str> = content.lines().collect();
+    let lines: Vec<&str> = md.source.lines().collect();
 
     let mut all_matches: Vec<SecMatch> = Vec::new();
     let mut unmatched: Vec<&str> = Vec::new();

@@ -1,5 +1,3 @@
-use std::fs;
-
 use crate::cli::{AtArgs, OutputFormat};
 use crate::error::{MddError, Result};
 use crate::output::{self, AtOutput};
@@ -55,11 +53,7 @@ pub fn run(args: &AtArgs, format: OutputFormat) -> Result<()> {
         .collect();
     let breadcrumb: Vec<String> = ancestry.iter().map(|s| s.title.clone()).collect();
 
-    let content = fs::read_to_string(path).map_err(|e| MddError::IoError {
-        path: path.clone(),
-        source: e,
-    })?;
-    let lines_vec: Vec<&str> = content.lines().collect();
+    let lines_vec: Vec<&str> = md.source.lines().collect();
 
     let start = target.offset - 1;
     let end = (start + target.limit).min(lines_vec.len());
