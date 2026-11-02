@@ -1,0 +1,468 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (stats))
+---
+$ mdd -f human --strict stats edge12
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f agent --strict stats edge12
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f json --strict stats edge12
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f human stats edge12
+exit: 0
+--- stdout
+=== stats for edge12/ ===
+Files: 3 (14 lines, 89B)
+Frontmatter: 1/3 (33% coverage)
+  type: ok(1)
+Content: 0 with tables, 0 with code, 0 with lists
+Headings: avg 1.3/file, max depth 2
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f agent stats edge12
+exit: 0
+--- stdout
+=== stats for edge12/ ===
+Files: 3 (14 lines, 89B)
+Frontmatter: 1/3 (33% coverage)
+  type: ok(1)
+Content: 0 with tables, 0 with code, 0 with lists
+Headings: avg 1.3/file, max depth 2
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f json stats edge12
+exit: 0
+--- stdout
+=== stats for edge12/ ===
+Files: 3 (14 lines, 89B)
+Frontmatter: 1/3 (33% coverage)
+  type: ok(1)
+Content: 0 with tables, 0 with code, 0 with lists
+Headings: avg 1.3/file, max depth 2
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human stats fixtures/simple.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[not_a_directory]: not a directory: fixtures/simple.md
+
+$ mdd -f agent stats fixtures/simple.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[not_a_directory]: not a directory: fixtures/simple.md
+
+$ mdd -f json stats fixtures/simple.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[not_a_directory]: not a directory: fixtures/simple.md
+
+$ mdd -f human stats edge12/empty
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no Markdown files in edge12/empty
+
+$ mdd -f agent stats edge12/empty
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no Markdown files in edge12/empty
+
+$ mdd -f json stats edge12/empty
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no Markdown files in edge12/empty
+
+$ mdd -f human stats edge11
+exit: 0
+--- stdout
+=== stats for edge11/ ===
+Files: 6 (79 lines, 1K)
+Frontmatter: 2/6 (33% coverage)
+  type: a(1), b(1), x(1)
+Content: 1 with tables, 1 with code, 3 with lists
+Headings: avg 1.2/file, max depth 2
+--- stderr
+
+$ mdd -f agent stats edge11
+exit: 0
+--- stdout
+=== stats for edge11/ ===
+Files: 6 (79 lines, 1K)
+Frontmatter: 2/6 (33% coverage)
+  type: a(1), b(1), x(1)
+Content: 1 with tables, 1 with code, 3 with lists
+Headings: avg 1.2/file, max depth 2
+--- stderr
+
+$ mdd -f json stats edge11
+exit: 0
+--- stdout
+=== stats for edge11/ ===
+Files: 6 (79 lines, 1K)
+Frontmatter: 2/6 (33% coverage)
+  type: a(1), b(1), x(1)
+Content: 1 with tables, 1 with code, 3 with lists
+Headings: avg 1.2/file, max depth 2
+--- stderr
+
+$ mdd -f human stats edge
+exit: 0
+--- stdout
+=== stats for edge/ ===
+Files: 10 (111 lines, 1001B)
+Frontmatter: 6/10 (60% coverage)
+  type: Reference(1), note(1), ref(1), reference(1), Étude(1)
+Content: 1 with tables, 1 with code, 1 with lists
+Headings: avg 1.4/file, max depth 2
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f agent stats edge
+exit: 0
+--- stdout
+=== stats for edge/ ===
+Files: 10 (111 lines, 1001B)
+Frontmatter: 6/10 (60% coverage)
+  type: Reference(1), note(1), ref(1), reference(1), Étude(1)
+Content: 1 with tables, 1 with code, 1 with lists
+Headings: avg 1.4/file, max depth 2
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f json stats edge
+exit: 0
+--- stdout
+=== stats for edge/ ===
+Files: 10 (111 lines, 1001B)
+Frontmatter: 6/10 (60% coverage)
+  type: Reference(1), note(1), ref(1), reference(1), Étude(1)
+Content: 1 with tables, 1 with code, 1 with lists
+Headings: avg 1.4/file, max depth 2
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human stats -h
+exit: 0
+--- stdout
+Directory statistics: file counts, frontmatter coverage, types
+
+Usage: mdd stats [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>  Directory path
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f agent stats -h
+exit: 0
+--- stdout
+Directory statistics: file counts, frontmatter coverage, types
+
+Usage: mdd stats [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>  Directory path
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f json stats -h
+exit: 0
+--- stdout
+Directory statistics: file counts, frontmatter coverage, types
+
+Usage: mdd stats [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>  Directory path
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f human stats
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <DIR>
+
+Usage: mdd stats <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f agent stats
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <DIR>
+
+Usage: mdd stats <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f json stats
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <DIR>
+
+Usage: mdd stats <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f human stats fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd stats <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f agent stats fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd stats <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f json stats fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd stats <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f human stats edge
+exit: 0
+--- stdout
+=== stats for edge/ ===
+Files: 10 (111 lines, 1001B)
+Frontmatter: 6/10 (60% coverage)
+  type: Reference(1), note(1), ref(1), reference(1), Étude(1)
+Content: 1 with tables, 1 with code, 1 with lists
+Headings: avg 1.4/file, max depth 2
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f agent stats edge
+exit: 0
+--- stdout
+=== stats for edge/ ===
+Files: 10 (111 lines, 1001B)
+Frontmatter: 6/10 (60% coverage)
+  type: Reference(1), note(1), ref(1), reference(1), Étude(1)
+Content: 1 with tables, 1 with code, 1 with lists
+Headings: avg 1.4/file, max depth 2
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f json stats edge
+exit: 0
+--- stdout
+=== stats for edge/ ===
+Files: 10 (111 lines, 1001B)
+Frontmatter: 6/10 (60% coverage)
+  type: Reference(1), note(1), ref(1), reference(1), Étude(1)
+Content: 1 with tables, 1 with code, 1 with lists
+Headings: avg 1.4/file, max depth 2
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human stats fixtures
+exit: 0
+--- stdout
+=== stats for fixtures/ ===
+Files: 11 (392 lines, 17K)
+Frontmatter: 8/11 (73% coverage)
+  type: reference(8), note(2), feedback(1)
+Content: 2 with tables, 3 with code, 7 with lists
+Headings: avg 4.5/file, max depth 3
+--- stderr
+
+$ mdd -f agent stats fixtures
+exit: 0
+--- stdout
+=== stats for fixtures/ ===
+Files: 11 (392 lines, 17K)
+Frontmatter: 8/11 (73% coverage)
+  type: reference(8), note(2), feedback(1)
+Content: 2 with tables, 3 with code, 7 with lists
+Headings: avg 4.5/file, max depth 3
+--- stderr
+
+$ mdd -f json stats fixtures
+exit: 0
+--- stdout
+=== stats for fixtures/ ===
+Files: 11 (392 lines, 17K)
+Frontmatter: 8/11 (73% coverage)
+  type: reference(8), note(2), feedback(1)
+Content: 2 with tables, 3 with code, 7 with lists
+Headings: avg 4.5/file, max depth 3
+--- stderr
+
+$ mdd -f human stats nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f agent stats nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f json stats nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f human stats --help
+exit: 0
+--- stdout
+Directory statistics: file counts, frontmatter coverage, types
+
+Usage: mdd stats [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent stats --help
+exit: 0
+--- stdout
+Directory statistics: file counts, frontmatter coverage, types
+
+Usage: mdd stats [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json stats --help
+exit: 0
+--- stdout
+Directory statistics: file counts, frontmatter coverage, types
+
+Usage: mdd stats [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr

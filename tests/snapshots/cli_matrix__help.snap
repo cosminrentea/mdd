@@ -1,0 +1,1203 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (help))
+---
+$ mdd -f human help
+exit: 0
+--- stdout
+Markdown-Driven Development -- structural queries for coding agents
+
+Usage: mdd [OPTIONS] <COMMAND>
+
+Commands:
+  toc    Table of contents with offset/limit annotations. Works on single files and directories
+  sec    Extract section content by heading match. When path is a directory, searches across all .md files
+  at     Find the section containing a given line number. Prints breadcrumb path to stderr
+  map    Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+  find   Cross-file structural query with composable filters
+  fm     Frontmatter inspection (read-only)
+  links  Link graph extraction and validation
+  agg    Aggregate matching sections into a single context-efficient output
+  parts  List/filter entries in multi-frontmatter documents
+  stats  Directory statistics: file counts, frontmatter coverage, types
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+--- stderr
+
+$ mdd -f agent help
+exit: 0
+--- stdout
+Markdown-Driven Development -- structural queries for coding agents
+
+Usage: mdd [OPTIONS] <COMMAND>
+
+Commands:
+  toc    Table of contents with offset/limit annotations. Works on single files and directories
+  sec    Extract section content by heading match. When path is a directory, searches across all .md files
+  at     Find the section containing a given line number. Prints breadcrumb path to stderr
+  map    Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+  find   Cross-file structural query with composable filters
+  fm     Frontmatter inspection (read-only)
+  links  Link graph extraction and validation
+  agg    Aggregate matching sections into a single context-efficient output
+  parts  List/filter entries in multi-frontmatter documents
+  stats  Directory statistics: file counts, frontmatter coverage, types
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+--- stderr
+
+$ mdd -f json help
+exit: 0
+--- stdout
+Markdown-Driven Development -- structural queries for coding agents
+
+Usage: mdd [OPTIONS] <COMMAND>
+
+Commands:
+  toc    Table of contents with offset/limit annotations. Works on single files and directories
+  sec    Extract section content by heading match. When path is a directory, searches across all .md files
+  at     Find the section containing a given line number. Prints breadcrumb path to stderr
+  map    Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+  find   Cross-file structural query with composable filters
+  fm     Frontmatter inspection (read-only)
+  links  Link graph extraction and validation
+  agg    Aggregate matching sections into a single context-efficient output
+  parts  List/filter entries in multi-frontmatter documents
+  stats  Directory statistics: file counts, frontmatter coverage, types
+  help   Print this message or the help of the given subcommand(s)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+--- stderr
+
+$ mdd -f human help toc
+exit: 0
+--- stdout
+Table of contents with offset/limit annotations. Works on single files and directories
+
+Usage: mdd toc [OPTIONS] <PATH> [PATTERN]
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERN]
+          Optional pattern to filter headings (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent help toc
+exit: 0
+--- stdout
+Table of contents with offset/limit annotations. Works on single files and directories
+
+Usage: mdd toc [OPTIONS] <PATH> [PATTERN]
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERN]
+          Optional pattern to filter headings (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json help toc
+exit: 0
+--- stdout
+Table of contents with offset/limit annotations. Works on single files and directories
+
+Usage: mdd toc [OPTIONS] <PATH> [PATTERN]
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERN]
+          Optional pattern to filter headings (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f human help sec
+exit: 0
+--- stdout
+Extract section content by heading match. When path is a directory, searches across all .md files
+
+Usage: mdd sec [OPTIONS] <PATH> [PATTERNS]...
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERNS]...
+          Heading patterns to match (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent help sec
+exit: 0
+--- stdout
+Extract section content by heading match. When path is a directory, searches across all .md files
+
+Usage: mdd sec [OPTIONS] <PATH> [PATTERNS]...
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERNS]...
+          Heading patterns to match (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json help sec
+exit: 0
+--- stdout
+Extract section content by heading match. When path is a directory, searches across all .md files
+
+Usage: mdd sec [OPTIONS] <PATH> [PATTERNS]...
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERNS]...
+          Heading patterns to match (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f human help at
+exit: 0
+--- stdout
+Find the section containing a given line number. Prints breadcrumb path to stderr
+
+Usage: mdd at [OPTIONS] <PATH> <LINE> [LEVEL]
+
+Arguments:
+  <PATH>
+          File path
+
+  <LINE>
+          Line number (1-based)
+
+  [LEVEL]
+          Levels to climb up from innermost section (0 = innermost)
+          
+          [default: 0]
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent help at
+exit: 0
+--- stdout
+Find the section containing a given line number. Prints breadcrumb path to stderr
+
+Usage: mdd at [OPTIONS] <PATH> <LINE> [LEVEL]
+
+Arguments:
+  <PATH>
+          File path
+
+  <LINE>
+          Line number (1-based)
+
+  [LEVEL]
+          Levels to climb up from innermost section (0 = innermost)
+          
+          [default: 0]
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json help at
+exit: 0
+--- stdout
+Find the section containing a given line number. Prints breadcrumb path to stderr
+
+Usage: mdd at [OPTIONS] <PATH> <LINE> [LEVEL]
+
+Arguments:
+  <PATH>
+          File path
+
+  <LINE>
+          Line number (1-based)
+
+  [LEVEL]
+          Levels to climb up from innermost section (0 = innermost)
+          
+          [default: 0]
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f human help map
+exit: 0
+--- stdout
+Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+
+Usage: mdd map [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent help map
+exit: 0
+--- stdout
+Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+
+Usage: mdd map [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json help map
+exit: 0
+--- stdout
+Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+
+Usage: mdd map [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f human help find
+exit: 0
+--- stdout
+Cross-file structural query with composable filters
+
+Usage: mdd find [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field value
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field value
+
+  -H, --heading <HEADING>
+          Filter by heading pattern (substring match)
+
+      --has-table
+          Only files containing at least one table
+
+      --has-code <HAS_CODE>
+          Only files containing code blocks in the specified language
+
+      --newer-than <NEWER_THAN>
+          Only files modified after this date (YYYY-MM-DD)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent help find
+exit: 0
+--- stdout
+Cross-file structural query with composable filters
+
+Usage: mdd find [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field value
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field value
+
+  -H, --heading <HEADING>
+          Filter by heading pattern (substring match)
+
+      --has-table
+          Only files containing at least one table
+
+      --has-code <HAS_CODE>
+          Only files containing code blocks in the specified language
+
+      --newer-than <NEWER_THAN>
+          Only files modified after this date (YYYY-MM-DD)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json help find
+exit: 0
+--- stdout
+Cross-file structural query with composable filters
+
+Usage: mdd find [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field value
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field value
+
+  -H, --heading <HEADING>
+          Filter by heading pattern (substring match)
+
+      --has-table
+          Only files containing at least one table
+
+      --has-code <HAS_CODE>
+          Only files containing code blocks in the specified language
+
+      --newer-than <NEWER_THAN>
+          Only files modified after this date (YYYY-MM-DD)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f human help fm
+exit: 0
+--- stdout
+Frontmatter inspection (read-only)
+
+Usage: mdd fm [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory or file path
+
+Options:
+      --list-values <LIST_VALUES>
+          List all unique values for a frontmatter field
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent help fm
+exit: 0
+--- stdout
+Frontmatter inspection (read-only)
+
+Usage: mdd fm [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory or file path
+
+Options:
+      --list-values <LIST_VALUES>
+          List all unique values for a frontmatter field
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json help fm
+exit: 0
+--- stdout
+Frontmatter inspection (read-only)
+
+Usage: mdd fm [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory or file path
+
+Options:
+      --list-values <LIST_VALUES>
+          List all unique values for a frontmatter field
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f human help links
+exit: 0
+--- stdout
+Link graph extraction and validation
+
+Usage: mdd links [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File or directory path
+
+Options:
+      --check
+          Check all links for validity (resolve paths)
+
+      --broken
+          Show only broken links
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent help links
+exit: 0
+--- stdout
+Link graph extraction and validation
+
+Usage: mdd links [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File or directory path
+
+Options:
+      --check
+          Check all links for validity (resolve paths)
+
+      --broken
+          Show only broken links
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json help links
+exit: 0
+--- stdout
+Link graph extraction and validation
+
+Usage: mdd links [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File or directory path
+
+Options:
+      --check
+          Check all links for validity (resolve paths)
+
+      --broken
+          Show only broken links
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f human help agg
+exit: 0
+--- stdout
+Aggregate matching sections into a single context-efficient output
+
+Usage: mdd agg [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -H, --heading <HEADING>
+          Filter by heading pattern
+
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field
+
+      --budget <BUDGET>
+          Maximum output lines (default: 500)
+          
+          [default: 500]
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent help agg
+exit: 0
+--- stdout
+Aggregate matching sections into a single context-efficient output
+
+Usage: mdd agg [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -H, --heading <HEADING>
+          Filter by heading pattern
+
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field
+
+      --budget <BUDGET>
+          Maximum output lines (default: 500)
+          
+          [default: 500]
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json help agg
+exit: 0
+--- stdout
+Aggregate matching sections into a single context-efficient output
+
+Usage: mdd agg [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -H, --heading <HEADING>
+          Filter by heading pattern
+
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field
+
+      --budget <BUDGET>
+          Maximum output lines (default: 500)
+          
+          [default: 500]
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f human help parts
+exit: 0
+--- stdout
+List/filter entries in multi-frontmatter documents
+
+Usage: mdd parts [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File path
+
+Options:
+      --filter <FILTER>
+          Filter entries by frontmatter field (key=value)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent help parts
+exit: 0
+--- stdout
+List/filter entries in multi-frontmatter documents
+
+Usage: mdd parts [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File path
+
+Options:
+      --filter <FILTER>
+          Filter entries by frontmatter field (key=value)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json help parts
+exit: 0
+--- stdout
+List/filter entries in multi-frontmatter documents
+
+Usage: mdd parts [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          File path
+
+Options:
+      --filter <FILTER>
+          Filter entries by frontmatter field (key=value)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f human help stats
+exit: 0
+--- stdout
+Directory statistics: file counts, frontmatter coverage, types
+
+Usage: mdd stats [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent help stats
+exit: 0
+--- stdout
+Directory statistics: file counts, frontmatter coverage, types
+
+Usage: mdd stats [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json help stats
+exit: 0
+--- stdout
+Directory statistics: file counts, frontmatter coverage, types
+
+Usage: mdd stats [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr

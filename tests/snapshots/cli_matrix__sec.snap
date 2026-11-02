@@ -1,0 +1,546 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (sec))
+---
+$ mdd -f human sec fixtures/simple.md NOPE_XYZ Simple
+exit: 0
+--- stdout
+# Simple Test Document
+
+## Section One
+
+This is the first section with some content.
+
+- Item 1
+- Item 2
+- Item 3
+
+## Section Two
+
+A section with a code block:
+
+```rust
+fn main() {
+    println!("hello");
+}
+```
+
+## Section Three
+
+| Column A | Column B |
+|----------|----------|
+| value 1  | value 2  |
+| value 3  | value 4  |
+
+### Nested Subsection
+
+Content in a nested subsection.--- stderr
+mdd: warning: no match for: NOPE_XYZ
+
+$ mdd -f agent sec fixtures/simple.md NOPE_XYZ Simple
+exit: 0
+--- stdout
+[fixtures/simple.md:6,30]
+# Simple Test Document
+
+## Section One
+
+This is the first section with some content.
+
+- Item 1
+- Item 2
+- Item 3
+
+## Section Two
+
+A section with a code block:
+
+```rust
+fn main() {
+    println!("hello");
+}
+```
+
+## Section Three
+
+| Column A | Column B |
+|----------|----------|
+| value 1  | value 2  |
+| value 3  | value 4  |
+
+### Nested Subsection
+
+Content in a nested subsection.--- stderr
+mdd: warning: no match for: NOPE_XYZ
+
+$ mdd -f json sec fixtures/simple.md NOPE_XYZ Simple
+exit: 0
+--- stdout
+{
+  "matches": [
+    {
+      "content": "# Simple Test Document\n\n## Section One\n\nThis is the first section with some content.\n\n- Item 1\n- Item 2\n- Item 3\n\n## Section Two\n\nA section with a code block:\n\n```rust\nfn main() {\n    println!(\"hello\");\n}\n```\n\n## Section Three\n\n| Column A | Column B |\n|----------|----------|\n| value 1  | value 2  |\n| value 3  | value 4  |\n\n### Nested Subsection\n\nContent in a nested subsection.",
+      "limit": 30,
+      "offset": 6,
+      "title": "Simple Test Document"
+    }
+  ],
+  "path": "fixtures/simple.md"
+}
+--- stderr
+mdd: warning: no match for: NOPE_XYZ
+
+$ mdd -f human sec edge11/lists.md Lists
+exit: 0
+--- stdout
+# Lists
+
+- a
+  - b
+  - c
+- d
+
+1. one
+   - x
+     - y
+2. two
+
+## Flat
+
+- p
+- q--- stderr
+
+$ mdd -f agent sec edge11/lists.md Lists
+exit: 0
+--- stdout
+[edge11/lists.md:1,16]
+# Lists
+
+- a
+  - b
+  - c
+- d
+
+1. one
+   - x
+     - y
+2. two
+
+## Flat
+
+- p
+- q--- stderr
+
+$ mdd -f json sec edge11/lists.md Lists
+exit: 0
+--- stdout
+{
+  "matches": [
+    {
+      "content": "# Lists\n\n- a\n  - b\n  - c\n- d\n\n1. one\n   - x\n     - y\n2. two\n\n## Flat\n\n- p\n- q",
+      "limit": 16,
+      "offset": 1,
+      "title": "Lists"
+    }
+  ],
+  "path": "edge11/lists.md"
+}
+--- stderr
+
+$ mdd -f human sec -h
+exit: 0
+--- stdout
+Extract section content by heading match. When path is a directory, searches across all .md files
+
+Usage: mdd sec [OPTIONS] <PATH> [PATTERNS]...
+
+Arguments:
+  <PATH>         File or directory path
+  [PATTERNS]...  Heading patterns to match (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f agent sec -h
+exit: 0
+--- stdout
+Extract section content by heading match. When path is a directory, searches across all .md files
+
+Usage: mdd sec [OPTIONS] <PATH> [PATTERNS]...
+
+Arguments:
+  <PATH>         File or directory path
+  [PATTERNS]...  Heading patterns to match (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f json sec -h
+exit: 0
+--- stdout
+Extract section content by heading match. When path is a directory, searches across all .md files
+
+Usage: mdd sec [OPTIONS] <PATH> [PATTERNS]...
+
+Arguments:
+  <PATH>         File or directory path
+  [PATTERNS]...  Heading patterns to match (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f human sec
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd sec <PATH> [PATTERNS]...
+
+For more information, try '--help'.
+
+$ mdd -f agent sec
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd sec <PATH> [PATTERNS]...
+
+For more information, try '--help'.
+
+$ mdd -f json sec
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd sec <PATH> [PATTERNS]...
+
+For more information, try '--help'.
+
+$ mdd -f human sec fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd sec <PATH> [PATTERNS]...
+
+For more information, try '--help'.
+
+$ mdd -f agent sec fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd sec <PATH> [PATTERNS]...
+
+For more information, try '--help'.
+
+$ mdd -f json sec fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd sec <PATH> [PATTERNS]...
+
+For more information, try '--help'.
+
+$ mdd -f human sec fixtures/service-doc.md "Queue Bindings"
+exit: 0
+--- stdout
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+--- stderr
+
+$ mdd -f agent sec fixtures/service-doc.md "Queue Bindings"
+exit: 0
+--- stdout
+[fixtures/service-doc.md:23,9]
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+--- stderr
+
+$ mdd -f json sec fixtures/service-doc.md "Queue Bindings"
+exit: 0
+--- stdout
+{
+  "matches": [
+    {
+      "content": "### Queue Bindings\n\n| Queue | Entity Type | Priority |\n|-------|------------|----------|\n| entity-alpha-p1 | alpha | 1 |\n| entity-alpha-p2 | alpha | 2 |\n| entity-beta-p1 | beta | 1 |\n| entity-beta-p2 | beta | 2 |\n",
+      "limit": 9,
+      "offset": 23,
+      "title": "Queue Bindings"
+    }
+  ],
+  "path": "fixtures/service-doc.md"
+}
+--- stderr
+
+$ mdd -f human sec fixtures/service-doc.md Overview Architecture
+exit: 0
+--- stdout
+## Overview
+
+Receives upstream events from message queues and transforms them into document records.
+Publishes completion notifications downstream for indexing consumers.
+
+In one sentence: Queue consumer to document store plus event fanout.
+
+[2m---[0m
+
+## Architecture
+
+```
+Message Queues --> EventListener --> Transformer --> DocumentStore
+                                                 --> NotificationProducer
+```
+
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+
+### Document Collections
+
+- `entityAlpha` -- primary entity records
+- `entityBeta` -- secondary classification data
+- `entityGamma` -- variant configurations
+--- stderr
+
+$ mdd -f agent sec fixtures/service-doc.md Overview Architecture
+exit: 0
+--- stdout
+[fixtures/service-doc.md:9,7]
+## Overview
+
+Receives upstream events from message queues and transforms them into document records.
+Publishes completion notifications downstream for indexing consumers.
+
+In one sentence: Queue consumer to document store plus event fanout.
+
+---
+
+[fixtures/service-doc.md:16,22]
+## Architecture
+
+```
+Message Queues --> EventListener --> Transformer --> DocumentStore
+                                                 --> NotificationProducer
+```
+
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+
+### Document Collections
+
+- `entityAlpha` -- primary entity records
+- `entityBeta` -- secondary classification data
+- `entityGamma` -- variant configurations
+--- stderr
+
+$ mdd -f json sec fixtures/service-doc.md Overview Architecture
+exit: 0
+--- stdout
+{
+  "matches": [
+    {
+      "content": "## Overview\n\nReceives upstream events from message queues and transforms them into document records.\nPublishes completion notifications downstream for indexing consumers.\n\nIn one sentence: Queue consumer to document store plus event fanout.\n",
+      "limit": 7,
+      "offset": 9,
+      "title": "Overview"
+    },
+    {
+      "content": "## Architecture\n\n```\nMessage Queues --> EventListener --> Transformer --> DocumentStore\n                                                 --> NotificationProducer\n```\n\n### Queue Bindings\n\n| Queue | Entity Type | Priority |\n|-------|------------|----------|\n| entity-alpha-p1 | alpha | 1 |\n| entity-alpha-p2 | alpha | 2 |\n| entity-beta-p1 | beta | 1 |\n| entity-beta-p2 | beta | 2 |\n\n### Document Collections\n\n- `entityAlpha` -- primary entity records\n- `entityBeta` -- secondary classification data\n- `entityGamma` -- variant configurations\n",
+      "limit": 22,
+      "offset": 16,
+      "title": "Architecture"
+    }
+  ],
+  "path": "fixtures/service-doc.md"
+}
+--- stderr
+
+$ mdd -f human sec fixtures Overview
+exit: 2
+--- stdout
+--- stderr
+mdd: error[io]: failed to read file: fixtures
+  caused by: Is a directory (os error 21)
+
+$ mdd -f agent sec fixtures Overview
+exit: 2
+--- stdout
+--- stderr
+mdd: error[io]: failed to read file: fixtures
+  caused by: Is a directory (os error 21)
+
+$ mdd -f json sec fixtures Overview
+exit: 2
+--- stdout
+--- stderr
+mdd: error[io]: failed to read file: fixtures
+  caused by: Is a directory (os error 21)
+
+$ mdd -f human sec fixtures/simple.md NOPE_XYZ
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no matching sections for pattern: NOPE_XYZ
+
+$ mdd -f agent sec fixtures/simple.md NOPE_XYZ
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no matching sections for pattern: NOPE_XYZ
+
+$ mdd -f json sec fixtures/simple.md NOPE_XYZ
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no matching sections for pattern: NOPE_XYZ
+
+$ mdd -f human sec --help
+exit: 0
+--- stdout
+Extract section content by heading match. When path is a directory, searches across all .md files
+
+Usage: mdd sec [OPTIONS] <PATH> [PATTERNS]...
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERNS]...
+          Heading patterns to match (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent sec --help
+exit: 0
+--- stdout
+Extract section content by heading match. When path is a directory, searches across all .md files
+
+Usage: mdd sec [OPTIONS] <PATH> [PATTERNS]...
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERNS]...
+          Heading patterns to match (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json sec --help
+exit: 0
+--- stdout
+Extract section content by heading match. When path is a directory, searches across all .md files
+
+Usage: mdd sec [OPTIONS] <PATH> [PATTERNS]...
+
+Arguments:
+  <PATH>
+          File or directory path
+
+  [PATTERNS]...
+          Heading patterns to match (substring, case-insensitive)
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr

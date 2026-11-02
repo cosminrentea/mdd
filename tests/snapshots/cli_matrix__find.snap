@@ -1,0 +1,1733 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (find))
+---
+$ mdd -f human --strict find edge12
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f agent --strict find edge12
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f json --strict find edge12
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f human find edge12
+exit: 0
+--- stdout
+[1mbadfm.md[0m [2m(6 lines, 43B)[0m
+  Broken fm [2m(offset=4, limit=3)[0m
+    Sub [2m(offset=6, limit=1)[0m
+[1mfine.md[0m [2m(4 lines, 24B)[0m
+  Fine [2m(offset=4, limit=1)[0m
+[1msub/listfm.md[0m [2m(4 lines, 22B)[0m
+  List fm [2m(offset=4, limit=1)[0m
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+3 files matched
+
+$ mdd -f agent find edge12
+exit: 0
+--- stdout
+[badfm.md:4,3] # Broken fm
+[badfm.md:6,1] ## Sub
+[fine.md:4,1] # Fine
+[sub/listfm.md:4,1] # List fm
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+3 files matched
+
+$ mdd -f json find edge12
+exit: 0
+--- stdout
+{"byte_size":43,"path":"badfm.md","sections":[{"level":1,"limit":3,"offset":4,"title":"Broken fm"},{"level":2,"limit":1,"offset":6,"title":"Sub"}],"total_lines":6}
+{"byte_size":24,"path":"fine.md","sections":[{"level":1,"limit":1,"offset":4,"title":"Fine"}],"total_lines":4}
+{"byte_size":22,"path":"sub/listfm.md","sections":[{"level":1,"limit":1,"offset":4,"title":"List fm"}],"total_lines":4}
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+3 files matched
+
+$ mdd -f human --all-files find edge -t readme-type
+exit: 0
+--- stdout
+[1mREADME.md[0m [2m(7 lines, 80B)[0m
+  Readme [2m(offset=5, limit=3)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent --all-files find edge -t readme-type
+exit: 0
+--- stdout
+[README.md:5,3] # Readme {words:3, links:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json --all-files find edge -t readme-type
+exit: 0
+--- stdout
+{"byte_size":80,"path":"README.md","sections":[{"level":1,"limit":3,"offset":5,"title":"Readme"}],"total_lines":7}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find fixtures -H nomatchxyz
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no files matched the given filters
+
+$ mdd -f agent find fixtures -H nomatchxyz
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no files matched the given filters
+
+$ mdd -f json find fixtures -H nomatchxyz
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no files matched the given filters
+
+$ mdd -f human find edge11
+exit: 0
+--- stdout
+[1mlists.md[0m [2m(16 lines, 78B)[0m
+  Lists [2m(offset=1, limit=16)[0m
+    Flat [2m(offset=13, limit=4)[0m
+[1mmulti.md[0m [2m(15 lines, 149B)[0m
+  First [2m(offset=6, limit=4)[0m
+  Second [2m(offset=13, limit=3)[0m
+[1modd.md[0m [2m(4 lines, 80B)[0m
+  Odd [2m(offset=1, limit=4)[0m
+[1mplaces.md[0m [2m(16 lines, 244B)[0m
+  Heading with hlink [2m(offset=1, limit=16)[0m
+[1mprobe.md[0m [2m(28 lines, 498B)[0m
+  Probe [2m(offset=5, limit=24)[0m
+--- stderr
+
+5 files matched
+
+$ mdd -f agent find edge11
+exit: 0
+--- stdout
+[lists.md:1,16] # Lists {lists:8, words:8}
+[lists.md:13,4] ## Flat {lists:2, words:2}
+[multi.md:6,4] # First {words:1, links:1}
+[multi.md:13,3] # Second {words:3, links:2}
+[odd.md:1,4] # Odd {words:5, links:4}
+[places.md:1,16] # Heading with hlink {tables:1, lists:2, words:19, links:4}
+[probe.md:5,24] # Probe {code:md, lists:4, words:39, links:10}
+--- stderr
+
+5 files matched
+
+$ mdd -f json find edge11
+exit: 0
+--- stdout
+{"byte_size":78,"path":"lists.md","sections":[{"level":1,"limit":16,"offset":1,"title":"Lists"},{"level":2,"limit":4,"offset":13,"title":"Flat"}],"total_lines":16}
+{"byte_size":149,"path":"multi.md","sections":[{"level":1,"limit":4,"offset":6,"title":"First"},{"level":1,"limit":3,"offset":13,"title":"Second"}],"total_lines":15}
+{"byte_size":80,"path":"odd.md","sections":[{"level":1,"limit":4,"offset":1,"title":"Odd"}],"total_lines":4}
+{"byte_size":244,"path":"places.md","sections":[{"level":1,"limit":16,"offset":1,"title":"Heading with hlink"}],"total_lines":16}
+{"byte_size":498,"path":"probe.md","sections":[{"level":1,"limit":24,"offset":5,"title":"Probe"}],"total_lines":28}
+--- stderr
+
+5 files matched
+
+$ mdd -f human find edge11 -H lists
+exit: 0
+--- stdout
+[1mlists.md[0m [2m(16 lines, 78B)[0m
+  Lists [2m(offset=1, limit=16)[0m
+--- stderr
+
+1 files matched
+
+$ mdd -f agent find edge11 -H lists
+exit: 0
+--- stdout
+[lists.md:1,16] # Lists {lists:8, words:8}
+--- stderr
+
+1 files matched
+
+$ mdd -f json find edge11 -H lists
+exit: 0
+--- stdout
+{"byte_size":78,"path":"lists.md","sections":[{"level":1,"limit":16,"offset":1,"title":"Lists"}],"total_lines":16}
+--- stderr
+
+1 files matched
+
+$ mdd -f human find edge -t readme-type
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no files matched the given filters
+
+$ mdd -f agent find edge -t readme-type
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no files matched the given filters
+
+$ mdd -f json find edge -t readme-type
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no files matched the given filters
+
+$ mdd -f human find -h
+exit: 0
+--- stdout
+Cross-file structural query with composable filters
+
+Usage: mdd find [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>  Directory to search
+
+Options:
+  -t, --type <TYPE>              Filter by frontmatter 'type' field value
+      --topic <TOPIC>            Filter by frontmatter 'topic' field value
+  -H, --heading <HEADING>        Filter by heading pattern (substring match)
+      --has-table                Only files containing at least one table
+      --has-code <HAS_CODE>      Only files containing code blocks in the specified language
+      --newer-than <NEWER_THAN>  Only files modified after this date (YYYY-MM-DD)
+  -f, --format <FORMAT>          Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict                   Fail on first malformed file instead of skipping with a warning
+      --all-files                Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help                     Print help (see more with '--help')
+--- stderr
+
+$ mdd -f agent find -h
+exit: 0
+--- stdout
+Cross-file structural query with composable filters
+
+Usage: mdd find [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>  Directory to search
+
+Options:
+  -t, --type <TYPE>              Filter by frontmatter 'type' field value
+      --topic <TOPIC>            Filter by frontmatter 'topic' field value
+  -H, --heading <HEADING>        Filter by heading pattern (substring match)
+      --has-table                Only files containing at least one table
+      --has-code <HAS_CODE>      Only files containing code blocks in the specified language
+      --newer-than <NEWER_THAN>  Only files modified after this date (YYYY-MM-DD)
+  -f, --format <FORMAT>          Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict                   Fail on first malformed file instead of skipping with a warning
+      --all-files                Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help                     Print help (see more with '--help')
+--- stderr
+
+$ mdd -f json find -h
+exit: 0
+--- stdout
+Cross-file structural query with composable filters
+
+Usage: mdd find [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>  Directory to search
+
+Options:
+  -t, --type <TYPE>              Filter by frontmatter 'type' field value
+      --topic <TOPIC>            Filter by frontmatter 'topic' field value
+  -H, --heading <HEADING>        Filter by heading pattern (substring match)
+      --has-table                Only files containing at least one table
+      --has-code <HAS_CODE>      Only files containing code blocks in the specified language
+      --newer-than <NEWER_THAN>  Only files modified after this date (YYYY-MM-DD)
+  -f, --format <FORMAT>          Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict                   Fail on first malformed file instead of skipping with a warning
+      --all-files                Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help                     Print help (see more with '--help')
+--- stderr
+
+$ mdd -f human find
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <DIR>
+
+Usage: mdd find <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f agent find
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <DIR>
+
+Usage: mdd find <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f json find
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <DIR>
+
+Usage: mdd find <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f human find fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd find <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f agent find fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd find <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f json find fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd find <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f human find fixtures --newer-than
+exit: 2
+--- stdout
+--- stderr
+error: a value is required for '--newer-than <NEWER_THAN>' but none was supplied
+
+For more information, try '--help'.
+
+$ mdd -f agent find fixtures --newer-than
+exit: 2
+--- stdout
+--- stderr
+error: a value is required for '--newer-than <NEWER_THAN>' but none was supplied
+
+For more information, try '--help'.
+
+$ mdd -f json find fixtures --newer-than
+exit: 2
+--- stdout
+--- stderr
+error: a value is required for '--newer-than <NEWER_THAN>' but none was supplied
+
+For more information, try '--help'.
+
+$ mdd -f human find edge -t REFERENCE
+exit: 0
+--- stdout
+[1mcode.md[0m [2m(21 lines, 150B)[0m
+  Code Case [2m(offset=5, limit=17)[0m
+    No Lang [2m(offset=11, limit=6)[0m
+    Table [2m(offset=17, limit=5)[0m
+[1myaml.md[0m [2m(39 lines, 467B)[0m
+  Yaml types [2m(offset=37, limit=3)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 files matched
+
+$ mdd -f agent find edge -t REFERENCE
+exit: 0
+--- stdout
+[code.md:5,17] # Code Case {code:RUST, words:3}
+[code.md:11,6] ## No Lang {code:1, words:1}
+[code.md:17,5] ## Table {tables:1, words:4}
+[yaml.md:37,3] # Yaml types {words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 files matched
+
+$ mdd -f json find edge -t REFERENCE
+exit: 0
+--- stdout
+{"byte_size":150,"path":"code.md","sections":[{"level":1,"limit":17,"offset":5,"title":"Code Case"},{"level":2,"limit":6,"offset":11,"title":"No Lang"},{"level":2,"limit":5,"offset":17,"title":"Table"}],"total_lines":21}
+{"byte_size":467,"path":"yaml.md","sections":[{"level":1,"limit":3,"offset":37,"title":"Yaml types"}],"total_lines":39}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 files matched
+
+$ mdd -f human find edge -t étude
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no files matched the given filters
+
+$ mdd -f agent find edge -t étude
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no files matched the given filters
+
+$ mdd -f json find edge -t étude
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no files matched the given filters
+
+$ mdd -f human find edge -t ÉTUDE
+exit: 0
+--- stdout
+[1municode.md[0m [2m(7 lines, 63B)[0m
+  Über Größe [2m(offset=5, limit=3)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge -t ÉTUDE
+exit: 0
+--- stdout
+[unicode.md:5,3] # Über Größe {words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge -t ÉTUDE
+exit: 0
+--- stdout
+{"byte_size":63,"path":"unicode.md","sections":[{"level":1,"limit":3,"offset":5,"title":"Über Größe"}],"total_lines":7}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find edge --topic über
+exit: 0
+--- stdout
+[1municode.md[0m [2m(7 lines, 63B)[0m
+  Über Größe [2m(offset=5, limit=3)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge --topic über
+exit: 0
+--- stdout
+[unicode.md:5,3] # Über Größe {words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge --topic über
+exit: 0
+--- stdout
+{"byte_size":63,"path":"unicode.md","sections":[{"level":1,"limit":3,"offset":5,"title":"Über Größe"}],"total_lines":7}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find edge --topic ÜBER
+exit: 0
+--- stdout
+[1municode.md[0m [2m(7 lines, 63B)[0m
+  Über Größe [2m(offset=5, limit=3)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge --topic ÜBER
+exit: 0
+--- stdout
+[unicode.md:5,3] # Über Größe {words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge --topic ÜBER
+exit: 0
+--- stdout
+{"byte_size":63,"path":"unicode.md","sections":[{"level":1,"limit":3,"offset":5,"title":"Über Größe"}],"total_lines":7}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find edge --topic unit
+exit: 0
+--- stdout
+[1mcode.md[0m [2m(21 lines, 150B)[0m
+  Code Case [2m(offset=5, limit=17)[0m
+    No Lang [2m(offset=11, limit=6)[0m
+    Table [2m(offset=17, limit=5)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge --topic unit
+exit: 0
+--- stdout
+[code.md:5,17] # Code Case {code:RUST, words:3}
+[code.md:11,6] ## No Lang {code:1, words:1}
+[code.md:17,5] ## Table {tables:1, words:4}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge --topic unit
+exit: 0
+--- stdout
+{"byte_size":150,"path":"code.md","sections":[{"level":1,"limit":17,"offset":5,"title":"Code Case"},{"level":2,"limit":6,"offset":11,"title":"No Lang"},{"level":2,"limit":5,"offset":17,"title":"Table"}],"total_lines":21}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find edge -H größe
+exit: 0
+--- stdout
+[1municode.md[0m [2m(7 lines, 63B)[0m
+  Über Größe [2m(offset=5, limit=3)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge -H größe
+exit: 0
+--- stdout
+[unicode.md:5,3] # Über Größe {words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge -H größe
+exit: 0
+--- stdout
+{"byte_size":63,"path":"unicode.md","sections":[{"level":1,"limit":3,"offset":5,"title":"Über Größe"}],"total_lines":7}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find edge -H GRÖSSE
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no files matched the given filters
+
+$ mdd -f agent find edge -H GRÖSSE
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no files matched the given filters
+
+$ mdd -f json find edge -H GRÖSSE
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no files matched the given filters
+
+$ mdd -f human find edge -H über
+exit: 0
+--- stdout
+[1municode.md[0m [2m(7 lines, 63B)[0m
+  Über Größe [2m(offset=5, limit=3)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge -H über
+exit: 0
+--- stdout
+[unicode.md:5,3] # Über Größe {words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge -H über
+exit: 0
+--- stdout
+{"byte_size":63,"path":"unicode.md","sections":[{"level":1,"limit":3,"offset":5,"title":"Über Größe"}],"total_lines":7}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find edge --has-code ""
+exit: 0
+--- stdout
+[1mcode.md[0m [2m(21 lines, 150B)[0m
+  Code Case [2m(offset=5, limit=17)[0m
+    No Lang [2m(offset=11, limit=6)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge --has-code ""
+exit: 0
+--- stdout
+[code.md:5,17] # Code Case {code:RUST, words:3}
+[code.md:11,6] ## No Lang {code:1, words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge --has-code ""
+exit: 0
+--- stdout
+{"byte_size":150,"path":"code.md","sections":[{"level":1,"limit":17,"offset":5,"title":"Code Case"},{"level":2,"limit":6,"offset":11,"title":"No Lang"}],"total_lines":21}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find edge --has-code rust
+exit: 0
+--- stdout
+[1mcode.md[0m [2m(21 lines, 150B)[0m
+  Code Case [2m(offset=5, limit=17)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge --has-code rust
+exit: 0
+--- stdout
+[code.md:5,17] # Code Case {code:RUST, words:3}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge --has-code rust
+exit: 0
+--- stdout
+{"byte_size":150,"path":"code.md","sections":[{"level":1,"limit":17,"offset":5,"title":"Code Case"}],"total_lines":21}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find edge --has-code RUST
+exit: 0
+--- stdout
+[1mcode.md[0m [2m(21 lines, 150B)[0m
+  Code Case [2m(offset=5, limit=17)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge --has-code RUST
+exit: 0
+--- stdout
+[code.md:5,17] # Code Case {code:RUST, words:3}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge --has-code RUST
+exit: 0
+--- stdout
+{"byte_size":150,"path":"code.md","sections":[{"level":1,"limit":17,"offset":5,"title":"Code Case"}],"total_lines":21}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find edge --has-table
+exit: 0
+--- stdout
+[1mcode.md[0m [2m(21 lines, 150B)[0m
+    Table [2m(offset=17, limit=5)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge --has-table
+exit: 0
+--- stdout
+[code.md:17,5] ## Table {tables:1, words:4}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge --has-table
+exit: 0
+--- stdout
+{"byte_size":150,"path":"code.md","sections":[{"level":2,"limit":5,"offset":17,"title":"Table"}],"total_lines":21}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find fixtures --has-code ""
+exit: 0
+--- stdout
+[1mfeedback-entry.md[0m [2m(32 lines, 662B)[0m
+      Good [2m(offset=16, limit=11)[0m
+      Bad [2m(offset=27, limit=6)[0m
+[1mservice-doc.md[0m [2m(61 lines, 1K)[0m
+    Architecture [2m(offset=16, limit=22)[0m
+      Environment Variables [2m(offset=42, limit=8)[0m
+[1msimple.md[0m [2m(35 lines, 420B)[0m
+    Section Two [2m(offset=16, limit=10)[0m
+--- stderr
+
+3 files matched
+
+$ mdd -f agent find fixtures --has-code ""
+exit: 0
+--- stdout
+[feedback-entry.md:16,11] ### Good {code:java, words:13}
+[feedback-entry.md:27,6] ### Bad {code:java, words:8}
+[service-doc.md:16,22] ## Architecture {code:1, words:10}
+[service-doc.md:42,8] ### Environment Variables {code:yaml, words:6}
+[simple.md:16,10] ## Section Two {code:rust, words:11}
+--- stderr
+
+3 files matched
+
+$ mdd -f json find fixtures --has-code ""
+exit: 0
+--- stdout
+{"byte_size":662,"path":"feedback-entry.md","sections":[{"level":3,"limit":11,"offset":16,"title":"Good"},{"level":3,"limit":6,"offset":27,"title":"Bad"}],"total_lines":32}
+{"byte_size":1407,"path":"service-doc.md","sections":[{"level":2,"limit":22,"offset":16,"title":"Architecture"},{"level":3,"limit":8,"offset":42,"title":"Environment Variables"}],"total_lines":61}
+{"byte_size":420,"path":"simple.md","sections":[{"level":2,"limit":10,"offset":16,"title":"Section Two"}],"total_lines":35}
+--- stderr
+
+3 files matched
+
+$ mdd -f human find fixtures -H QUEUE
+exit: 0
+--- stdout
+[1mservice-doc.md[0m [2m(61 lines, 1K)[0m
+      Queue Bindings [2m(offset=23, limit=9)[0m
+      High Queue Backlog [2m(offset=52, limit=5)[0m
+--- stderr
+
+1 files matched
+
+$ mdd -f agent find fixtures -H QUEUE
+exit: 0
+--- stdout
+[service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+[service-doc.md:52,5] ### High Queue Backlog {words:12}
+--- stderr
+
+1 files matched
+
+$ mdd -f json find fixtures -H QUEUE
+exit: 0
+--- stdout
+{"byte_size":1407,"path":"service-doc.md","sections":[{"level":3,"limit":9,"offset":23,"title":"Queue Bindings"},{"level":3,"limit":5,"offset":52,"title":"High Queue Backlog"}],"total_lines":61}
+--- stderr
+
+1 files matched
+
+$ mdd -f human find fixtures -t reference --topic testing --has-table
+exit: 0
+--- stdout
+[1msimple.md[0m [2m(35 lines, 420B)[0m
+    Section Three [2m(offset=26, limit=10)[0m
+--- stderr
+
+1 files matched
+
+$ mdd -f agent find fixtures -t reference --topic testing --has-table
+exit: 0
+--- stdout
+[simple.md:26,10] ## Section Three {tables:1, words:12}
+--- stderr
+
+1 files matched
+
+$ mdd -f json find fixtures -t reference --topic testing --has-table
+exit: 0
+--- stdout
+{"byte_size":420,"path":"simple.md","sections":[{"level":2,"limit":10,"offset":26,"title":"Section Three"}],"total_lines":35}
+--- stderr
+
+1 files matched
+
+$ mdd -f human find edge -t reference -H no --has-code ""
+exit: 0
+--- stdout
+[1mcode.md[0m [2m(21 lines, 150B)[0m
+    No Lang [2m(offset=11, limit=6)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge -t reference -H no --has-code ""
+exit: 0
+--- stdout
+[code.md:11,6] ## No Lang {code:1, words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge -t reference -H no --has-code ""
+exit: 0
+--- stdout
+{"byte_size":150,"path":"code.md","sections":[{"level":2,"limit":6,"offset":11,"title":"No Lang"}],"total_lines":21}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find edge
+exit: 0
+--- stdout
+[1mbad.md[0m [2m(4 lines, 34B)[0m
+  Bad yaml [2m(offset=4, limit=1)[0m
+[1mcode.md[0m [2m(21 lines, 150B)[0m
+  Code Case [2m(offset=5, limit=17)[0m
+    No Lang [2m(offset=11, limit=6)[0m
+    Table [2m(offset=17, limit=5)[0m
+[1mdup.md[0m [2m(5 lines, 29B)[0m
+  Dup keys [2m(offset=5, limit=1)[0m
+[1mempty.md[0m [2m(3 lines, 28B)[0m
+  Empty frontmatter [2m(offset=3, limit=1)[0m
+[1mkeys.md[0m [2m(5 lines, 56B)[0m
+  Non-string keys [2m(offset=5, limit=1)[0m
+[1mlist.md[0m [2m(5 lines, 35B)[0m
+  List frontmatter [2m(offset=5, limit=1)[0m
+[1mmulti.md[0m [2m(12 lines, 66B)[0m
+  Doc [2m(offset=5, limit=4)[0m
+    Two [2m(offset=12, limit=1)[0m
+[1mplain.md[0m [2m(10 lines, 73B)[0m
+  A [2m(offset=1, limit=10)[0m
+    B [2m(offset=5, limit=6)[0m
+[1municode.md[0m [2m(7 lines, 63B)[0m
+  Über Größe [2m(offset=5, limit=3)[0m
+[1myaml.md[0m [2m(39 lines, 467B)[0m
+  Yaml types [2m(offset=37, limit=3)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+10 files matched
+
+$ mdd -f agent find edge
+exit: 0
+--- stdout
+[bad.md:4,1] # Bad yaml
+[code.md:5,17] # Code Case {code:RUST, words:3}
+[code.md:11,6] ## No Lang {code:1, words:1}
+[code.md:17,5] ## Table {tables:1, words:4}
+[dup.md:5,1] # Dup keys
+[empty.md:3,1] # Empty frontmatter
+[keys.md:5,1] # Non-string keys
+[list.md:5,1] # List frontmatter
+[multi.md:5,4] # Doc {words:1}
+[multi.md:12,1] ## Two
+[plain.md:1,10] # A {words:1}
+[plain.md:5,6] ## B {lists:2, words:4, links:2}
+[unicode.md:5,3] # Über Größe {words:1}
+[yaml.md:37,3] # Yaml types {words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+10 files matched
+
+$ mdd -f json find edge
+exit: 0
+--- stdout
+{"byte_size":34,"path":"bad.md","sections":[{"level":1,"limit":1,"offset":4,"title":"Bad yaml"}],"total_lines":4}
+{"byte_size":150,"path":"code.md","sections":[{"level":1,"limit":17,"offset":5,"title":"Code Case"},{"level":2,"limit":6,"offset":11,"title":"No Lang"},{"level":2,"limit":5,"offset":17,"title":"Table"}],"total_lines":21}
+{"byte_size":29,"path":"dup.md","sections":[{"level":1,"limit":1,"offset":5,"title":"Dup keys"}],"total_lines":5}
+{"byte_size":28,"path":"empty.md","sections":[{"level":1,"limit":1,"offset":3,"title":"Empty frontmatter"}],"total_lines":3}
+{"byte_size":56,"path":"keys.md","sections":[{"level":1,"limit":1,"offset":5,"title":"Non-string keys"}],"total_lines":5}
+{"byte_size":35,"path":"list.md","sections":[{"level":1,"limit":1,"offset":5,"title":"List frontmatter"}],"total_lines":5}
+{"byte_size":66,"path":"multi.md","sections":[{"level":1,"limit":4,"offset":5,"title":"Doc"},{"level":2,"limit":1,"offset":12,"title":"Two"}],"total_lines":12}
+{"byte_size":73,"path":"plain.md","sections":[{"level":1,"limit":10,"offset":1,"title":"A"},{"level":2,"limit":6,"offset":5,"title":"B"}],"total_lines":10}
+{"byte_size":63,"path":"unicode.md","sections":[{"level":1,"limit":3,"offset":5,"title":"Über Größe"}],"total_lines":7}
+{"byte_size":467,"path":"yaml.md","sections":[{"level":1,"limit":3,"offset":37,"title":"Yaml types"}],"total_lines":39}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+10 files matched
+
+$ mdd -f human find edge -t reference
+exit: 0
+--- stdout
+[1mcode.md[0m [2m(21 lines, 150B)[0m
+  Code Case [2m(offset=5, limit=17)[0m
+    No Lang [2m(offset=11, limit=6)[0m
+    Table [2m(offset=17, limit=5)[0m
+[1myaml.md[0m [2m(39 lines, 467B)[0m
+  Yaml types [2m(offset=37, limit=3)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 files matched
+
+$ mdd -f agent find edge -t reference
+exit: 0
+--- stdout
+[code.md:5,17] # Code Case {code:RUST, words:3}
+[code.md:11,6] ## No Lang {code:1, words:1}
+[code.md:17,5] ## Table {tables:1, words:4}
+[yaml.md:37,3] # Yaml types {words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 files matched
+
+$ mdd -f json find edge -t reference
+exit: 0
+--- stdout
+{"byte_size":150,"path":"code.md","sections":[{"level":1,"limit":17,"offset":5,"title":"Code Case"},{"level":2,"limit":6,"offset":11,"title":"No Lang"},{"level":2,"limit":5,"offset":17,"title":"Table"}],"total_lines":21}
+{"byte_size":467,"path":"yaml.md","sections":[{"level":1,"limit":3,"offset":37,"title":"Yaml types"}],"total_lines":39}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+2 files matched
+
+$ mdd -f human find edge --topic yaml
+exit: 0
+--- stdout
+[1myaml.md[0m [2m(39 lines, 467B)[0m
+  Yaml types [2m(offset=37, limit=3)[0m
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f agent find edge --topic yaml
+exit: 0
+--- stdout
+[yaml.md:37,3] # Yaml types {words:1}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f json find edge --topic yaml
+exit: 0
+--- stdout
+{"byte_size":467,"path":"yaml.md","sections":[{"level":1,"limit":3,"offset":37,"title":"Yaml types"}],"total_lines":39}
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 files matched
+
+$ mdd -f human find fixtures
+exit: 0
+--- stdout
+[1mcross-refs.md[0m [2m(18 lines, 462B)[0m
+  Service Dependencies [2m(offset=6, limit=13)[0m
+    Internal Links [2m(offset=8, limit=6)[0m
+    External Resources [2m(offset=14, limit=5)[0m
+[1mfeedback-entry.md[0m [2m(32 lines, 662B)[0m
+  Integration Tests Must Use Real Dependencies [2m(offset=6, limit=27)[0m
+    Examples [2m(offset=14, limit=19)[0m
+      Good [2m(offset=16, limit=11)[0m
+      Bad [2m(offset=27, limit=6)[0m
+[1mlinks-test.md[0m [2m(18 lines, 289B)[0m
+  Links Test Document [2m(offset=6, limit=13)[0m
+    Standard Links [2m(offset=8, limit=8)[0m
+    Anchors [2m(offset=16, limit=3)[0m
+[1mlrn-agents.md[0m [2m(29 lines, 2K)[0m
+    Reading (for agents) [2m(offset=23, limit=7)[0m
+[1mlrn-multipart.md[0m [2m(23 lines, 1K)[0m
+      PES PB WebClient Refactoring: 4.1x Bulk POST Throughput [2m(offset=13, limit=11)[0m
+[1mlrn-two-entries.md[0m [2m(21 lines, 211B)[0m
+      First Entry [2m(offset=9, limit=4)[0m
+      Second Entry [2m(offset=19, limit=3)[0m
+[1mmemory-index.md[0m [2m(84 lines, 9K)[0m
+  Agent Memory Index [2m(offset=1, limit=81)[0m
+    Pre-Task Rules [2m(offset=3, limit=3)[0m
+    User [2m(offset=6, limit=3)[0m
+    Feedback [2m(offset=9, limit=8)[0m
+    Reference — Infrastructure & Ops [2m(offset=17, limit=15)[0m
+    Reference — Services & Domain [2m(offset=32, limit=15)[0m
+    Reference — PES (Product Export Service) [2m(offset=47, limit=7)[0m
+    Reference — Shell & Local Dev [2m(offset=54, limit=3)[0m
+    Reference — Knowledge Management [2m(offset=57, limit=3)[0m
+    Reference — Tooling [2m(offset=60, limit=13)[0m
+    Reference — Load Testing [2m(offset=73, limit=3)[0m
+    Project [2m(offset=76, limit=3)[0m
+    Domain Knowledge [2m(offset=79, limit=3)[0m
+  Unimported learnings [2m(offset=82, limit=3)[0m
+[1mmultipart-lrn.md[0m [2m(62 lines, 1K)[0m
+      HTTP Client Bulk Throughput Improvement [2m(offset=12, limit=9)[0m
+      Thread Pool Utilization [2m(offset=21, limit=7)[0m
+      Consumer Library Broker 3.9 Incompatibility [2m(offset=37, limit=8)[0m
+      Notification Service Authentication [2m(offset=54, limit=9)[0m
+[1mno-frontmatter.md[0m [2m(9 lines, 109B)[0m
+  Document Without Frontmatter [2m(offset=1, limit=9)[0m
+    First Heading [2m(offset=3, limit=4)[0m
+    Second Heading [2m(offset=7, limit=3)[0m
+[1mservice-doc.md[0m [2m(61 lines, 1K)[0m
+  Nexus Ingestion Pipeline [2m(offset=7, limit=55)[0m
+    Overview [2m(offset=9, limit=7)[0m
+    Architecture [2m(offset=16, limit=22)[0m
+      Queue Bindings [2m(offset=23, limit=9)[0m
+      Document Collections [2m(offset=32, limit=6)[0m
+    Deployment [2m(offset=38, limit=12)[0m
+      Environment Variables [2m(offset=42, limit=8)[0m
+    Troubleshooting [2m(offset=50, limit=12)[0m
+      High Queue Backlog [2m(offset=52, limit=5)[0m
+      Store Timeout [2m(offset=57, limit=5)[0m
+[1msimple.md[0m [2m(35 lines, 420B)[0m
+  Simple Test Document [2m(offset=6, limit=30)[0m
+    Section One [2m(offset=8, limit=8)[0m
+    Section Two [2m(offset=16, limit=10)[0m
+    Section Three [2m(offset=26, limit=10)[0m
+      Nested Subsection [2m(offset=33, limit=3)[0m
+--- stderr
+
+11 files matched
+
+$ mdd -f agent find fixtures
+exit: 0
+--- stdout
+[cross-refs.md:6,13] # Service Dependencies
+[cross-refs.md:8,6] ## Internal Links {words:20, links:3}
+[cross-refs.md:14,5] ## External Resources {lists:3, words:4, links:3}
+[feedback-entry.md:6,27] # Integration Tests Must Use Real Dependencies {words:43}
+[feedback-entry.md:14,19] ## Examples
+[feedback-entry.md:16,11] ### Good {code:java, words:13}
+[feedback-entry.md:27,6] ### Bad {code:java, words:8}
+[links-test.md:6,13] # Links Test Document
+[links-test.md:8,8] ## Standard Links {words:17, links:3}
+[links-test.md:16,3] ## Anchors {words:5, links:1}
+[lrn-agents.md:23,7] ## Reading (for agents) {lists:6, words:49}
+[lrn-multipart.md:13,11] ### PES PB WebClient Refactoring: 4.1x Bulk POST Throughput {lists:7, words:116}
+[lrn-two-entries.md:9,4] ### First Entry {words:5}
+[lrn-two-entries.md:19,3] ### Second Entry {words:5}
+[memory-index.md:1,81] # Agent Memory Index
+[memory-index.md:3,3] ## Pre-Task Rules {lists:1, words:18, links:1}
+[memory-index.md:6,3] ## User {lists:1, words:11, links:1}
+[memory-index.md:9,8] ## Feedback {lists:6, words:81, links:6}
+[memory-index.md:17,15] ## Reference — Infrastructure & Ops {lists:13, words:231, links:13}
+[memory-index.md:32,15] ## Reference — Services & Domain {lists:13, words:235, links:13}
+[memory-index.md:47,7] ## Reference — PES (Product Export Service) {lists:5, words:124, links:5}
+[memory-index.md:54,3] ## Reference — Shell & Local Dev {lists:1, words:18, links:1}
+[memory-index.md:57,3] ## Reference — Knowledge Management {lists:1, words:13, links:1}
+[memory-index.md:60,13] ## Reference — Tooling {lists:11, words:188, links:11}
+[memory-index.md:73,3] ## Reference — Load Testing {lists:1, words:23, links:1}
+[memory-index.md:76,3] ## Project {lists:1, words:13, links:1}
+[memory-index.md:79,3] ## Domain Knowledge {lists:1, words:11, links:1}
+[memory-index.md:82,3] # Unimported learnings {lists:2, words:14}
+[multipart-lrn.md:12,9] ### HTTP Client Bulk Throughput Improvement {lists:3, words:36}
+[multipart-lrn.md:21,7] ### Thread Pool Utilization {lists:4, words:20}
+[multipart-lrn.md:37,8] ### Consumer Library Broker 3.9 Incompatibility {words:23}
+[multipart-lrn.md:54,9] ### Notification Service Authentication {lists:3, words:33}
+[no-frontmatter.md:1,9] # Document Without Frontmatter
+[no-frontmatter.md:3,4] ## First Heading {words:4}
+[no-frontmatter.md:7,3] ## Second Heading {words:2}
+[service-doc.md:7,55] # Nexus Ingestion Pipeline
+[service-doc.md:9,7] ## Overview {words:30}
+[service-doc.md:16,22] ## Architecture {code:1, words:10}
+[service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+[service-doc.md:32,6] ### Document Collections {lists:3, words:14}
+[service-doc.md:38,12] ## Deployment {words:9}
+[service-doc.md:42,8] ### Environment Variables {code:yaml, words:6}
+[service-doc.md:50,12] ## Troubleshooting
+[service-doc.md:52,5] ### High Queue Backlog {words:12}
+[service-doc.md:57,5] ### Store Timeout {lists:2, words:11}
+[simple.md:6,30] # Simple Test Document
+[simple.md:8,8] ## Section One {lists:3, words:14}
+[simple.md:16,10] ## Section Two {code:rust, words:11}
+[simple.md:26,10] ## Section Three {tables:1, words:12}
+[simple.md:33,3] ### Nested Subsection {words:5}
+--- stderr
+
+11 files matched
+
+$ mdd -f json find fixtures
+exit: 0
+--- stdout
+{"byte_size":462,"path":"cross-refs.md","sections":[{"level":1,"limit":13,"offset":6,"title":"Service Dependencies"},{"level":2,"limit":6,"offset":8,"title":"Internal Links"},{"level":2,"limit":5,"offset":14,"title":"External Resources"}],"total_lines":18}
+{"byte_size":662,"path":"feedback-entry.md","sections":[{"level":1,"limit":27,"offset":6,"title":"Integration Tests Must Use Real Dependencies"},{"level":2,"limit":19,"offset":14,"title":"Examples"},{"level":3,"limit":11,"offset":16,"title":"Good"},{"level":3,"limit":6,"offset":27,"title":"Bad"}],"total_lines":32}
+{"byte_size":289,"path":"links-test.md","sections":[{"level":1,"limit":13,"offset":6,"title":"Links Test Document"},{"level":2,"limit":8,"offset":8,"title":"Standard Links"},{"level":2,"limit":3,"offset":16,"title":"Anchors"}],"total_lines":18}
+{"byte_size":2213,"path":"lrn-agents.md","sections":[{"level":2,"limit":7,"offset":23,"title":"Reading (for agents)"}],"total_lines":29}
+{"byte_size":1077,"path":"lrn-multipart.md","sections":[{"level":3,"limit":11,"offset":13,"title":"PES PB WebClient Refactoring: 4.1x Bulk POST Throughput"}],"total_lines":23}
+{"byte_size":211,"path":"lrn-two-entries.md","sections":[{"level":3,"limit":4,"offset":9,"title":"First Entry"},{"level":3,"limit":3,"offset":19,"title":"Second Entry"}],"total_lines":21}
+{"byte_size":9612,"path":"memory-index.md","sections":[{"level":1,"limit":81,"offset":1,"title":"Agent Memory Index"},{"level":2,"limit":3,"offset":3,"title":"Pre-Task Rules"},{"level":2,"limit":3,"offset":6,"title":"User"},{"level":2,"limit":8,"offset":9,"title":"Feedback"},{"level":2,"limit":15,"offset":17,"title":"Reference — Infrastructure & Ops"},{"level":2,"limit":15,"offset":32,"title":"Reference — Services & Domain"},{"level":2,"limit":7,"offset":47,"title":"Reference — PES (Product Export Service)"},{"level":2,"limit":3,"offset":54,"title":"Reference — Shell & Local Dev"},{"level":2,"limit":3,"offset":57,"title":"Reference — Knowledge Management"},{"level":2,"limit":13,"offset":60,"title":"Reference — Tooling"},{"level":2,"limit":3,"offset":73,"title":"Reference — Load Testing"},{"level":2,"limit":3,"offset":76,"title":"Project"},{"level":2,"limit":3,"offset":79,"title":"Domain Knowledge"},{"level":1,"limit":3,"offset":82,"title":"Unimported learnings"}],"total_lines":84}
+{"byte_size":1551,"path":"multipart-lrn.md","sections":[{"level":3,"limit":9,"offset":12,"title":"HTTP Client Bulk Throughput Improvement"},{"level":3,"limit":7,"offset":21,"title":"Thread Pool Utilization"},{"level":3,"limit":8,"offset":37,"title":"Consumer Library Broker 3.9 Incompatibility"},{"level":3,"limit":9,"offset":54,"title":"Notification Service Authentication"}],"total_lines":62}
+{"byte_size":109,"path":"no-frontmatter.md","sections":[{"level":1,"limit":9,"offset":1,"title":"Document Without Frontmatter"},{"level":2,"limit":4,"offset":3,"title":"First Heading"},{"level":2,"limit":3,"offset":7,"title":"Second Heading"}],"total_lines":9}
+{"byte_size":1407,"path":"service-doc.md","sections":[{"level":1,"limit":55,"offset":7,"title":"Nexus Ingestion Pipeline"},{"level":2,"limit":7,"offset":9,"title":"Overview"},{"level":2,"limit":22,"offset":16,"title":"Architecture"},{"level":3,"limit":9,"offset":23,"title":"Queue Bindings"},{"level":3,"limit":6,"offset":32,"title":"Document Collections"},{"level":2,"limit":12,"offset":38,"title":"Deployment"},{"level":3,"limit":8,"offset":42,"title":"Environment Variables"},{"level":2,"limit":12,"offset":50,"title":"Troubleshooting"},{"level":3,"limit":5,"offset":52,"title":"High Queue Backlog"},{"level":3,"limit":5,"offset":57,"title":"Store Timeout"}],"total_lines":61}
+{"byte_size":420,"path":"simple.md","sections":[{"level":1,"limit":30,"offset":6,"title":"Simple Test Document"},{"level":2,"limit":8,"offset":8,"title":"Section One"},{"level":2,"limit":10,"offset":16,"title":"Section Two"},{"level":2,"limit":10,"offset":26,"title":"Section Three"},{"level":3,"limit":3,"offset":33,"title":"Nested Subsection"}],"total_lines":35}
+--- stderr
+
+11 files matched
+
+$ mdd -f human find fixtures -t reference
+exit: 0
+--- stdout
+[1mcross-refs.md[0m [2m(18 lines, 462B)[0m
+  Service Dependencies [2m(offset=6, limit=13)[0m
+    Internal Links [2m(offset=8, limit=6)[0m
+    External Resources [2m(offset=14, limit=5)[0m
+[1mlinks-test.md[0m [2m(18 lines, 289B)[0m
+  Links Test Document [2m(offset=6, limit=13)[0m
+    Standard Links [2m(offset=8, limit=8)[0m
+    Anchors [2m(offset=16, limit=3)[0m
+[1mlrn-multipart.md[0m [2m(23 lines, 1K)[0m
+      PES PB WebClient Refactoring: 4.1x Bulk POST Throughput [2m(offset=13, limit=11)[0m
+[1mlrn-two-entries.md[0m [2m(21 lines, 211B)[0m
+      First Entry [2m(offset=9, limit=4)[0m
+[1mmultipart-lrn.md[0m [2m(62 lines, 1K)[0m
+      HTTP Client Bulk Throughput Improvement [2m(offset=12, limit=9)[0m
+      Thread Pool Utilization [2m(offset=21, limit=7)[0m
+      Notification Service Authentication [2m(offset=54, limit=9)[0m
+[1mservice-doc.md[0m [2m(61 lines, 1K)[0m
+  Nexus Ingestion Pipeline [2m(offset=7, limit=55)[0m
+    Overview [2m(offset=9, limit=7)[0m
+    Architecture [2m(offset=16, limit=22)[0m
+      Queue Bindings [2m(offset=23, limit=9)[0m
+      Document Collections [2m(offset=32, limit=6)[0m
+    Deployment [2m(offset=38, limit=12)[0m
+      Environment Variables [2m(offset=42, limit=8)[0m
+    Troubleshooting [2m(offset=50, limit=12)[0m
+      High Queue Backlog [2m(offset=52, limit=5)[0m
+      Store Timeout [2m(offset=57, limit=5)[0m
+[1msimple.md[0m [2m(35 lines, 420B)[0m
+  Simple Test Document [2m(offset=6, limit=30)[0m
+    Section One [2m(offset=8, limit=8)[0m
+    Section Two [2m(offset=16, limit=10)[0m
+    Section Three [2m(offset=26, limit=10)[0m
+      Nested Subsection [2m(offset=33, limit=3)[0m
+--- stderr
+
+7 files matched
+
+$ mdd -f agent find fixtures -t reference
+exit: 0
+--- stdout
+[cross-refs.md:6,13] # Service Dependencies
+[cross-refs.md:8,6] ## Internal Links {words:20, links:3}
+[cross-refs.md:14,5] ## External Resources {lists:3, words:4, links:3}
+[links-test.md:6,13] # Links Test Document
+[links-test.md:8,8] ## Standard Links {words:17, links:3}
+[links-test.md:16,3] ## Anchors {words:5, links:1}
+[lrn-multipart.md:13,11] ### PES PB WebClient Refactoring: 4.1x Bulk POST Throughput {lists:7, words:116}
+[lrn-two-entries.md:9,4] ### First Entry {words:5}
+[multipart-lrn.md:12,9] ### HTTP Client Bulk Throughput Improvement {lists:3, words:36}
+[multipart-lrn.md:21,7] ### Thread Pool Utilization {lists:4, words:20}
+[multipart-lrn.md:54,9] ### Notification Service Authentication {lists:3, words:33}
+[service-doc.md:7,55] # Nexus Ingestion Pipeline
+[service-doc.md:9,7] ## Overview {words:30}
+[service-doc.md:16,22] ## Architecture {code:1, words:10}
+[service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+[service-doc.md:32,6] ### Document Collections {lists:3, words:14}
+[service-doc.md:38,12] ## Deployment {words:9}
+[service-doc.md:42,8] ### Environment Variables {code:yaml, words:6}
+[service-doc.md:50,12] ## Troubleshooting
+[service-doc.md:52,5] ### High Queue Backlog {words:12}
+[service-doc.md:57,5] ### Store Timeout {lists:2, words:11}
+[simple.md:6,30] # Simple Test Document
+[simple.md:8,8] ## Section One {lists:3, words:14}
+[simple.md:16,10] ## Section Two {code:rust, words:11}
+[simple.md:26,10] ## Section Three {tables:1, words:12}
+[simple.md:33,3] ### Nested Subsection {words:5}
+--- stderr
+
+7 files matched
+
+$ mdd -f json find fixtures -t reference
+exit: 0
+--- stdout
+{"byte_size":462,"path":"cross-refs.md","sections":[{"level":1,"limit":13,"offset":6,"title":"Service Dependencies"},{"level":2,"limit":6,"offset":8,"title":"Internal Links"},{"level":2,"limit":5,"offset":14,"title":"External Resources"}],"total_lines":18}
+{"byte_size":289,"path":"links-test.md","sections":[{"level":1,"limit":13,"offset":6,"title":"Links Test Document"},{"level":2,"limit":8,"offset":8,"title":"Standard Links"},{"level":2,"limit":3,"offset":16,"title":"Anchors"}],"total_lines":18}
+{"byte_size":1077,"path":"lrn-multipart.md","sections":[{"level":3,"limit":11,"offset":13,"title":"PES PB WebClient Refactoring: 4.1x Bulk POST Throughput"}],"total_lines":23}
+{"byte_size":211,"path":"lrn-two-entries.md","sections":[{"level":3,"limit":4,"offset":9,"title":"First Entry"}],"total_lines":21}
+{"byte_size":1551,"path":"multipart-lrn.md","sections":[{"level":3,"limit":9,"offset":12,"title":"HTTP Client Bulk Throughput Improvement"},{"level":3,"limit":7,"offset":21,"title":"Thread Pool Utilization"},{"level":3,"limit":9,"offset":54,"title":"Notification Service Authentication"}],"total_lines":62}
+{"byte_size":1407,"path":"service-doc.md","sections":[{"level":1,"limit":55,"offset":7,"title":"Nexus Ingestion Pipeline"},{"level":2,"limit":7,"offset":9,"title":"Overview"},{"level":2,"limit":22,"offset":16,"title":"Architecture"},{"level":3,"limit":9,"offset":23,"title":"Queue Bindings"},{"level":3,"limit":6,"offset":32,"title":"Document Collections"},{"level":2,"limit":12,"offset":38,"title":"Deployment"},{"level":3,"limit":8,"offset":42,"title":"Environment Variables"},{"level":2,"limit":12,"offset":50,"title":"Troubleshooting"},{"level":3,"limit":5,"offset":52,"title":"High Queue Backlog"},{"level":3,"limit":5,"offset":57,"title":"Store Timeout"}],"total_lines":61}
+{"byte_size":420,"path":"simple.md","sections":[{"level":1,"limit":30,"offset":6,"title":"Simple Test Document"},{"level":2,"limit":8,"offset":8,"title":"Section One"},{"level":2,"limit":10,"offset":16,"title":"Section Two"},{"level":2,"limit":10,"offset":26,"title":"Section Three"},{"level":3,"limit":3,"offset":33,"title":"Nested Subsection"}],"total_lines":35}
+--- stderr
+
+7 files matched
+
+$ mdd -f human find fixtures --topic testing
+exit: 0
+--- stdout
+[1mfeedback-entry.md[0m [2m(32 lines, 662B)[0m
+  Integration Tests Must Use Real Dependencies [2m(offset=6, limit=27)[0m
+    Examples [2m(offset=14, limit=19)[0m
+      Good [2m(offset=16, limit=11)[0m
+      Bad [2m(offset=27, limit=6)[0m
+[1mlrn-two-entries.md[0m [2m(21 lines, 211B)[0m
+      First Entry [2m(offset=9, limit=4)[0m
+[1msimple.md[0m [2m(35 lines, 420B)[0m
+  Simple Test Document [2m(offset=6, limit=30)[0m
+    Section One [2m(offset=8, limit=8)[0m
+    Section Two [2m(offset=16, limit=10)[0m
+    Section Three [2m(offset=26, limit=10)[0m
+      Nested Subsection [2m(offset=33, limit=3)[0m
+--- stderr
+
+3 files matched
+
+$ mdd -f agent find fixtures --topic testing
+exit: 0
+--- stdout
+[feedback-entry.md:6,27] # Integration Tests Must Use Real Dependencies {words:43}
+[feedback-entry.md:14,19] ## Examples
+[feedback-entry.md:16,11] ### Good {code:java, words:13}
+[feedback-entry.md:27,6] ### Bad {code:java, words:8}
+[lrn-two-entries.md:9,4] ### First Entry {words:5}
+[simple.md:6,30] # Simple Test Document
+[simple.md:8,8] ## Section One {lists:3, words:14}
+[simple.md:16,10] ## Section Two {code:rust, words:11}
+[simple.md:26,10] ## Section Three {tables:1, words:12}
+[simple.md:33,3] ### Nested Subsection {words:5}
+--- stderr
+
+3 files matched
+
+$ mdd -f json find fixtures --topic testing
+exit: 0
+--- stdout
+{"byte_size":662,"path":"feedback-entry.md","sections":[{"level":1,"limit":27,"offset":6,"title":"Integration Tests Must Use Real Dependencies"},{"level":2,"limit":19,"offset":14,"title":"Examples"},{"level":3,"limit":11,"offset":16,"title":"Good"},{"level":3,"limit":6,"offset":27,"title":"Bad"}],"total_lines":32}
+{"byte_size":211,"path":"lrn-two-entries.md","sections":[{"level":3,"limit":4,"offset":9,"title":"First Entry"}],"total_lines":21}
+{"byte_size":420,"path":"simple.md","sections":[{"level":1,"limit":30,"offset":6,"title":"Simple Test Document"},{"level":2,"limit":8,"offset":8,"title":"Section One"},{"level":2,"limit":10,"offset":16,"title":"Section Two"},{"level":2,"limit":10,"offset":26,"title":"Section Three"},{"level":3,"limit":3,"offset":33,"title":"Nested Subsection"}],"total_lines":35}
+--- stderr
+
+3 files matched
+
+$ mdd -f human find fixtures -H Queue
+exit: 0
+--- stdout
+[1mservice-doc.md[0m [2m(61 lines, 1K)[0m
+      Queue Bindings [2m(offset=23, limit=9)[0m
+      High Queue Backlog [2m(offset=52, limit=5)[0m
+--- stderr
+
+1 files matched
+
+$ mdd -f agent find fixtures -H Queue
+exit: 0
+--- stdout
+[service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+[service-doc.md:52,5] ### High Queue Backlog {words:12}
+--- stderr
+
+1 files matched
+
+$ mdd -f json find fixtures -H Queue
+exit: 0
+--- stdout
+{"byte_size":1407,"path":"service-doc.md","sections":[{"level":3,"limit":9,"offset":23,"title":"Queue Bindings"},{"level":3,"limit":5,"offset":52,"title":"High Queue Backlog"}],"total_lines":61}
+--- stderr
+
+1 files matched
+
+$ mdd -f human find fixtures --has-table
+exit: 0
+--- stdout
+[1mservice-doc.md[0m [2m(61 lines, 1K)[0m
+      Queue Bindings [2m(offset=23, limit=9)[0m
+[1msimple.md[0m [2m(35 lines, 420B)[0m
+    Section Three [2m(offset=26, limit=10)[0m
+--- stderr
+
+2 files matched
+
+$ mdd -f agent find fixtures --has-table
+exit: 0
+--- stdout
+[service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+[simple.md:26,10] ## Section Three {tables:1, words:12}
+--- stderr
+
+2 files matched
+
+$ mdd -f json find fixtures --has-table
+exit: 0
+--- stdout
+{"byte_size":1407,"path":"service-doc.md","sections":[{"level":3,"limit":9,"offset":23,"title":"Queue Bindings"}],"total_lines":61}
+{"byte_size":420,"path":"simple.md","sections":[{"level":2,"limit":10,"offset":26,"title":"Section Three"}],"total_lines":35}
+--- stderr
+
+2 files matched
+
+$ mdd -f human find fixtures --has-code go
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no files matched the given filters
+
+$ mdd -f agent find fixtures --has-code go
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no files matched the given filters
+
+$ mdd -f json find fixtures --has-code go
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no files matched the given filters
+
+$ mdd -f human find fixtures --newer-than 2000-01-01
+exit: 0
+--- stdout
+[1mcross-refs.md[0m [2m(18 lines, 462B)[0m
+  Service Dependencies [2m(offset=6, limit=13)[0m
+    Internal Links [2m(offset=8, limit=6)[0m
+    External Resources [2m(offset=14, limit=5)[0m
+[1mfeedback-entry.md[0m [2m(32 lines, 662B)[0m
+  Integration Tests Must Use Real Dependencies [2m(offset=6, limit=27)[0m
+    Examples [2m(offset=14, limit=19)[0m
+      Good [2m(offset=16, limit=11)[0m
+      Bad [2m(offset=27, limit=6)[0m
+[1mlinks-test.md[0m [2m(18 lines, 289B)[0m
+  Links Test Document [2m(offset=6, limit=13)[0m
+    Standard Links [2m(offset=8, limit=8)[0m
+    Anchors [2m(offset=16, limit=3)[0m
+[1mlrn-agents.md[0m [2m(29 lines, 2K)[0m
+    Reading (for agents) [2m(offset=23, limit=7)[0m
+[1mlrn-multipart.md[0m [2m(23 lines, 1K)[0m
+      PES PB WebClient Refactoring: 4.1x Bulk POST Throughput [2m(offset=13, limit=11)[0m
+[1mlrn-two-entries.md[0m [2m(21 lines, 211B)[0m
+      First Entry [2m(offset=9, limit=4)[0m
+      Second Entry [2m(offset=19, limit=3)[0m
+[1mmemory-index.md[0m [2m(84 lines, 9K)[0m
+  Agent Memory Index [2m(offset=1, limit=81)[0m
+    Pre-Task Rules [2m(offset=3, limit=3)[0m
+    User [2m(offset=6, limit=3)[0m
+    Feedback [2m(offset=9, limit=8)[0m
+    Reference — Infrastructure & Ops [2m(offset=17, limit=15)[0m
+    Reference — Services & Domain [2m(offset=32, limit=15)[0m
+    Reference — PES (Product Export Service) [2m(offset=47, limit=7)[0m
+    Reference — Shell & Local Dev [2m(offset=54, limit=3)[0m
+    Reference — Knowledge Management [2m(offset=57, limit=3)[0m
+    Reference — Tooling [2m(offset=60, limit=13)[0m
+    Reference — Load Testing [2m(offset=73, limit=3)[0m
+    Project [2m(offset=76, limit=3)[0m
+    Domain Knowledge [2m(offset=79, limit=3)[0m
+  Unimported learnings [2m(offset=82, limit=3)[0m
+[1mmultipart-lrn.md[0m [2m(62 lines, 1K)[0m
+      HTTP Client Bulk Throughput Improvement [2m(offset=12, limit=9)[0m
+      Thread Pool Utilization [2m(offset=21, limit=7)[0m
+      Consumer Library Broker 3.9 Incompatibility [2m(offset=37, limit=8)[0m
+      Notification Service Authentication [2m(offset=54, limit=9)[0m
+[1mno-frontmatter.md[0m [2m(9 lines, 109B)[0m
+  Document Without Frontmatter [2m(offset=1, limit=9)[0m
+    First Heading [2m(offset=3, limit=4)[0m
+    Second Heading [2m(offset=7, limit=3)[0m
+[1mservice-doc.md[0m [2m(61 lines, 1K)[0m
+  Nexus Ingestion Pipeline [2m(offset=7, limit=55)[0m
+    Overview [2m(offset=9, limit=7)[0m
+    Architecture [2m(offset=16, limit=22)[0m
+      Queue Bindings [2m(offset=23, limit=9)[0m
+      Document Collections [2m(offset=32, limit=6)[0m
+    Deployment [2m(offset=38, limit=12)[0m
+      Environment Variables [2m(offset=42, limit=8)[0m
+    Troubleshooting [2m(offset=50, limit=12)[0m
+      High Queue Backlog [2m(offset=52, limit=5)[0m
+      Store Timeout [2m(offset=57, limit=5)[0m
+[1msimple.md[0m [2m(35 lines, 420B)[0m
+  Simple Test Document [2m(offset=6, limit=30)[0m
+    Section One [2m(offset=8, limit=8)[0m
+    Section Two [2m(offset=16, limit=10)[0m
+    Section Three [2m(offset=26, limit=10)[0m
+      Nested Subsection [2m(offset=33, limit=3)[0m
+--- stderr
+
+11 files matched
+
+$ mdd -f agent find fixtures --newer-than 2000-01-01
+exit: 0
+--- stdout
+[cross-refs.md:6,13] # Service Dependencies
+[cross-refs.md:8,6] ## Internal Links {words:20, links:3}
+[cross-refs.md:14,5] ## External Resources {lists:3, words:4, links:3}
+[feedback-entry.md:6,27] # Integration Tests Must Use Real Dependencies {words:43}
+[feedback-entry.md:14,19] ## Examples
+[feedback-entry.md:16,11] ### Good {code:java, words:13}
+[feedback-entry.md:27,6] ### Bad {code:java, words:8}
+[links-test.md:6,13] # Links Test Document
+[links-test.md:8,8] ## Standard Links {words:17, links:3}
+[links-test.md:16,3] ## Anchors {words:5, links:1}
+[lrn-agents.md:23,7] ## Reading (for agents) {lists:6, words:49}
+[lrn-multipart.md:13,11] ### PES PB WebClient Refactoring: 4.1x Bulk POST Throughput {lists:7, words:116}
+[lrn-two-entries.md:9,4] ### First Entry {words:5}
+[lrn-two-entries.md:19,3] ### Second Entry {words:5}
+[memory-index.md:1,81] # Agent Memory Index
+[memory-index.md:3,3] ## Pre-Task Rules {lists:1, words:18, links:1}
+[memory-index.md:6,3] ## User {lists:1, words:11, links:1}
+[memory-index.md:9,8] ## Feedback {lists:6, words:81, links:6}
+[memory-index.md:17,15] ## Reference — Infrastructure & Ops {lists:13, words:231, links:13}
+[memory-index.md:32,15] ## Reference — Services & Domain {lists:13, words:235, links:13}
+[memory-index.md:47,7] ## Reference — PES (Product Export Service) {lists:5, words:124, links:5}
+[memory-index.md:54,3] ## Reference — Shell & Local Dev {lists:1, words:18, links:1}
+[memory-index.md:57,3] ## Reference — Knowledge Management {lists:1, words:13, links:1}
+[memory-index.md:60,13] ## Reference — Tooling {lists:11, words:188, links:11}
+[memory-index.md:73,3] ## Reference — Load Testing {lists:1, words:23, links:1}
+[memory-index.md:76,3] ## Project {lists:1, words:13, links:1}
+[memory-index.md:79,3] ## Domain Knowledge {lists:1, words:11, links:1}
+[memory-index.md:82,3] # Unimported learnings {lists:2, words:14}
+[multipart-lrn.md:12,9] ### HTTP Client Bulk Throughput Improvement {lists:3, words:36}
+[multipart-lrn.md:21,7] ### Thread Pool Utilization {lists:4, words:20}
+[multipart-lrn.md:37,8] ### Consumer Library Broker 3.9 Incompatibility {words:23}
+[multipart-lrn.md:54,9] ### Notification Service Authentication {lists:3, words:33}
+[no-frontmatter.md:1,9] # Document Without Frontmatter
+[no-frontmatter.md:3,4] ## First Heading {words:4}
+[no-frontmatter.md:7,3] ## Second Heading {words:2}
+[service-doc.md:7,55] # Nexus Ingestion Pipeline
+[service-doc.md:9,7] ## Overview {words:30}
+[service-doc.md:16,22] ## Architecture {code:1, words:10}
+[service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+[service-doc.md:32,6] ### Document Collections {lists:3, words:14}
+[service-doc.md:38,12] ## Deployment {words:9}
+[service-doc.md:42,8] ### Environment Variables {code:yaml, words:6}
+[service-doc.md:50,12] ## Troubleshooting
+[service-doc.md:52,5] ### High Queue Backlog {words:12}
+[service-doc.md:57,5] ### Store Timeout {lists:2, words:11}
+[simple.md:6,30] # Simple Test Document
+[simple.md:8,8] ## Section One {lists:3, words:14}
+[simple.md:16,10] ## Section Two {code:rust, words:11}
+[simple.md:26,10] ## Section Three {tables:1, words:12}
+[simple.md:33,3] ### Nested Subsection {words:5}
+--- stderr
+
+11 files matched
+
+$ mdd -f json find fixtures --newer-than 2000-01-01
+exit: 0
+--- stdout
+{"byte_size":462,"path":"cross-refs.md","sections":[{"level":1,"limit":13,"offset":6,"title":"Service Dependencies"},{"level":2,"limit":6,"offset":8,"title":"Internal Links"},{"level":2,"limit":5,"offset":14,"title":"External Resources"}],"total_lines":18}
+{"byte_size":662,"path":"feedback-entry.md","sections":[{"level":1,"limit":27,"offset":6,"title":"Integration Tests Must Use Real Dependencies"},{"level":2,"limit":19,"offset":14,"title":"Examples"},{"level":3,"limit":11,"offset":16,"title":"Good"},{"level":3,"limit":6,"offset":27,"title":"Bad"}],"total_lines":32}
+{"byte_size":289,"path":"links-test.md","sections":[{"level":1,"limit":13,"offset":6,"title":"Links Test Document"},{"level":2,"limit":8,"offset":8,"title":"Standard Links"},{"level":2,"limit":3,"offset":16,"title":"Anchors"}],"total_lines":18}
+{"byte_size":2213,"path":"lrn-agents.md","sections":[{"level":2,"limit":7,"offset":23,"title":"Reading (for agents)"}],"total_lines":29}
+{"byte_size":1077,"path":"lrn-multipart.md","sections":[{"level":3,"limit":11,"offset":13,"title":"PES PB WebClient Refactoring: 4.1x Bulk POST Throughput"}],"total_lines":23}
+{"byte_size":211,"path":"lrn-two-entries.md","sections":[{"level":3,"limit":4,"offset":9,"title":"First Entry"},{"level":3,"limit":3,"offset":19,"title":"Second Entry"}],"total_lines":21}
+{"byte_size":9612,"path":"memory-index.md","sections":[{"level":1,"limit":81,"offset":1,"title":"Agent Memory Index"},{"level":2,"limit":3,"offset":3,"title":"Pre-Task Rules"},{"level":2,"limit":3,"offset":6,"title":"User"},{"level":2,"limit":8,"offset":9,"title":"Feedback"},{"level":2,"limit":15,"offset":17,"title":"Reference — Infrastructure & Ops"},{"level":2,"limit":15,"offset":32,"title":"Reference — Services & Domain"},{"level":2,"limit":7,"offset":47,"title":"Reference — PES (Product Export Service)"},{"level":2,"limit":3,"offset":54,"title":"Reference — Shell & Local Dev"},{"level":2,"limit":3,"offset":57,"title":"Reference — Knowledge Management"},{"level":2,"limit":13,"offset":60,"title":"Reference — Tooling"},{"level":2,"limit":3,"offset":73,"title":"Reference — Load Testing"},{"level":2,"limit":3,"offset":76,"title":"Project"},{"level":2,"limit":3,"offset":79,"title":"Domain Knowledge"},{"level":1,"limit":3,"offset":82,"title":"Unimported learnings"}],"total_lines":84}
+{"byte_size":1551,"path":"multipart-lrn.md","sections":[{"level":3,"limit":9,"offset":12,"title":"HTTP Client Bulk Throughput Improvement"},{"level":3,"limit":7,"offset":21,"title":"Thread Pool Utilization"},{"level":3,"limit":8,"offset":37,"title":"Consumer Library Broker 3.9 Incompatibility"},{"level":3,"limit":9,"offset":54,"title":"Notification Service Authentication"}],"total_lines":62}
+{"byte_size":109,"path":"no-frontmatter.md","sections":[{"level":1,"limit":9,"offset":1,"title":"Document Without Frontmatter"},{"level":2,"limit":4,"offset":3,"title":"First Heading"},{"level":2,"limit":3,"offset":7,"title":"Second Heading"}],"total_lines":9}
+{"byte_size":1407,"path":"service-doc.md","sections":[{"level":1,"limit":55,"offset":7,"title":"Nexus Ingestion Pipeline"},{"level":2,"limit":7,"offset":9,"title":"Overview"},{"level":2,"limit":22,"offset":16,"title":"Architecture"},{"level":3,"limit":9,"offset":23,"title":"Queue Bindings"},{"level":3,"limit":6,"offset":32,"title":"Document Collections"},{"level":2,"limit":12,"offset":38,"title":"Deployment"},{"level":3,"limit":8,"offset":42,"title":"Environment Variables"},{"level":2,"limit":12,"offset":50,"title":"Troubleshooting"},{"level":3,"limit":5,"offset":52,"title":"High Queue Backlog"},{"level":3,"limit":5,"offset":57,"title":"Store Timeout"}],"total_lines":61}
+{"byte_size":420,"path":"simple.md","sections":[{"level":1,"limit":30,"offset":6,"title":"Simple Test Document"},{"level":2,"limit":8,"offset":8,"title":"Section One"},{"level":2,"limit":10,"offset":16,"title":"Section Two"},{"level":2,"limit":10,"offset":26,"title":"Section Three"},{"level":3,"limit":3,"offset":33,"title":"Nested Subsection"}],"total_lines":35}
+--- stderr
+
+11 files matched
+
+$ mdd -f human find fixtures --newer-than 2100-01-01
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no files matched the given filters
+
+$ mdd -f agent find fixtures --newer-than 2100-01-01
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no files matched the given filters
+
+$ mdd -f json find fixtures --newer-than 2100-01-01
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no files matched the given filters
+
+$ mdd -f human find nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f agent find nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f json find nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f human find fixtures --newer-than bad
+exit: 2
+--- stdout
+--- stderr
+error: invalid value 'bad' for '--newer-than <NEWER_THAN>': expected a date as YYYY-MM-DD
+
+For more information, try '--help'.
+
+$ mdd -f agent find fixtures --newer-than bad
+exit: 2
+--- stdout
+--- stderr
+error: invalid value 'bad' for '--newer-than <NEWER_THAN>': expected a date as YYYY-MM-DD
+
+For more information, try '--help'.
+
+$ mdd -f json find fixtures --newer-than bad
+exit: 2
+--- stdout
+--- stderr
+error: invalid value 'bad' for '--newer-than <NEWER_THAN>': expected a date as YYYY-MM-DD
+
+For more information, try '--help'.
+
+$ mdd -f human find --help
+exit: 0
+--- stdout
+Cross-file structural query with composable filters
+
+Usage: mdd find [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field value
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field value
+
+  -H, --heading <HEADING>
+          Filter by heading pattern (substring match)
+
+      --has-table
+          Only files containing at least one table
+
+      --has-code <HAS_CODE>
+          Only files containing code blocks in the specified language
+
+      --newer-than <NEWER_THAN>
+          Only files modified after this date (YYYY-MM-DD)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent find --help
+exit: 0
+--- stdout
+Cross-file structural query with composable filters
+
+Usage: mdd find [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field value
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field value
+
+  -H, --heading <HEADING>
+          Filter by heading pattern (substring match)
+
+      --has-table
+          Only files containing at least one table
+
+      --has-code <HAS_CODE>
+          Only files containing code blocks in the specified language
+
+      --newer-than <NEWER_THAN>
+          Only files modified after this date (YYYY-MM-DD)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json find --help
+exit: 0
+--- stdout
+Cross-file structural query with composable filters
+
+Usage: mdd find [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field value
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field value
+
+  -H, --heading <HEADING>
+          Filter by heading pattern (substring match)
+
+      --has-table
+          Only files containing at least one table
+
+      --has-code <HAS_CODE>
+          Only files containing code blocks in the specified language
+
+      --newer-than <NEWER_THAN>
+          Only files modified after this date (YYYY-MM-DD)
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr

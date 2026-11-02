@@ -1,0 +1,2074 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (agg))
+---
+$ mdd -f human agg edge11 -H flat
+exit: 0
+--- stdout
+[2m[lists.md:13,4][0m [1mFlat[0m
+## Flat
+
+- p
+- q
+
+--- stderr
+1 sections emitted (4 lines)
+
+$ mdd -f agent agg edge11 -H flat
+exit: 0
+--- stdout
+[lists.md:13,4] ## Flat {lists:2, words:2}
+## Flat
+
+- p
+- q
+
+--- stderr
+1 sections emitted (4 lines)
+
+$ mdd -f json agg edge11 -H flat
+exit: 0
+--- stdout
+[
+  {
+    "content": "## Flat\n\n- p\n- q",
+    "limit": 4,
+    "offset": 13,
+    "path": "lists.md",
+    "title": "Flat"
+  }
+]
+--- stderr
+1 sections emitted (4 lines)
+
+$ mdd -f human agg -h
+exit: 0
+--- stdout
+Aggregate matching sections into a single context-efficient output
+
+Usage: mdd agg [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>  Directory to search
+
+Options:
+  -H, --heading <HEADING>  Filter by heading pattern
+  -t, --type <TYPE>        Filter by frontmatter 'type' field
+      --topic <TOPIC>      Filter by frontmatter 'topic' field
+      --budget <BUDGET>    Maximum output lines (default: 500) [default: 500]
+  -f, --format <FORMAT>    Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict             Fail on first malformed file instead of skipping with a warning
+      --all-files          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help               Print help (see more with '--help')
+--- stderr
+
+$ mdd -f agent agg -h
+exit: 0
+--- stdout
+Aggregate matching sections into a single context-efficient output
+
+Usage: mdd agg [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>  Directory to search
+
+Options:
+  -H, --heading <HEADING>  Filter by heading pattern
+  -t, --type <TYPE>        Filter by frontmatter 'type' field
+      --topic <TOPIC>      Filter by frontmatter 'topic' field
+      --budget <BUDGET>    Maximum output lines (default: 500) [default: 500]
+  -f, --format <FORMAT>    Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict             Fail on first malformed file instead of skipping with a warning
+      --all-files          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help               Print help (see more with '--help')
+--- stderr
+
+$ mdd -f json agg -h
+exit: 0
+--- stdout
+Aggregate matching sections into a single context-efficient output
+
+Usage: mdd agg [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>  Directory to search
+
+Options:
+  -H, --heading <HEADING>  Filter by heading pattern
+  -t, --type <TYPE>        Filter by frontmatter 'type' field
+      --topic <TOPIC>      Filter by frontmatter 'topic' field
+      --budget <BUDGET>    Maximum output lines (default: 500) [default: 500]
+  -f, --format <FORMAT>    Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict             Fail on first malformed file instead of skipping with a warning
+      --all-files          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help               Print help (see more with '--help')
+--- stderr
+
+$ mdd -f human agg
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <DIR>
+
+Usage: mdd agg <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f agent agg
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <DIR>
+
+Usage: mdd agg <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f json agg
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <DIR>
+
+Usage: mdd agg <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f human agg fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd agg <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f agent agg fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd agg <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f json agg fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd agg <DIR>
+
+For more information, try '--help'.
+
+$ mdd -f human agg fixtures --budget x
+exit: 2
+--- stdout
+--- stderr
+error: invalid value 'x' for '--budget <BUDGET>': invalid digit found in string
+
+For more information, try '--help'.
+
+$ mdd -f agent agg fixtures --budget x
+exit: 2
+--- stdout
+--- stderr
+error: invalid value 'x' for '--budget <BUDGET>': invalid digit found in string
+
+For more information, try '--help'.
+
+$ mdd -f json agg fixtures --budget x
+exit: 2
+--- stdout
+--- stderr
+error: invalid value 'x' for '--budget <BUDGET>': invalid digit found in string
+
+For more information, try '--help'.
+
+$ mdd -f human agg edge -H über
+exit: 0
+--- stdout
+[2m[unicode.md:5,3][0m [1mÜber Größe[0m
+# Über Größe
+
+Text.
+
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (3 lines)
+
+$ mdd -f agent agg edge -H über
+exit: 0
+--- stdout
+[unicode.md:5,3] # Über Größe {words:1}
+# Über Größe
+
+Text.
+
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (3 lines)
+
+$ mdd -f json agg edge -H über
+exit: 0
+--- stdout
+[
+  {
+    "content": "# Über Größe\n\nText.",
+    "limit": 3,
+    "offset": 5,
+    "path": "unicode.md",
+    "title": "Über Größe"
+  }
+]
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (3 lines)
+
+$ mdd -f human agg edge --topic über
+exit: 0
+--- stdout
+[2m[unicode.md:5,3][0m [1mÜber Größe[0m
+# Über Größe
+
+Text.
+
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (3 lines)
+
+$ mdd -f agent agg edge --topic über
+exit: 0
+--- stdout
+[unicode.md:5,3] # Über Größe {words:1}
+# Über Größe
+
+Text.
+
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (3 lines)
+
+$ mdd -f json agg edge --topic über
+exit: 0
+--- stdout
+[
+  {
+    "content": "# Über Größe\n\nText.",
+    "limit": 3,
+    "offset": 5,
+    "path": "unicode.md",
+    "title": "Über Größe"
+  }
+]
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (3 lines)
+
+$ mdd -f human agg edge -t ÉTUDE
+exit: 0
+--- stdout
+[2m[unicode.md:5,3][0m [1mÜber Größe[0m
+# Über Größe
+
+Text.
+
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (3 lines)
+
+$ mdd -f agent agg edge -t ÉTUDE
+exit: 0
+--- stdout
+[unicode.md:5,3] # Über Größe {words:1}
+# Über Größe
+
+Text.
+
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (3 lines)
+
+$ mdd -f json agg edge -t ÉTUDE
+exit: 0
+--- stdout
+[
+  {
+    "content": "# Über Größe\n\nText.",
+    "limit": 3,
+    "offset": 5,
+    "path": "unicode.md",
+    "title": "Über Größe"
+  }
+]
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (3 lines)
+
+$ mdd -f human agg edge -H TABLE
+exit: 0
+--- stdout
+[2m[code.md:17,5][0m [1mTable[0m
+## Table
+
+| a | b |
+|---|---|
+| 1 | 2 |
+
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (5 lines)
+
+$ mdd -f agent agg edge -H TABLE
+exit: 0
+--- stdout
+[code.md:17,5] ## Table {tables:1, words:4}
+## Table
+
+| a | b |
+|---|---|
+| 1 | 2 |
+
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (5 lines)
+
+$ mdd -f json agg edge -H TABLE
+exit: 0
+--- stdout
+[
+  {
+    "content": "## Table\n\n| a | b |\n|---|---|\n| 1 | 2 |",
+    "limit": 5,
+    "offset": 17,
+    "path": "code.md",
+    "title": "Table"
+  }
+]
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+1 sections emitted (5 lines)
+
+$ mdd -f human agg fixtures --topic testing
+exit: 0
+--- stdout
+[2m[simple.md:33,3][0m [1mNested Subsection[0m
+### Nested Subsection
+
+Content in a nested subsection.
+
+[2m[lrn-two-entries.md:9,4][0m [1mFirst Entry[0m
+### First Entry
+
+Content of the first entry.
+
+
+[2m[feedback-entry.md:27,6][0m [1mBad[0m
+### Bad
+
+```java
+@MockBean
+DocStoreTemplate storeTemplate; // Never for integration tests
+```
+
+[2m[simple.md:8,8][0m [1mSection One[0m
+## Section One
+
+This is the first section with some content.
+
+- Item 1
+- Item 2
+- Item 3
+
+
+[2m[simple.md:16,10][0m [1mSection Two[0m
+## Section Two
+
+A section with a code block:
+
+```rust
+fn main() {
+    println!("hello");
+}
+```
+
+
+[2m[simple.md:26,10][0m [1mSection Three[0m
+## Section Three
+
+| Column A | Column B |
+|----------|----------|
+| value 1  | value 2  |
+| value 3  | value 4  |
+
+### Nested Subsection
+
+Content in a nested subsection.
+
+[2m[feedback-entry.md:16,11][0m [1mGood[0m
+### Good
+
+```java
+@IntegrationTest
+@EphemeralContainers
+class IngestionIT {
+    @Container
+    static DocStoreContainer store = new DocStoreContainer("docstore:7");
+}
+```
+
+
+[2m[feedback-entry.md:14,19][0m [1mExamples[0m
+## Examples
+
+### Good
+
+```java
+@IntegrationTest
+@EphemeralContainers
+class IngestionIT {
+    @Container
+    static DocStoreContainer store = new DocStoreContainer("docstore:7");
+}
+```
+
+### Bad
+
+```java
+@MockBean
+DocStoreTemplate storeTemplate; // Never for integration tests
+```
+
+[2m[feedback-entry.md:6,27][0m [1mIntegration Tests Must Use Real Dependencies[0m
+# Integration Tests Must Use Real Dependencies
+
+Integration tests must hit actual backing services, not mocks.
+
+**Why:** Previous incident where mocked tests passed but production migration failed due to schema drift.
+
+**How to apply:** Use ephemeral containers for integration tests. Reserve mocks for unit tests of pure business logic only.
+
+## Examples
+
+### Good
+
+```java
+@IntegrationTest
+@EphemeralContainers
+class IngestionIT {
+    @Container
+    static DocStoreContainer store = new DocStoreContainer("docstore:7");
+}
+```
+
+### Bad
+
+```java
+@MockBean
+DocStoreTemplate storeTemplate; // Never for integration tests
+```
+
+[2m[simple.md:6,30][0m [1mSimple Test Document[0m
+# Simple Test Document
+
+## Section One
+
+This is the first section with some content.
+
+- Item 1
+- Item 2
+- Item 3
+
+## Section Two
+
+A section with a code block:
+
+```rust
+fn main() {
+    println!("hello");
+}
+```
+
+## Section Three
+
+| Column A | Column B |
+|----------|----------|
+| value 1  | value 2  |
+| value 3  | value 4  |
+
+### Nested Subsection
+
+Content in a nested subsection.
+
+--- stderr
+10 sections emitted (128 lines)
+
+$ mdd -f agent agg fixtures --topic testing
+exit: 0
+--- stdout
+[simple.md:33,3] ### Nested Subsection {words:5}
+### Nested Subsection
+
+Content in a nested subsection.
+
+[lrn-two-entries.md:9,4] ### First Entry {words:5}
+### First Entry
+
+Content of the first entry.
+
+
+[feedback-entry.md:27,6] ### Bad {code:java, words:8}
+### Bad
+
+```java
+@MockBean
+DocStoreTemplate storeTemplate; // Never for integration tests
+```
+
+[simple.md:8,8] ## Section One {lists:3, words:14}
+## Section One
+
+This is the first section with some content.
+
+- Item 1
+- Item 2
+- Item 3
+
+
+[simple.md:16,10] ## Section Two {code:rust, words:11}
+## Section Two
+
+A section with a code block:
+
+```rust
+fn main() {
+    println!("hello");
+}
+```
+
+
+[simple.md:26,10] ## Section Three {tables:1, words:12}
+## Section Three
+
+| Column A | Column B |
+|----------|----------|
+| value 1  | value 2  |
+| value 3  | value 4  |
+
+### Nested Subsection
+
+Content in a nested subsection.
+
+[feedback-entry.md:16,11] ### Good {code:java, words:13}
+### Good
+
+```java
+@IntegrationTest
+@EphemeralContainers
+class IngestionIT {
+    @Container
+    static DocStoreContainer store = new DocStoreContainer("docstore:7");
+}
+```
+
+
+[feedback-entry.md:14,19] ## Examples
+## Examples
+
+### Good
+
+```java
+@IntegrationTest
+@EphemeralContainers
+class IngestionIT {
+    @Container
+    static DocStoreContainer store = new DocStoreContainer("docstore:7");
+}
+```
+
+### Bad
+
+```java
+@MockBean
+DocStoreTemplate storeTemplate; // Never for integration tests
+```
+
+[feedback-entry.md:6,27] # Integration Tests Must Use Real Dependencies {words:43}
+# Integration Tests Must Use Real Dependencies
+
+Integration tests must hit actual backing services, not mocks.
+
+**Why:** Previous incident where mocked tests passed but production migration failed due to schema drift.
+
+**How to apply:** Use ephemeral containers for integration tests. Reserve mocks for unit tests of pure business logic only.
+
+## Examples
+
+### Good
+
+```java
+@IntegrationTest
+@EphemeralContainers
+class IngestionIT {
+    @Container
+    static DocStoreContainer store = new DocStoreContainer("docstore:7");
+}
+```
+
+### Bad
+
+```java
+@MockBean
+DocStoreTemplate storeTemplate; // Never for integration tests
+```
+
+[simple.md:6,30] # Simple Test Document
+# Simple Test Document
+
+## Section One
+
+This is the first section with some content.
+
+- Item 1
+- Item 2
+- Item 3
+
+## Section Two
+
+A section with a code block:
+
+```rust
+fn main() {
+    println!("hello");
+}
+```
+
+## Section Three
+
+| Column A | Column B |
+|----------|----------|
+| value 1  | value 2  |
+| value 3  | value 4  |
+
+### Nested Subsection
+
+Content in a nested subsection.
+
+--- stderr
+10 sections emitted (128 lines)
+
+$ mdd -f json agg fixtures --topic testing
+exit: 0
+--- stdout
+[
+  {
+    "content": "### Nested Subsection\n\nContent in a nested subsection.",
+    "limit": 3,
+    "offset": 33,
+    "path": "simple.md",
+    "title": "Nested Subsection"
+  },
+  {
+    "content": "### First Entry\n\nContent of the first entry.\n",
+    "limit": 4,
+    "offset": 9,
+    "path": "lrn-two-entries.md",
+    "title": "First Entry"
+  },
+  {
+    "content": "### Bad\n\n```java\n@MockBean\nDocStoreTemplate storeTemplate; // Never for integration tests\n```",
+    "limit": 6,
+    "offset": 27,
+    "path": "feedback-entry.md",
+    "title": "Bad"
+  },
+  {
+    "content": "## Section One\n\nThis is the first section with some content.\n\n- Item 1\n- Item 2\n- Item 3\n",
+    "limit": 8,
+    "offset": 8,
+    "path": "simple.md",
+    "title": "Section One"
+  },
+  {
+    "content": "## Section Two\n\nA section with a code block:\n\n```rust\nfn main() {\n    println!(\"hello\");\n}\n```\n",
+    "limit": 10,
+    "offset": 16,
+    "path": "simple.md",
+    "title": "Section Two"
+  },
+  {
+    "content": "## Section Three\n\n| Column A | Column B |\n|----------|----------|\n| value 1  | value 2  |\n| value 3  | value 4  |\n\n### Nested Subsection\n\nContent in a nested subsection.",
+    "limit": 10,
+    "offset": 26,
+    "path": "simple.md",
+    "title": "Section Three"
+  },
+  {
+    "content": "### Good\n\n```java\n@IntegrationTest\n@EphemeralContainers\nclass IngestionIT {\n    @Container\n    static DocStoreContainer store = new DocStoreContainer(\"docstore:7\");\n}\n```\n",
+    "limit": 11,
+    "offset": 16,
+    "path": "feedback-entry.md",
+    "title": "Good"
+  },
+  {
+    "content": "## Examples\n\n### Good\n\n```java\n@IntegrationTest\n@EphemeralContainers\nclass IngestionIT {\n    @Container\n    static DocStoreContainer store = new DocStoreContainer(\"docstore:7\");\n}\n```\n\n### Bad\n\n```java\n@MockBean\nDocStoreTemplate storeTemplate; // Never for integration tests\n```",
+    "limit": 19,
+    "offset": 14,
+    "path": "feedback-entry.md",
+    "title": "Examples"
+  },
+  {
+    "content": "# Integration Tests Must Use Real Dependencies\n\nIntegration tests must hit actual backing services, not mocks.\n\n**Why:** Previous incident where mocked tests passed but production migration failed due to schema drift.\n\n**How to apply:** Use ephemeral containers for integration tests. Reserve mocks for unit tests of pure business logic only.\n\n## Examples\n\n### Good\n\n```java\n@IntegrationTest\n@EphemeralContainers\nclass IngestionIT {\n    @Container\n    static DocStoreContainer store = new DocStoreContainer(\"docstore:7\");\n}\n```\n\n### Bad\n\n```java\n@MockBean\nDocStoreTemplate storeTemplate; // Never for integration tests\n```",
+    "limit": 27,
+    "offset": 6,
+    "path": "feedback-entry.md",
+    "title": "Integration Tests Must Use Real Dependencies"
+  },
+  {
+    "content": "# Simple Test Document\n\n## Section One\n\nThis is the first section with some content.\n\n- Item 1\n- Item 2\n- Item 3\n\n## Section Two\n\nA section with a code block:\n\n```rust\nfn main() {\n    println!(\"hello\");\n}\n```\n\n## Section Three\n\n| Column A | Column B |\n|----------|----------|\n| value 1  | value 2  |\n| value 3  | value 4  |\n\n### Nested Subsection\n\nContent in a nested subsection.",
+    "limit": 30,
+    "offset": 6,
+    "path": "simple.md",
+    "title": "Simple Test Document"
+  }
+]
+--- stderr
+10 sections emitted (128 lines)
+
+$ mdd -f human agg fixtures -t reference -H a --topic testing
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no sections matched the given filters
+
+$ mdd -f agent agg fixtures -t reference -H a --topic testing
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no sections matched the given filters
+
+$ mdd -f json agg fixtures -t reference -H a --topic testing
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no sections matched the given filters
+
+$ mdd -f human agg fixtures --budget 5 -H a
+exit: 0
+--- stdout
+[2m[links-test.md:16,3][0m [1mAnchors[0m
+## Anchors
+
+A section anchor: [jump](#standard-links).
+
+--- stderr
+--- (27 more sections, 301 lines truncated) ---
+1 sections emitted (3 lines)
+
+$ mdd -f agent agg fixtures --budget 5 -H a
+exit: 0
+--- stdout
+[links-test.md:16,3] ## Anchors {words:5, links:1}
+## Anchors
+
+A section anchor: [jump](#standard-links).
+
+--- stderr
+--- (27 more sections, 301 lines truncated) ---
+1 sections emitted (3 lines)
+
+$ mdd -f json agg fixtures --budget 5 -H a
+exit: 0
+--- stdout
+[
+  {
+    "content": "## Anchors\n\nA section anchor: [jump](#standard-links).",
+    "limit": 3,
+    "offset": 16,
+    "path": "links-test.md",
+    "title": "Anchors"
+  }
+]
+--- stderr
+--- (27 more sections, 301 lines truncated) ---
+1 sections emitted (3 lines)
+
+$ mdd -f human agg edge -t reference
+exit: 0
+--- stdout
+[2m[yaml.md:37,3][0m [1mYaml types[0m
+# Yaml types
+
+text
+
+[2m[code.md:17,5][0m [1mTable[0m
+## Table
+
+| a | b |
+|---|---|
+| 1 | 2 |
+
+[2m[code.md:11,6][0m [1mNo Lang[0m
+## No Lang
+
+```
+plain
+```
+
+
+[2m[code.md:5,17][0m [1mCode Case[0m
+# Code Case
+
+```RUST
+fn main() {}
+```
+
+## No Lang
+
+```
+plain
+```
+
+## Table
+
+| a | b |
+|---|---|
+| 1 | 2 |
+
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+4 sections emitted (31 lines)
+
+$ mdd -f agent agg edge -t reference
+exit: 0
+--- stdout
+[yaml.md:37,3] # Yaml types {words:1}
+# Yaml types
+
+text
+
+[code.md:17,5] ## Table {tables:1, words:4}
+## Table
+
+| a | b |
+|---|---|
+| 1 | 2 |
+
+[code.md:11,6] ## No Lang {code:1, words:1}
+## No Lang
+
+```
+plain
+```
+
+
+[code.md:5,17] # Code Case {code:RUST, words:3}
+# Code Case
+
+```RUST
+fn main() {}
+```
+
+## No Lang
+
+```
+plain
+```
+
+## Table
+
+| a | b |
+|---|---|
+| 1 | 2 |
+
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+4 sections emitted (31 lines)
+
+$ mdd -f json agg edge -t reference
+exit: 0
+--- stdout
+[
+  {
+    "content": "# Yaml types\n\ntext",
+    "limit": 3,
+    "offset": 37,
+    "path": "yaml.md",
+    "title": "Yaml types"
+  },
+  {
+    "content": "## Table\n\n| a | b |\n|---|---|\n| 1 | 2 |",
+    "limit": 5,
+    "offset": 17,
+    "path": "code.md",
+    "title": "Table"
+  },
+  {
+    "content": "## No Lang\n\n```\nplain\n```\n",
+    "limit": 6,
+    "offset": 11,
+    "path": "code.md",
+    "title": "No Lang"
+  },
+  {
+    "content": "# Code Case\n\n```RUST\nfn main() {}\n```\n\n## No Lang\n\n```\nplain\n```\n\n## Table\n\n| a | b |\n|---|---|\n| 1 | 2 |",
+    "limit": 17,
+    "offset": 5,
+    "path": "code.md",
+    "title": "Code Case"
+  }
+]
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+4 sections emitted (31 lines)
+
+$ mdd -f human agg fixtures -H Queue
+exit: 0
+--- stdout
+[2m[service-doc.md:52,5][0m [1mHigh Queue Backlog[0m
+### High Queue Backlog
+
+Check consumer health via `/health/ready` endpoint.
+Monitor `queue.messages.consumed` counter in the dashboard.
+
+
+[2m[service-doc.md:23,9][0m [1mQueue Bindings[0m
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+
+
+--- stderr
+2 sections emitted (14 lines)
+
+$ mdd -f agent agg fixtures -H Queue
+exit: 0
+--- stdout
+[service-doc.md:52,5] ### High Queue Backlog {words:12}
+### High Queue Backlog
+
+Check consumer health via `/health/ready` endpoint.
+Monitor `queue.messages.consumed` counter in the dashboard.
+
+
+[service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+
+
+--- stderr
+2 sections emitted (14 lines)
+
+$ mdd -f json agg fixtures -H Queue
+exit: 0
+--- stdout
+[
+  {
+    "content": "### High Queue Backlog\n\nCheck consumer health via `/health/ready` endpoint.\nMonitor `queue.messages.consumed` counter in the dashboard.\n",
+    "limit": 5,
+    "offset": 52,
+    "path": "service-doc.md",
+    "title": "High Queue Backlog"
+  },
+  {
+    "content": "### Queue Bindings\n\n| Queue | Entity Type | Priority |\n|-------|------------|----------|\n| entity-alpha-p1 | alpha | 1 |\n| entity-alpha-p2 | alpha | 2 |\n| entity-beta-p1 | beta | 1 |\n| entity-beta-p2 | beta | 2 |\n",
+    "limit": 9,
+    "offset": 23,
+    "path": "service-doc.md",
+    "title": "Queue Bindings"
+  }
+]
+--- stderr
+2 sections emitted (14 lines)
+
+$ mdd -f human agg fixtures -t reference
+exit: 0
+--- stdout
+[2m[links-test.md:16,3][0m [1mAnchors[0m
+## Anchors
+
+A section anchor: [jump](#standard-links).
+
+[2m[simple.md:33,3][0m [1mNested Subsection[0m
+### Nested Subsection
+
+Content in a nested subsection.
+
+[2m[lrn-two-entries.md:9,4][0m [1mFirst Entry[0m
+### First Entry
+
+Content of the first entry.
+
+
+[2m[cross-refs.md:14,5][0m [1mExternal Resources[0m
+## External Resources
+
+- [Wiki](https://wiki.example.com/display/ENG)
+- [Dashboard](https://dash.example.com/d/ingestion)
+- [Issue Tracker](https://issues.example.com/browse/PROJ)
+
+[2m[service-doc.md:52,5][0m [1mHigh Queue Backlog[0m
+### High Queue Backlog
+
+Check consumer health via `/health/ready` endpoint.
+Monitor `queue.messages.consumed` counter in the dashboard.
+
+
+[2m[service-doc.md:57,5][0m [1mStore Timeout[0m
+### Store Timeout
+
+Verify connection pool settings:
+- `maxPoolSize`: 50 (default)
+- `connectTimeoutMS`: 10000
+
+[2m[cross-refs.md:8,6][0m [1mInternal Links[0m
+## Internal Links
+
+See [ingestion pipeline](./service-doc.md) for write-path details.
+See [feedback on testing](./feedback-entry.md) for integration test rules.
+A broken ref: [deleted doc](./removed-service.md).
+
+
+[2m[service-doc.md:32,6][0m [1mDocument Collections[0m
+### Document Collections
+
+- `entityAlpha` -- primary entity records
+- `entityBeta` -- secondary classification data
+- `entityGamma` -- variant configurations
+
+
+[2m[multipart-lrn.md:21,7][0m [1mThread Pool Utilization[0m
+### Thread Pool Utilization
+
+- Threads used: 8 of 10 max (vs 5 previously)
+- Object read: 2300 items in 2.1s
+- Transform: 0.1s
+- Bulk POST: 4.1s
+
+
+[2m[service-doc.md:9,7][0m [1mOverview[0m
+## Overview
+
+Receives upstream events from message queues and transforms them into document records.
+Publishes completion notifications downstream for indexing consumers.
+
+In one sentence: Queue consumer to document store plus event fanout.
+
+
+[2m[links-test.md:8,8][0m [1mStandard Links[0m
+## Standard Links
+
+See [simple](./simple.md) for the basic test fixture.
+
+A broken link: [missing](./does-not-exist.md).
+
+An external link: [example](https://example.com).
+
+
+[2m[service-doc.md:42,8][0m [1mEnvironment Variables[0m
+### Environment Variables
+
+```yaml
+STORE_URI: docstore+srv://cluster.example.net
+QUEUE_ENDPOINT: https://queue.region.example.com
+NOTIFY_BOOTSTRAP: notify.internal.example.net:9093
+```
+
+
+[2m[simple.md:8,8][0m [1mSection One[0m
+## Section One
+
+This is the first section with some content.
+
+- Item 1
+- Item 2
+- Item 3
+
+
+[2m[multipart-lrn.md:12,9][0m [1mHTTP Client Bulk Throughput Improvement[0m
+### HTTP Client Bulk Throughput Improvement
+
+Bulk POST rate improved from 24 to 98 items/s (4.1x gain).
+
+Root causes:
+- maxConcurrency raised from 5 to 10
+- Client refactored to share rate limiter across async operators
+- Total sync time: 40s to 24s (400 items)
+
+
+[2m[multipart-lrn.md:54,9][0m [1mNotification Service Authentication[0m
+### Notification Service Authentication
+
+The notification service requires token-based authentication:
+- clientId, clientSecret, clientCode in config
+- QA/STG bootstrap: `notify-corp.int.example.net:443`
+- PROD bootstrap: `notify-secure.prd.example.net:9097`
+
+Secure endpoints only reachable from inside cluster pods.
+Topics cannot auto-create and must be manually provisioned.
+
+[2m[service-doc.md:23,9][0m [1mQueue Bindings[0m
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+
+
+[2m[simple.md:16,10][0m [1mSection Two[0m
+## Section Two
+
+A section with a code block:
+
+```rust
+fn main() {
+    println!("hello");
+}
+```
+
+
+[2m[simple.md:26,10][0m [1mSection Three[0m
+## Section Three
+
+| Column A | Column B |
+|----------|----------|
+| value 1  | value 2  |
+| value 3  | value 4  |
+
+### Nested Subsection
+
+Content in a nested subsection.
+
+[2m[lrn-multipart.md:13,11][0m [1mPES PB WebClient Refactoring: 4.1x Bulk POST Throughput[0m
+### PES PB WebClient Refactoring: 4.1x Bulk POST Throughput
+
+Commits `e67e728..d2832f2` on branch `pb1-2` validated via e2e on PaaS QA (2026-05-08):
+
+- Bulk POST rate: 23.7 -> **97.0 products/s** (4.1x improvement)
+- Root causes: `maxConcurrency` raised from 5 to 10 (env `PES_PB_MAX_CONCURRENCY`), WebClient refactored to share rate limiter across reactive operators via `RateLimiterOperator.of(rateLimiter)` in `Flux.flatMap`
+- PB-side latency also dropped from 10-15s to ~4s per batch (appears to be PB infrastructure variability, not client-side)
+- Total sync time: 40s -> **24s** (for 397 products, 8 batches of 50)
+- Delete rate unchanged at 1.0 deletes/s (rate-limited, sequential) -- PB has no batch DELETE API
+- Reactor threads used: 8 (of 10 max) vs 5 previously
+- S3 read: 2333 products in 2.1s; transform: 0.1s; bulk POST: 4.1s; reconcile list: 3.5s
+
+[2m[service-doc.md:38,12][0m [1mDeployment[0m
+## Deployment
+
+Deployed via CI pipeline to staging and production clusters.
+
+### Environment Variables
+
+```yaml
+STORE_URI: docstore+srv://cluster.example.net
+QUEUE_ENDPOINT: https://queue.region.example.com
+NOTIFY_BOOTSTRAP: notify.internal.example.net:9093
+```
+
+
+[2m[service-doc.md:50,12][0m [1mTroubleshooting[0m
+## Troubleshooting
+
+### High Queue Backlog
+
+Check consumer health via `/health/ready` endpoint.
+Monitor `queue.messages.consumed` counter in the dashboard.
+
+### Store Timeout
+
+Verify connection pool settings:
+- `maxPoolSize`: 50 (default)
+- `connectTimeoutMS`: 10000
+
+[2m[cross-refs.md:6,13][0m [1mService Dependencies[0m
+# Service Dependencies
+
+## Internal Links
+
+See [ingestion pipeline](./service-doc.md) for write-path details.
+See [feedback on testing](./feedback-entry.md) for integration test rules.
+A broken ref: [deleted doc](./removed-service.md).
+
+## External Resources
+
+- [Wiki](https://wiki.example.com/display/ENG)
+- [Dashboard](https://dash.example.com/d/ingestion)
+- [Issue Tracker](https://issues.example.com/browse/PROJ)
+
+[2m[links-test.md:6,13][0m [1mLinks Test Document[0m
+# Links Test Document
+
+## Standard Links
+
+See [simple](./simple.md) for the basic test fixture.
+
+A broken link: [missing](./does-not-exist.md).
+
+An external link: [example](https://example.com).
+
+## Anchors
+
+A section anchor: [jump](#standard-links).
+
+[2m[service-doc.md:16,22][0m [1mArchitecture[0m
+## Architecture
+
+```
+Message Queues --> EventListener --> Transformer --> DocumentStore
+                                                 --> NotificationProducer
+```
+
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+
+### Document Collections
+
+- `entityAlpha` -- primary entity records
+- `entityBeta` -- secondary classification data
+- `entityGamma` -- variant configurations
+
+
+[2m[simple.md:6,30][0m [1mSimple Test Document[0m
+# Simple Test Document
+
+## Section One
+
+This is the first section with some content.
+
+- Item 1
+- Item 2
+- Item 3
+
+## Section Two
+
+A section with a code block:
+
+```rust
+fn main() {
+    println!("hello");
+}
+```
+
+## Section Three
+
+| Column A | Column B |
+|----------|----------|
+| value 1  | value 2  |
+| value 3  | value 4  |
+
+### Nested Subsection
+
+Content in a nested subsection.
+
+[2m[service-doc.md:7,55][0m [1mNexus Ingestion Pipeline[0m
+# Nexus Ingestion Pipeline
+
+## Overview
+
+Receives upstream events from message queues and transforms them into document records.
+Publishes completion notifications downstream for indexing consumers.
+
+In one sentence: Queue consumer to document store plus event fanout.
+
+## Architecture
+
+```
+Message Queues --> EventListener --> Transformer --> DocumentStore
+                                                 --> NotificationProducer
+```
+
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+
+### Document Collections
+
+- `entityAlpha` -- primary entity records
+- `entityBeta` -- secondary classification data
+- `entityGamma` -- variant configurations
+
+## Deployment
+
+Deployed via CI pipeline to staging and production clusters.
+
+### Environment Variables
+
+```yaml
+STORE_URI: docstore+srv://cluster.example.net
+QUEUE_ENDPOINT: https://queue.region.example.com
+NOTIFY_BOOTSTRAP: notify.internal.example.net:9093
+```
+
+## Troubleshooting
+
+### High Queue Backlog
+
+Check consumer health via `/health/ready` endpoint.
+Monitor `queue.messages.consumed` counter in the dashboard.
+
+### Store Timeout
+
+Verify connection pool settings:
+- `maxPoolSize`: 50 (default)
+- `connectTimeoutMS`: 10000
+
+--- stderr
+26 sections emitted (290 lines)
+
+$ mdd -f agent agg fixtures -t reference
+exit: 0
+--- stdout
+[links-test.md:16,3] ## Anchors {words:5, links:1}
+## Anchors
+
+A section anchor: [jump](#standard-links).
+
+[simple.md:33,3] ### Nested Subsection {words:5}
+### Nested Subsection
+
+Content in a nested subsection.
+
+[lrn-two-entries.md:9,4] ### First Entry {words:5}
+### First Entry
+
+Content of the first entry.
+
+
+[cross-refs.md:14,5] ## External Resources {lists:3, words:4, links:3}
+## External Resources
+
+- [Wiki](https://wiki.example.com/display/ENG)
+- [Dashboard](https://dash.example.com/d/ingestion)
+- [Issue Tracker](https://issues.example.com/browse/PROJ)
+
+[service-doc.md:52,5] ### High Queue Backlog {words:12}
+### High Queue Backlog
+
+Check consumer health via `/health/ready` endpoint.
+Monitor `queue.messages.consumed` counter in the dashboard.
+
+
+[service-doc.md:57,5] ### Store Timeout {lists:2, words:11}
+### Store Timeout
+
+Verify connection pool settings:
+- `maxPoolSize`: 50 (default)
+- `connectTimeoutMS`: 10000
+
+[cross-refs.md:8,6] ## Internal Links {words:20, links:3}
+## Internal Links
+
+See [ingestion pipeline](./service-doc.md) for write-path details.
+See [feedback on testing](./feedback-entry.md) for integration test rules.
+A broken ref: [deleted doc](./removed-service.md).
+
+
+[service-doc.md:32,6] ### Document Collections {lists:3, words:14}
+### Document Collections
+
+- `entityAlpha` -- primary entity records
+- `entityBeta` -- secondary classification data
+- `entityGamma` -- variant configurations
+
+
+[multipart-lrn.md:21,7] ### Thread Pool Utilization {lists:4, words:20}
+### Thread Pool Utilization
+
+- Threads used: 8 of 10 max (vs 5 previously)
+- Object read: 2300 items in 2.1s
+- Transform: 0.1s
+- Bulk POST: 4.1s
+
+
+[service-doc.md:9,7] ## Overview {words:30}
+## Overview
+
+Receives upstream events from message queues and transforms them into document records.
+Publishes completion notifications downstream for indexing consumers.
+
+In one sentence: Queue consumer to document store plus event fanout.
+
+
+[links-test.md:8,8] ## Standard Links {words:17, links:3}
+## Standard Links
+
+See [simple](./simple.md) for the basic test fixture.
+
+A broken link: [missing](./does-not-exist.md).
+
+An external link: [example](https://example.com).
+
+
+[service-doc.md:42,8] ### Environment Variables {code:yaml, words:6}
+### Environment Variables
+
+```yaml
+STORE_URI: docstore+srv://cluster.example.net
+QUEUE_ENDPOINT: https://queue.region.example.com
+NOTIFY_BOOTSTRAP: notify.internal.example.net:9093
+```
+
+
+[simple.md:8,8] ## Section One {lists:3, words:14}
+## Section One
+
+This is the first section with some content.
+
+- Item 1
+- Item 2
+- Item 3
+
+
+[multipart-lrn.md:12,9] ### HTTP Client Bulk Throughput Improvement {lists:3, words:36}
+### HTTP Client Bulk Throughput Improvement
+
+Bulk POST rate improved from 24 to 98 items/s (4.1x gain).
+
+Root causes:
+- maxConcurrency raised from 5 to 10
+- Client refactored to share rate limiter across async operators
+- Total sync time: 40s to 24s (400 items)
+
+
+[multipart-lrn.md:54,9] ### Notification Service Authentication {lists:3, words:33}
+### Notification Service Authentication
+
+The notification service requires token-based authentication:
+- clientId, clientSecret, clientCode in config
+- QA/STG bootstrap: `notify-corp.int.example.net:443`
+- PROD bootstrap: `notify-secure.prd.example.net:9097`
+
+Secure endpoints only reachable from inside cluster pods.
+Topics cannot auto-create and must be manually provisioned.
+
+[service-doc.md:23,9] ### Queue Bindings {tables:1, words:16}
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+
+
+[simple.md:16,10] ## Section Two {code:rust, words:11}
+## Section Two
+
+A section with a code block:
+
+```rust
+fn main() {
+    println!("hello");
+}
+```
+
+
+[simple.md:26,10] ## Section Three {tables:1, words:12}
+## Section Three
+
+| Column A | Column B |
+|----------|----------|
+| value 1  | value 2  |
+| value 3  | value 4  |
+
+### Nested Subsection
+
+Content in a nested subsection.
+
+[lrn-multipart.md:13,11] ### PES PB WebClient Refactoring: 4.1x Bulk POST Throughput {lists:7, words:116}
+### PES PB WebClient Refactoring: 4.1x Bulk POST Throughput
+
+Commits `e67e728..d2832f2` on branch `pb1-2` validated via e2e on PaaS QA (2026-05-08):
+
+- Bulk POST rate: 23.7 -> **97.0 products/s** (4.1x improvement)
+- Root causes: `maxConcurrency` raised from 5 to 10 (env `PES_PB_MAX_CONCURRENCY`), WebClient refactored to share rate limiter across reactive operators via `RateLimiterOperator.of(rateLimiter)` in `Flux.flatMap`
+- PB-side latency also dropped from 10-15s to ~4s per batch (appears to be PB infrastructure variability, not client-side)
+- Total sync time: 40s -> **24s** (for 397 products, 8 batches of 50)
+- Delete rate unchanged at 1.0 deletes/s (rate-limited, sequential) -- PB has no batch DELETE API
+- Reactor threads used: 8 (of 10 max) vs 5 previously
+- S3 read: 2333 products in 2.1s; transform: 0.1s; bulk POST: 4.1s; reconcile list: 3.5s
+
+[service-doc.md:38,12] ## Deployment {words:9}
+## Deployment
+
+Deployed via CI pipeline to staging and production clusters.
+
+### Environment Variables
+
+```yaml
+STORE_URI: docstore+srv://cluster.example.net
+QUEUE_ENDPOINT: https://queue.region.example.com
+NOTIFY_BOOTSTRAP: notify.internal.example.net:9093
+```
+
+
+[service-doc.md:50,12] ## Troubleshooting
+## Troubleshooting
+
+### High Queue Backlog
+
+Check consumer health via `/health/ready` endpoint.
+Monitor `queue.messages.consumed` counter in the dashboard.
+
+### Store Timeout
+
+Verify connection pool settings:
+- `maxPoolSize`: 50 (default)
+- `connectTimeoutMS`: 10000
+
+[cross-refs.md:6,13] # Service Dependencies
+# Service Dependencies
+
+## Internal Links
+
+See [ingestion pipeline](./service-doc.md) for write-path details.
+See [feedback on testing](./feedback-entry.md) for integration test rules.
+A broken ref: [deleted doc](./removed-service.md).
+
+## External Resources
+
+- [Wiki](https://wiki.example.com/display/ENG)
+- [Dashboard](https://dash.example.com/d/ingestion)
+- [Issue Tracker](https://issues.example.com/browse/PROJ)
+
+[links-test.md:6,13] # Links Test Document
+# Links Test Document
+
+## Standard Links
+
+See [simple](./simple.md) for the basic test fixture.
+
+A broken link: [missing](./does-not-exist.md).
+
+An external link: [example](https://example.com).
+
+## Anchors
+
+A section anchor: [jump](#standard-links).
+
+[service-doc.md:16,22] ## Architecture {code:1, words:10}
+## Architecture
+
+```
+Message Queues --> EventListener --> Transformer --> DocumentStore
+                                                 --> NotificationProducer
+```
+
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+
+### Document Collections
+
+- `entityAlpha` -- primary entity records
+- `entityBeta` -- secondary classification data
+- `entityGamma` -- variant configurations
+
+
+[simple.md:6,30] # Simple Test Document
+# Simple Test Document
+
+## Section One
+
+This is the first section with some content.
+
+- Item 1
+- Item 2
+- Item 3
+
+## Section Two
+
+A section with a code block:
+
+```rust
+fn main() {
+    println!("hello");
+}
+```
+
+## Section Three
+
+| Column A | Column B |
+|----------|----------|
+| value 1  | value 2  |
+| value 3  | value 4  |
+
+### Nested Subsection
+
+Content in a nested subsection.
+
+[service-doc.md:7,55] # Nexus Ingestion Pipeline
+# Nexus Ingestion Pipeline
+
+## Overview
+
+Receives upstream events from message queues and transforms them into document records.
+Publishes completion notifications downstream for indexing consumers.
+
+In one sentence: Queue consumer to document store plus event fanout.
+
+## Architecture
+
+```
+Message Queues --> EventListener --> Transformer --> DocumentStore
+                                                 --> NotificationProducer
+```
+
+### Queue Bindings
+
+| Queue | Entity Type | Priority |
+|-------|------------|----------|
+| entity-alpha-p1 | alpha | 1 |
+| entity-alpha-p2 | alpha | 2 |
+| entity-beta-p1 | beta | 1 |
+| entity-beta-p2 | beta | 2 |
+
+### Document Collections
+
+- `entityAlpha` -- primary entity records
+- `entityBeta` -- secondary classification data
+- `entityGamma` -- variant configurations
+
+## Deployment
+
+Deployed via CI pipeline to staging and production clusters.
+
+### Environment Variables
+
+```yaml
+STORE_URI: docstore+srv://cluster.example.net
+QUEUE_ENDPOINT: https://queue.region.example.com
+NOTIFY_BOOTSTRAP: notify.internal.example.net:9093
+```
+
+## Troubleshooting
+
+### High Queue Backlog
+
+Check consumer health via `/health/ready` endpoint.
+Monitor `queue.messages.consumed` counter in the dashboard.
+
+### Store Timeout
+
+Verify connection pool settings:
+- `maxPoolSize`: 50 (default)
+- `connectTimeoutMS`: 10000
+
+--- stderr
+26 sections emitted (290 lines)
+
+$ mdd -f json agg fixtures -t reference
+exit: 0
+--- stdout
+[
+  {
+    "content": "## Anchors\n\nA section anchor: [jump](#standard-links).",
+    "limit": 3,
+    "offset": 16,
+    "path": "links-test.md",
+    "title": "Anchors"
+  },
+  {
+    "content": "### Nested Subsection\n\nContent in a nested subsection.",
+    "limit": 3,
+    "offset": 33,
+    "path": "simple.md",
+    "title": "Nested Subsection"
+  },
+  {
+    "content": "### First Entry\n\nContent of the first entry.\n",
+    "limit": 4,
+    "offset": 9,
+    "path": "lrn-two-entries.md",
+    "title": "First Entry"
+  },
+  {
+    "content": "## External Resources\n\n- [Wiki](https://wiki.example.com/display/ENG)\n- [Dashboard](https://dash.example.com/d/ingestion)\n- [Issue Tracker](https://issues.example.com/browse/PROJ)",
+    "limit": 5,
+    "offset": 14,
+    "path": "cross-refs.md",
+    "title": "External Resources"
+  },
+  {
+    "content": "### High Queue Backlog\n\nCheck consumer health via `/health/ready` endpoint.\nMonitor `queue.messages.consumed` counter in the dashboard.\n",
+    "limit": 5,
+    "offset": 52,
+    "path": "service-doc.md",
+    "title": "High Queue Backlog"
+  },
+  {
+    "content": "### Store Timeout\n\nVerify connection pool settings:\n- `maxPoolSize`: 50 (default)\n- `connectTimeoutMS`: 10000",
+    "limit": 5,
+    "offset": 57,
+    "path": "service-doc.md",
+    "title": "Store Timeout"
+  },
+  {
+    "content": "## Internal Links\n\nSee [ingestion pipeline](./service-doc.md) for write-path details.\nSee [feedback on testing](./feedback-entry.md) for integration test rules.\nA broken ref: [deleted doc](./removed-service.md).\n",
+    "limit": 6,
+    "offset": 8,
+    "path": "cross-refs.md",
+    "title": "Internal Links"
+  },
+  {
+    "content": "### Document Collections\n\n- `entityAlpha` -- primary entity records\n- `entityBeta` -- secondary classification data\n- `entityGamma` -- variant configurations\n",
+    "limit": 6,
+    "offset": 32,
+    "path": "service-doc.md",
+    "title": "Document Collections"
+  },
+  {
+    "content": "### Thread Pool Utilization\n\n- Threads used: 8 of 10 max (vs 5 previously)\n- Object read: 2300 items in 2.1s\n- Transform: 0.1s\n- Bulk POST: 4.1s\n",
+    "limit": 7,
+    "offset": 21,
+    "path": "multipart-lrn.md",
+    "title": "Thread Pool Utilization"
+  },
+  {
+    "content": "## Overview\n\nReceives upstream events from message queues and transforms them into document records.\nPublishes completion notifications downstream for indexing consumers.\n\nIn one sentence: Queue consumer to document store plus event fanout.\n",
+    "limit": 7,
+    "offset": 9,
+    "path": "service-doc.md",
+    "title": "Overview"
+  },
+  {
+    "content": "## Standard Links\n\nSee [simple](./simple.md) for the basic test fixture.\n\nA broken link: [missing](./does-not-exist.md).\n\nAn external link: [example](https://example.com).\n",
+    "limit": 8,
+    "offset": 8,
+    "path": "links-test.md",
+    "title": "Standard Links"
+  },
+  {
+    "content": "### Environment Variables\n\n```yaml\nSTORE_URI: docstore+srv://cluster.example.net\nQUEUE_ENDPOINT: https://queue.region.example.com\nNOTIFY_BOOTSTRAP: notify.internal.example.net:9093\n```\n",
+    "limit": 8,
+    "offset": 42,
+    "path": "service-doc.md",
+    "title": "Environment Variables"
+  },
+  {
+    "content": "## Section One\n\nThis is the first section with some content.\n\n- Item 1\n- Item 2\n- Item 3\n",
+    "limit": 8,
+    "offset": 8,
+    "path": "simple.md",
+    "title": "Section One"
+  },
+  {
+    "content": "### HTTP Client Bulk Throughput Improvement\n\nBulk POST rate improved from 24 to 98 items/s (4.1x gain).\n\nRoot causes:\n- maxConcurrency raised from 5 to 10\n- Client refactored to share rate limiter across async operators\n- Total sync time: 40s to 24s (400 items)\n",
+    "limit": 9,
+    "offset": 12,
+    "path": "multipart-lrn.md",
+    "title": "HTTP Client Bulk Throughput Improvement"
+  },
+  {
+    "content": "### Notification Service Authentication\n\nThe notification service requires token-based authentication:\n- clientId, clientSecret, clientCode in config\n- QA/STG bootstrap: `notify-corp.int.example.net:443`\n- PROD bootstrap: `notify-secure.prd.example.net:9097`\n\nSecure endpoints only reachable from inside cluster pods.\nTopics cannot auto-create and must be manually provisioned.",
+    "limit": 9,
+    "offset": 54,
+    "path": "multipart-lrn.md",
+    "title": "Notification Service Authentication"
+  },
+  {
+    "content": "### Queue Bindings\n\n| Queue | Entity Type | Priority |\n|-------|------------|----------|\n| entity-alpha-p1 | alpha | 1 |\n| entity-alpha-p2 | alpha | 2 |\n| entity-beta-p1 | beta | 1 |\n| entity-beta-p2 | beta | 2 |\n",
+    "limit": 9,
+    "offset": 23,
+    "path": "service-doc.md",
+    "title": "Queue Bindings"
+  },
+  {
+    "content": "## Section Two\n\nA section with a code block:\n\n```rust\nfn main() {\n    println!(\"hello\");\n}\n```\n",
+    "limit": 10,
+    "offset": 16,
+    "path": "simple.md",
+    "title": "Section Two"
+  },
+  {
+    "content": "## Section Three\n\n| Column A | Column B |\n|----------|----------|\n| value 1  | value 2  |\n| value 3  | value 4  |\n\n### Nested Subsection\n\nContent in a nested subsection.",
+    "limit": 10,
+    "offset": 26,
+    "path": "simple.md",
+    "title": "Section Three"
+  },
+  {
+    "content": "### PES PB WebClient Refactoring: 4.1x Bulk POST Throughput\n\nCommits `e67e728..d2832f2` on branch `pb1-2` validated via e2e on PaaS QA (2026-05-08):\n\n- Bulk POST rate: 23.7 -> **97.0 products/s** (4.1x improvement)\n- Root causes: `maxConcurrency` raised from 5 to 10 (env `PES_PB_MAX_CONCURRENCY`), WebClient refactored to share rate limiter across reactive operators via `RateLimiterOperator.of(rateLimiter)` in `Flux.flatMap`\n- PB-side latency also dropped from 10-15s to ~4s per batch (appears to be PB infrastructure variability, not client-side)\n- Total sync time: 40s -> **24s** (for 397 products, 8 batches of 50)\n- Delete rate unchanged at 1.0 deletes/s (rate-limited, sequential) -- PB has no batch DELETE API\n- Reactor threads used: 8 (of 10 max) vs 5 previously\n- S3 read: 2333 products in 2.1s; transform: 0.1s; bulk POST: 4.1s; reconcile list: 3.5s",
+    "limit": 11,
+    "offset": 13,
+    "path": "lrn-multipart.md",
+    "title": "PES PB WebClient Refactoring: 4.1x Bulk POST Throughput"
+  },
+  {
+    "content": "## Deployment\n\nDeployed via CI pipeline to staging and production clusters.\n\n### Environment Variables\n\n```yaml\nSTORE_URI: docstore+srv://cluster.example.net\nQUEUE_ENDPOINT: https://queue.region.example.com\nNOTIFY_BOOTSTRAP: notify.internal.example.net:9093\n```\n",
+    "limit": 12,
+    "offset": 38,
+    "path": "service-doc.md",
+    "title": "Deployment"
+  },
+  {
+    "content": "## Troubleshooting\n\n### High Queue Backlog\n\nCheck consumer health via `/health/ready` endpoint.\nMonitor `queue.messages.consumed` counter in the dashboard.\n\n### Store Timeout\n\nVerify connection pool settings:\n- `maxPoolSize`: 50 (default)\n- `connectTimeoutMS`: 10000",
+    "limit": 12,
+    "offset": 50,
+    "path": "service-doc.md",
+    "title": "Troubleshooting"
+  },
+  {
+    "content": "# Service Dependencies\n\n## Internal Links\n\nSee [ingestion pipeline](./service-doc.md) for write-path details.\nSee [feedback on testing](./feedback-entry.md) for integration test rules.\nA broken ref: [deleted doc](./removed-service.md).\n\n## External Resources\n\n- [Wiki](https://wiki.example.com/display/ENG)\n- [Dashboard](https://dash.example.com/d/ingestion)\n- [Issue Tracker](https://issues.example.com/browse/PROJ)",
+    "limit": 13,
+    "offset": 6,
+    "path": "cross-refs.md",
+    "title": "Service Dependencies"
+  },
+  {
+    "content": "# Links Test Document\n\n## Standard Links\n\nSee [simple](./simple.md) for the basic test fixture.\n\nA broken link: [missing](./does-not-exist.md).\n\nAn external link: [example](https://example.com).\n\n## Anchors\n\nA section anchor: [jump](#standard-links).",
+    "limit": 13,
+    "offset": 6,
+    "path": "links-test.md",
+    "title": "Links Test Document"
+  },
+  {
+    "content": "## Architecture\n\n```\nMessage Queues --> EventListener --> Transformer --> DocumentStore\n                                                 --> NotificationProducer\n```\n\n### Queue Bindings\n\n| Queue | Entity Type | Priority |\n|-------|------------|----------|\n| entity-alpha-p1 | alpha | 1 |\n| entity-alpha-p2 | alpha | 2 |\n| entity-beta-p1 | beta | 1 |\n| entity-beta-p2 | beta | 2 |\n\n### Document Collections\n\n- `entityAlpha` -- primary entity records\n- `entityBeta` -- secondary classification data\n- `entityGamma` -- variant configurations\n",
+    "limit": 22,
+    "offset": 16,
+    "path": "service-doc.md",
+    "title": "Architecture"
+  },
+  {
+    "content": "# Simple Test Document\n\n## Section One\n\nThis is the first section with some content.\n\n- Item 1\n- Item 2\n- Item 3\n\n## Section Two\n\nA section with a code block:\n\n```rust\nfn main() {\n    println!(\"hello\");\n}\n```\n\n## Section Three\n\n| Column A | Column B |\n|----------|----------|\n| value 1  | value 2  |\n| value 3  | value 4  |\n\n### Nested Subsection\n\nContent in a nested subsection.",
+    "limit": 30,
+    "offset": 6,
+    "path": "simple.md",
+    "title": "Simple Test Document"
+  },
+  {
+    "content": "# Nexus Ingestion Pipeline\n\n## Overview\n\nReceives upstream events from message queues and transforms them into document records.\nPublishes completion notifications downstream for indexing consumers.\n\nIn one sentence: Queue consumer to document store plus event fanout.\n\n## Architecture\n\n```\nMessage Queues --> EventListener --> Transformer --> DocumentStore\n                                                 --> NotificationProducer\n```\n\n### Queue Bindings\n\n| Queue | Entity Type | Priority |\n|-------|------------|----------|\n| entity-alpha-p1 | alpha | 1 |\n| entity-alpha-p2 | alpha | 2 |\n| entity-beta-p1 | beta | 1 |\n| entity-beta-p2 | beta | 2 |\n\n### Document Collections\n\n- `entityAlpha` -- primary entity records\n- `entityBeta` -- secondary classification data\n- `entityGamma` -- variant configurations\n\n## Deployment\n\nDeployed via CI pipeline to staging and production clusters.\n\n### Environment Variables\n\n```yaml\nSTORE_URI: docstore+srv://cluster.example.net\nQUEUE_ENDPOINT: https://queue.region.example.com\nNOTIFY_BOOTSTRAP: notify.internal.example.net:9093\n```\n\n## Troubleshooting\n\n### High Queue Backlog\n\nCheck consumer health via `/health/ready` endpoint.\nMonitor `queue.messages.consumed` counter in the dashboard.\n\n### Store Timeout\n\nVerify connection pool settings:\n- `maxPoolSize`: 50 (default)\n- `connectTimeoutMS`: 10000",
+    "limit": 55,
+    "offset": 7,
+    "path": "service-doc.md",
+    "title": "Nexus Ingestion Pipeline"
+  }
+]
+--- stderr
+26 sections emitted (290 lines)
+
+$ mdd -f human agg fixtures -H nomatchxyz
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no sections matched the given filters
+
+$ mdd -f agent agg fixtures -H nomatchxyz
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no sections matched the given filters
+
+$ mdd -f json agg fixtures -H nomatchxyz
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no sections matched the given filters
+
+$ mdd -f human agg nonexistent -t x
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f agent agg nonexistent -t x
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f json agg nonexistent -t x
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f human agg --help
+exit: 0
+--- stdout
+Aggregate matching sections into a single context-efficient output
+
+Usage: mdd agg [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -H, --heading <HEADING>
+          Filter by heading pattern
+
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field
+
+      --budget <BUDGET>
+          Maximum output lines (default: 500)
+          
+          [default: 500]
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent agg --help
+exit: 0
+--- stdout
+Aggregate matching sections into a single context-efficient output
+
+Usage: mdd agg [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -H, --heading <HEADING>
+          Filter by heading pattern
+
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field
+
+      --budget <BUDGET>
+          Maximum output lines (default: 500)
+          
+          [default: 500]
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json agg --help
+exit: 0
+--- stdout
+Aggregate matching sections into a single context-efficient output
+
+Usage: mdd agg [OPTIONS] <DIR>
+
+Arguments:
+  <DIR>
+          Directory to search
+
+Options:
+  -H, --heading <HEADING>
+          Filter by heading pattern
+
+  -t, --type <TYPE>
+          Filter by frontmatter 'type' field
+
+      --topic <TOPIC>
+          Filter by frontmatter 'topic' field
+
+      --budget <BUDGET>
+          Maximum output lines (default: 500)
+          
+          [default: 500]
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr

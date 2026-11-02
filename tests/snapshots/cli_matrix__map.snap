@@ -1,0 +1,474 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (map))
+---
+$ mdd -f human map fixtures/simple.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[not_a_directory]: not a directory: fixtures/simple.md
+
+$ mdd -f agent map fixtures/simple.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[not_a_directory]: not a directory: fixtures/simple.md
+
+$ mdd -f json map fixtures/simple.md
+exit: 2
+--- stdout
+--- stderr
+mdd: error[not_a_directory]: not a directory: fixtures/simple.md
+
+$ mdd -f human map edge12/empty
+exit: 1
+--- stdout
+=== empty/ (0 files, 0K lines) ===
+TOTAL: 0 files, 0 with tables, 0 with code blocks
+--- stderr
+mdd: no match: no Markdown files in edge12/empty
+
+$ mdd -f agent map edge12/empty
+exit: 1
+--- stdout
+=== empty/ (0 files, 0K lines) ===
+TOTAL: 0 files, 0 with tables, 0 with code blocks
+--- stderr
+mdd: no match: no Markdown files in edge12/empty
+
+$ mdd -f json map edge12/empty
+exit: 1
+--- stdout
+=== empty/ (0 files, 0K lines) ===
+TOTAL: 0 files, 0 with tables, 0 with code blocks
+--- stderr
+mdd: no match: no Markdown files in edge12/empty
+
+$ mdd -f human map edge
+exit: 0
+--- stdout
+=== edge/ (10 files, 0K lines) ===
+
+HOT (modified last 3 days):
+  bad.md [4L]
+  code.md [21L] topic=Unit Testing ## No Lang, ## Table
+  dup.md [5L]
+  empty.md [3L]
+  keys.md [5L]
+  list.md [5L]
+  multi.md [12L] topic=t ## Two
+  plain.md [10L] ## B
+  unicode.md [7L] topic=ÜBER Alles
+  yaml.md [39L] topic=yaml types
+
+TOP TOPICS: Unit Testing(1), t(1), yaml types(1), ÜBER Alles(1)
+TOTAL: 10 files, 1 with tables, 2 with code blocks
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f agent map edge
+exit: 0
+--- stdout
+=== edge/ (10 files, 0K lines) ===
+
+HOT (modified last 3 days):
+  bad.md [4L]
+  code.md [21L] topic=Unit Testing ## No Lang, ## Table
+  dup.md [5L]
+  empty.md [3L]
+  keys.md [5L]
+  list.md [5L]
+  multi.md [12L] topic=t ## Two
+  plain.md [10L] ## B
+  unicode.md [7L] topic=ÜBER Alles
+  yaml.md [39L] topic=yaml types
+
+TOP TOPICS: Unit Testing(1), t(1), yaml types(1), ÜBER Alles(1)
+TOTAL: 10 files, 1 with tables, 2 with code blocks
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f json map edge
+exit: 0
+--- stdout
+=== edge/ (10 files, 0K lines) ===
+
+HOT (modified last 3 days):
+  bad.md [4L]
+  code.md [21L] topic=Unit Testing ## No Lang, ## Table
+  dup.md [5L]
+  empty.md [3L]
+  keys.md [5L]
+  list.md [5L]
+  multi.md [12L] topic=t ## Two
+  plain.md [10L] ## B
+  unicode.md [7L] topic=ÜBER Alles
+  yaml.md [39L] topic=yaml types
+
+TOP TOPICS: Unit Testing(1), t(1), yaml types(1), ÜBER Alles(1)
+TOTAL: 10 files, 1 with tables, 2 with code blocks
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human map -h
+exit: 0
+--- stdout
+Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+
+Usage: mdd map [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  Directory path
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f agent map -h
+exit: 0
+--- stdout
+Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+
+Usage: mdd map [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  Directory path
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f json map -h
+exit: 0
+--- stdout
+Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+
+Usage: mdd map [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  Directory path
+
+Options:
+  -f, --format <FORMAT>  Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict           Fail on first malformed file instead of skipping with a warning
+      --all-files        Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help             Print help (see more with '--help')
+--- stderr
+
+$ mdd -f human map
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd map <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent map
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd map <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json map
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd map <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human map fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd map <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent map fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd map <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json map fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd map <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human map fixtures
+exit: 0
+--- stdout
+=== fixtures/ (11 files, 0K lines) ===
+
+HOT (modified last 3 days):
+  cross-refs.md [18L] topic=architecture ## Internal Links, ## External Resources
+  feedback-entry.md [32L] topic=testing ## Examples, ## Good, ## Bad
+  links-test.md [18L] topic=links ## Standard Links, ## Anchors
+  lrn-agents.md [29L]
+  lrn-multipart.md [23L] topic=pes pb performance
+  lrn-two-entries.md [21L] topic=testing ## Second Entry
+  memory-index.md [84L] ## Pre-Task Rules, ## User, ## Feedback
+  multipart-lrn.md [62L] topic=performance tuning ## Thread Pool Utilization, ## Consumer Library Broker 3.9 Incompatibility, ## Notification Service Authentication
+  no-frontmatter.md [9L] ## First Heading, ## Second Heading
+  service-doc.md [61L] topic=ingestion ## Overview, ## Architecture, ## Queue Bindings
+
+TOP TOPICS: testing(3), architecture(1), deployment(1), ingestion(1), links(1), message broker configuration(1), parser(1), performance tuning(1)
+TOTAL: 11 files, 2 with tables, 5 with code blocks
+--- stderr
+
+$ mdd -f agent map fixtures
+exit: 0
+--- stdout
+=== fixtures/ (11 files, 0K lines) ===
+
+HOT (modified last 3 days):
+  cross-refs.md [18L] topic=architecture ## Internal Links, ## External Resources
+  feedback-entry.md [32L] topic=testing ## Examples, ## Good, ## Bad
+  links-test.md [18L] topic=links ## Standard Links, ## Anchors
+  lrn-agents.md [29L]
+  lrn-multipart.md [23L] topic=pes pb performance
+  lrn-two-entries.md [21L] topic=testing ## Second Entry
+  memory-index.md [84L] ## Pre-Task Rules, ## User, ## Feedback
+  multipart-lrn.md [62L] topic=performance tuning ## Thread Pool Utilization, ## Consumer Library Broker 3.9 Incompatibility, ## Notification Service Authentication
+  no-frontmatter.md [9L] ## First Heading, ## Second Heading
+  service-doc.md [61L] topic=ingestion ## Overview, ## Architecture, ## Queue Bindings
+
+TOP TOPICS: testing(3), architecture(1), deployment(1), ingestion(1), links(1), message broker configuration(1), parser(1), performance tuning(1)
+TOTAL: 11 files, 2 with tables, 5 with code blocks
+--- stderr
+
+$ mdd -f json map fixtures
+exit: 0
+--- stdout
+=== fixtures/ (11 files, 0K lines) ===
+
+HOT (modified last 3 days):
+  cross-refs.md [18L] topic=architecture ## Internal Links, ## External Resources
+  feedback-entry.md [32L] topic=testing ## Examples, ## Good, ## Bad
+  links-test.md [18L] topic=links ## Standard Links, ## Anchors
+  lrn-agents.md [29L]
+  lrn-multipart.md [23L] topic=pes pb performance
+  lrn-two-entries.md [21L] topic=testing ## Second Entry
+  memory-index.md [84L] ## Pre-Task Rules, ## User, ## Feedback
+  multipart-lrn.md [62L] topic=performance tuning ## Thread Pool Utilization, ## Consumer Library Broker 3.9 Incompatibility, ## Notification Service Authentication
+  no-frontmatter.md [9L] ## First Heading, ## Second Heading
+  service-doc.md [61L] topic=ingestion ## Overview, ## Architecture, ## Queue Bindings
+
+TOP TOPICS: testing(3), architecture(1), deployment(1), ingestion(1), links(1), message broker configuration(1), parser(1), performance tuning(1)
+TOTAL: 11 files, 2 with tables, 5 with code blocks
+--- stderr
+
+$ mdd -f human map edge
+exit: 0
+--- stdout
+=== edge/ (10 files, 0K lines) ===
+
+HOT (modified last 3 days):
+  bad.md [4L]
+  code.md [21L] topic=Unit Testing ## No Lang, ## Table
+  dup.md [5L]
+  empty.md [3L]
+  keys.md [5L]
+  list.md [5L]
+  multi.md [12L] topic=t ## Two
+  plain.md [10L] ## B
+  unicode.md [7L] topic=ÜBER Alles
+  yaml.md [39L] topic=yaml types
+
+TOP TOPICS: Unit Testing(1), t(1), yaml types(1), ÜBER Alles(1)
+TOTAL: 10 files, 1 with tables, 2 with code blocks
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f agent map edge
+exit: 0
+--- stdout
+=== edge/ (10 files, 0K lines) ===
+
+HOT (modified last 3 days):
+  bad.md [4L]
+  code.md [21L] topic=Unit Testing ## No Lang, ## Table
+  dup.md [5L]
+  empty.md [3L]
+  keys.md [5L]
+  list.md [5L]
+  multi.md [12L] topic=t ## Two
+  plain.md [10L] ## B
+  unicode.md [7L] topic=ÜBER Alles
+  yaml.md [39L] topic=yaml types
+
+TOP TOPICS: Unit Testing(1), t(1), yaml types(1), ÜBER Alles(1)
+TOTAL: 10 files, 1 with tables, 2 with code blocks
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f json map edge
+exit: 0
+--- stdout
+=== edge/ (10 files, 0K lines) ===
+
+HOT (modified last 3 days):
+  bad.md [4L]
+  code.md [21L] topic=Unit Testing ## No Lang, ## Table
+  dup.md [5L]
+  empty.md [3L]
+  keys.md [5L]
+  list.md [5L]
+  multi.md [12L] topic=t ## Two
+  plain.md [10L] ## B
+  unicode.md [7L] topic=ÜBER Alles
+  yaml.md [39L] topic=yaml types
+
+TOP TOPICS: Unit Testing(1), t(1), yaml types(1), ÜBER Alles(1)
+TOTAL: 10 files, 1 with tables, 2 with code blocks
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human map nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f agent map nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f json map nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f human map --help
+exit: 0
+--- stdout
+Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+
+Usage: mdd map [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent map --help
+exit: 0
+--- stdout
+Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+
+Usage: mdd map [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json map --help
+exit: 0
+--- stdout
+Compressed structural overview for agent orientation. Shows hot files, directory structure, frontmatter stats, link graph
+
+Usage: mdd map [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory path
+
+Options:
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr

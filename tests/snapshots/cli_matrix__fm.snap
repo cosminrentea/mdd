@@ -1,0 +1,1173 @@
+---
+source: tests/cli_matrix.rs
+expression: render(stringify! (fm))
+---
+$ mdd -f human --strict fm edge12
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f agent --strict fm edge12
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f json --strict fm edge12
+exit: 2
+--- stdout
+--- stderr
+mdd: error[invalid_frontmatter]: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+
+$ mdd -f human fm edge12
+exit: 0
+--- stdout
+1/3 files have frontmatter (33%)
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f agent fm edge12
+exit: 0
+--- stdout
+1/3 files have frontmatter (33%)
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f json fm edge12
+exit: 0
+--- stdout
+1/3 files have frontmatter (33%)
+--- stderr
+mdd: warning: edge12/badfm.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge12/sub/listfm.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human --all-files fm edge
+exit: 0
+--- stdout
+8/12 files have frontmatter (67%)
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f agent --all-files fm edge
+exit: 0
+--- stdout
+8/12 files have frontmatter (67%)
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f json --all-files fm edge
+exit: 0
+--- stdout
+8/12 files have frontmatter (67%)
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human fm edge/plain.md
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no frontmatter in edge/plain.md
+
+$ mdd -f agent fm edge/plain.md
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no frontmatter in edge/plain.md
+
+$ mdd -f json fm edge/plain.md
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no frontmatter in edge/plain.md
+
+$ mdd -f human fm edge --list-values nosuchfield
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no values found for field 'nosuchfield'
+
+$ mdd -f agent fm edge --list-values nosuchfield
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no values found for field 'nosuchfield'
+
+$ mdd -f json fm edge --list-values nosuchfield
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no values found for field 'nosuchfield'
+
+$ mdd -f human fm edge12/empty
+exit: 1
+--- stdout
+0/0 files have frontmatter (0%)
+--- stderr
+mdd: no match: no Markdown files in edge12/empty
+
+$ mdd -f agent fm edge12/empty
+exit: 1
+--- stdout
+0/0 files have frontmatter (0%)
+--- stderr
+mdd: no match: no Markdown files in edge12/empty
+
+$ mdd -f json fm edge12/empty
+exit: 1
+--- stdout
+0/0 files have frontmatter (0%)
+--- stderr
+mdd: no match: no Markdown files in edge12/empty
+
+$ mdd -f human fm edge --list-values type
+exit: 0
+--- stdout
+Reference
+note
+ref
+reference
+Étude
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+5 unique values
+
+$ mdd -f agent fm edge --list-values type
+exit: 0
+--- stdout
+Reference
+note
+ref
+reference
+Étude
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+5 unique values
+
+$ mdd -f json fm edge --list-values type
+exit: 0
+--- stdout
+Reference
+note
+ref
+reference
+Étude
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+5 unique values
+
+$ mdd -f human fm edge/README.md
+exit: 0
+--- stdout
+tags: [from-readme]
+type: readme-type
+--- stderr
+
+$ mdd -f agent fm edge/README.md
+exit: 0
+--- stdout
+tags: [from-readme]
+type: readme-type
+--- stderr
+
+$ mdd -f json fm edge/README.md
+exit: 0
+--- stdout
+tags: [from-readme]
+type: readme-type
+--- stderr
+
+$ mdd -f human fm edge/AGENTS.md
+exit: 0
+--- stdout
+type: agents-type
+--- stderr
+
+$ mdd -f agent fm edge/AGENTS.md
+exit: 0
+--- stdout
+type: agents-type
+--- stderr
+
+$ mdd -f json fm edge/AGENTS.md
+exit: 0
+--- stdout
+type: agents-type
+--- stderr
+
+$ mdd -f human fm -h
+exit: 0
+--- stdout
+Frontmatter inspection (read-only)
+
+Usage: mdd fm [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  Directory or file path
+
+Options:
+      --list-values <LIST_VALUES>  List all unique values for a frontmatter field
+  -f, --format <FORMAT>            Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict                     Fail on first malformed file instead of skipping with a warning
+      --all-files                  Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help                       Print help (see more with '--help')
+--- stderr
+
+$ mdd -f agent fm -h
+exit: 0
+--- stdout
+Frontmatter inspection (read-only)
+
+Usage: mdd fm [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  Directory or file path
+
+Options:
+      --list-values <LIST_VALUES>  List all unique values for a frontmatter field
+  -f, --format <FORMAT>            Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict                     Fail on first malformed file instead of skipping with a warning
+      --all-files                  Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help                       Print help (see more with '--help')
+--- stderr
+
+$ mdd -f json fm -h
+exit: 0
+--- stdout
+Frontmatter inspection (read-only)
+
+Usage: mdd fm [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  Directory or file path
+
+Options:
+      --list-values <LIST_VALUES>  List all unique values for a frontmatter field
+  -f, --format <FORMAT>            Output format: human (colored), agent (provenance+signature), json [possible values: human, agent, json]
+      --strict                     Fail on first malformed file instead of skipping with a warning
+      --all-files                  Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+  -h, --help                       Print help (see more with '--help')
+--- stderr
+
+$ mdd -f human fm
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent fm
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json fm
+exit: 2
+--- stdout
+--- stderr
+error: the following required arguments were not provided:
+  <PATH>
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human fm fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent fm fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json fm fixtures --bogus
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--bogus' found
+
+  tip: to pass '--bogus' as a value, use '-- --bogus'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human fm edge/yaml.md
+exit: 0
+--- stdout
+alias: shared
+anchor: shared
+big: 12345678901234567890
+count: 3
+date: 2026-11-01
+empty: null
+flag: true
+folded: folded text more
+
+hex: 31
+inf: .inf
+multi: line one
+line two
+
+nan: .nan
+neg: -7
+nested: k: v
+list:
+- 1
+- 2
+no_str: no
+nothing: null
+oct: 15
+off: false
+on_str: on
+quoted: x: y
+single: it's
+tagged: !custom value
+tags: [a, b, c d]
+topic: yaml types
+type: reference
+unicode: héllo ☃
+weight: 0.8
+yes_str: yes
+--- stderr
+
+$ mdd -f agent fm edge/yaml.md
+exit: 0
+--- stdout
+alias: shared
+anchor: shared
+big: 12345678901234567890
+count: 3
+date: 2026-11-01
+empty: null
+flag: true
+folded: folded text more
+
+hex: 31
+inf: .inf
+multi: line one
+line two
+
+nan: .nan
+neg: -7
+nested: k: v
+list:
+- 1
+- 2
+no_str: no
+nothing: null
+oct: 15
+off: false
+on_str: on
+quoted: x: y
+single: it's
+tagged: !custom value
+tags: [a, b, c d]
+topic: yaml types
+type: reference
+unicode: héllo ☃
+weight: 0.8
+yes_str: yes
+--- stderr
+
+$ mdd -f json fm edge/yaml.md
+exit: 0
+--- stdout
+alias: shared
+anchor: shared
+big: 12345678901234567890
+count: 3
+date: 2026-11-01
+empty: null
+flag: true
+folded: folded text more
+
+hex: 31
+inf: .inf
+multi: line one
+line two
+
+nan: .nan
+neg: -7
+nested: k: v
+list:
+- 1
+- 2
+no_str: no
+nothing: null
+oct: 15
+off: false
+on_str: on
+quoted: x: y
+single: it's
+tagged: !custom value
+tags: [a, b, c d]
+topic: yaml types
+type: reference
+unicode: héllo ☃
+weight: 0.8
+yes_str: yes
+--- stderr
+
+$ mdd -f human fm edge/bad.md
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: no match: no frontmatter in edge/bad.md
+
+$ mdd -f agent fm edge/bad.md
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: no match: no frontmatter in edge/bad.md
+
+$ mdd -f json fm edge/bad.md
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: no match: no frontmatter in edge/bad.md
+
+$ mdd -f human fm edge/dup.md
+exit: 0
+--- stdout
+k: 2
+--- stderr
+
+$ mdd -f agent fm edge/dup.md
+exit: 0
+--- stdout
+k: 2
+--- stderr
+
+$ mdd -f json fm edge/dup.md
+exit: 0
+--- stdout
+k: 2
+--- stderr
+
+$ mdd -f human fm edge/list.md
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no frontmatter in edge/list.md
+
+$ mdd -f agent fm edge/list.md
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no frontmatter in edge/list.md
+
+$ mdd -f json fm edge/list.md
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no frontmatter in edge/list.md
+
+$ mdd -f human fm edge/empty.md
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no frontmatter in edge/empty.md
+
+$ mdd -f agent fm edge/empty.md
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no frontmatter in edge/empty.md
+
+$ mdd -f json fm edge/empty.md
+exit: 1
+--- stdout
+--- stderr
+mdd: no match: no frontmatter in edge/empty.md
+
+$ mdd -f human fm edge/keys.md
+exit: 0
+--- stdout
+1: numeric key
+true: bool key
+--- stderr
+
+$ mdd -f agent fm edge/keys.md
+exit: 0
+--- stdout
+1: numeric key
+true: bool key
+--- stderr
+
+$ mdd -f json fm edge/keys.md
+exit: 0
+--- stdout
+1: numeric key
+true: bool key
+--- stderr
+
+$ mdd -f human fm edge
+exit: 0
+--- stdout
+6/10 files have frontmatter (60%)
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f agent fm edge
+exit: 0
+--- stdout
+6/10 files have frontmatter (60%)
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f json fm edge
+exit: 0
+--- stdout
+6/10 files have frontmatter (60%)
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+$ mdd -f human fm edge --list-values tags
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no values found for field 'tags'
+
+$ mdd -f agent fm edge --list-values tags
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no values found for field 'tags'
+
+$ mdd -f json fm edge --list-values tags
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no values found for field 'tags'
+
+$ mdd -f human fm edge --list-values nested
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no values found for field 'nested'
+
+$ mdd -f agent fm edge --list-values nested
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no values found for field 'nested'
+
+$ mdd -f json fm edge --list-values nested
+exit: 1
+--- stdout
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+mdd: no match: no values found for field 'nested'
+
+$ mdd -f human fm edge --list-values weight
+exit: 0
+--- stdout
+0.8
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 unique values
+
+$ mdd -f agent fm edge --list-values weight
+exit: 0
+--- stdout
+0.8
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 unique values
+
+$ mdd -f json fm edge --list-values weight
+exit: 0
+--- stdout
+0.8
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 unique values
+
+$ mdd -f human fm edge --list-values flag
+exit: 0
+--- stdout
+true
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 unique values
+
+$ mdd -f agent fm edge --list-values flag
+exit: 0
+--- stdout
+true
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 unique values
+
+$ mdd -f json fm edge --list-values flag
+exit: 0
+--- stdout
+true
+--- stderr
+mdd: warning: edge/bad.md:1: invalid frontmatter ignored: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 6
+mdd: warning: edge/list.md:1: invalid frontmatter ignored: invalid type: sequence, expected a map
+
+1 unique values
+
+$ mdd -f human fm edge/yaml.md --set type=zzz
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent fm edge/yaml.md --set type=zzz
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json fm edge/yaml.md --set type=zzz
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human fm edge/yaml.md --set newkey=v
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent fm edge/yaml.md --set newkey=v
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json fm edge/yaml.md --set newkey=v
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human fm edge/dup.md --set k=9
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent fm edge/dup.md --set k=9
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json fm edge/dup.md --set k=9
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human fm fixtures
+exit: 0
+--- stdout
+8/11 files have frontmatter (73%)
+--- stderr
+
+$ mdd -f agent fm fixtures
+exit: 0
+--- stdout
+8/11 files have frontmatter (73%)
+--- stderr
+
+$ mdd -f json fm fixtures
+exit: 0
+--- stdout
+8/11 files have frontmatter (73%)
+--- stderr
+
+$ mdd -f human fm fixtures/service-doc.md
+exit: 0
+--- stdout
+last_updated: 2026-04-18
+topic: ingestion
+type: reference
+--- stderr
+
+$ mdd -f agent fm fixtures/service-doc.md
+exit: 0
+--- stdout
+last_updated: 2026-04-18
+topic: ingestion
+type: reference
+--- stderr
+
+$ mdd -f json fm fixtures/service-doc.md
+exit: 0
+--- stdout
+last_updated: 2026-04-18
+topic: ingestion
+type: reference
+--- stderr
+
+$ mdd -f human fm fixtures --list-values type
+exit: 0
+--- stdout
+feedback
+note
+reference
+--- stderr
+
+3 unique values
+
+$ mdd -f agent fm fixtures --list-values type
+exit: 0
+--- stdout
+feedback
+note
+reference
+--- stderr
+
+3 unique values
+
+$ mdd -f json fm fixtures --list-values type
+exit: 0
+--- stdout
+feedback
+note
+reference
+--- stderr
+
+3 unique values
+
+$ mdd -f human fm fixtures --list-values topic
+exit: 0
+--- stdout
+architecture
+deployment
+ingestion
+links
+message broker configuration
+parser
+performance tuning
+pes pb performance
+testing
+--- stderr
+
+9 unique values
+
+$ mdd -f agent fm fixtures --list-values topic
+exit: 0
+--- stdout
+architecture
+deployment
+ingestion
+links
+message broker configuration
+parser
+performance tuning
+pes pb performance
+testing
+--- stderr
+
+9 unique values
+
+$ mdd -f json fm fixtures --list-values topic
+exit: 0
+--- stdout
+architecture
+deployment
+ingestion
+links
+message broker configuration
+parser
+performance tuning
+pes pb performance
+testing
+--- stderr
+
+9 unique values
+
+$ mdd -f human fm edge/multi.md --set type=zzz
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent fm edge/multi.md --set type=zzz
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json fm edge/multi.md --set type=zzz
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human fm fixtures --set a=b
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent fm fixtures --set a=b
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json fm fixtures --set a=b
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human fm nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f agent fm nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f json fm nonexistent
+exit: 2
+--- stdout
+--- stderr
+mdd: error[file_not_found]: file not found: nonexistent
+
+$ mdd -f human fm fixtures/no-frontmatter.md --set a=b
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent fm fixtures/no-frontmatter.md --set a=b
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json fm fixtures/no-frontmatter.md --set a=b
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human fm fixtures/simple.md --set badassign
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f agent fm fixtures/simple.md --set badassign
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f json fm fixtures/simple.md --set badassign
+exit: 2
+--- stdout
+--- stderr
+error: unexpected argument '--set' found
+
+  tip: to pass '--set' as a value, use '-- --set'
+
+Usage: mdd fm <PATH>
+
+For more information, try '--help'.
+
+$ mdd -f human fm --help
+exit: 0
+--- stdout
+Frontmatter inspection (read-only)
+
+Usage: mdd fm [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory or file path
+
+Options:
+      --list-values <LIST_VALUES>
+          List all unique values for a frontmatter field
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f agent fm --help
+exit: 0
+--- stdout
+Frontmatter inspection (read-only)
+
+Usage: mdd fm [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory or file path
+
+Options:
+      --list-values <LIST_VALUES>
+          List all unique values for a frontmatter field
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
+
+$ mdd -f json fm --help
+exit: 0
+--- stdout
+Frontmatter inspection (read-only)
+
+Usage: mdd fm [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>
+          Directory or file path
+
+Options:
+      --list-values <LIST_VALUES>
+          List all unique values for a frontmatter field
+
+  -f, --format <FORMAT>
+          Output format: human (colored), agent (provenance+signature), json
+
+          Possible values:
+          - human: Colored, indented, human-readable
+          - agent: Context-efficient with provenance: [file:offset,limit] heading {signature}
+          - json:  Structured JSON
+
+      --strict
+          Fail on first malformed file instead of skipping with a warning
+
+      --all-files
+          Include AGENTS.md, CLAUDE.md, CLAUDE.local.md and README.md in directory scans
+
+  -h, --help
+          Print help (see a summary with '-h')
+--- stderr
