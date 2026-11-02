@@ -1063,3 +1063,60 @@ fn at_in_first_entry_stays_inside_the_entry() {
         .stdout(predicate::str::contains("type: note").not())
         .stdout(predicate::str::contains("Consumer Library Broker 3.9").not());
 }
+
+// ─── directory fm scans use the same filename exclusions as the other commands ───
+
+fn infrastructure_files_dir() -> tempfile::TempDir {
+    let tmp = tempfile::tempdir().unwrap();
+    std::fs::write(
+        tmp.path().join("note.md"),
+        "---\ntype: note-type\n---\n\n# Note\n",
+    )
+    .unwrap();
+    for name in ["README.md", "AGENTS.md", "CLAUDE.md", "CLAUDE.local.md"] {
+        std::fs::write(
+            tmp.path().join(name),
+            "---\ntype: infra-type\n---\n\n# Infra\n",
+        )
+        .unwrap();
+    }
+    tmp
+}
+
+#[test]
+fn fm_directory_coverage_skips_infrastructure_files() {
+    let tmp = infrastructure_files_dir();
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .arg("fm")
+        .arg(tmp.path())
+        .assert()
+        .success()
+        .stdout("1/1 files have frontmatter (100%)\n");
+}
+
+#[test]
+fn fm_directory_list_values_skips_infrastructure_files() {
+    let tmp = infrastructure_files_dir();
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .arg("fm")
+        .arg(tmp.path())
+        .args(["--list-values", "type"])
+        .assert()
+        .success()
+        .stdout("note-type\n")
+        .stderr(predicate::str::contains("1 unique values"));
+}
+
+#[test]
+fn fm_single_infrastructure_file_is_still_read() {
+    let tmp = infrastructure_files_dir();
+    Command::cargo_bin("mdd")
+        .unwrap()
+        .arg("fm")
+        .arg(tmp.path().join("README.md"))
+        .assert()
+        .success()
+        .stdout("type: infra-type\n");
+}

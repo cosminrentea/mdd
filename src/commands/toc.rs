@@ -1,10 +1,9 @@
-use std::path::PathBuf;
-
 use crate::cli::{OutputFormat, TocArgs};
 use crate::error::{MddError, Result};
 use crate::output::{self, TocDirEntry, TocDirOutput, TocFileOutput};
 use crate::parse::Section;
 use crate::parse::markdown::{parse_content, parse_file};
+use crate::query::walk_md_files;
 
 pub fn run(args: &TocArgs, format: OutputFormat) -> Result<()> {
     if args.path.is_dir() {
@@ -61,22 +60,7 @@ fn run_dir(dir: &std::path::Path, pattern: Option<&str>, format: OutputFormat) -
         });
     }
 
-    let walker = ignore::WalkBuilder::new(dir).follow_links(true).build();
-
-    let mut files: Vec<PathBuf> = walker
-        .filter_map(std::result::Result::ok)
-        .filter(|e| e.path().extension().is_some_and(|ext| ext == "md"))
-        .filter(|e| {
-            let name = e.file_name().to_string_lossy();
-            !matches!(
-                name.as_ref(),
-                "AGENTS.md" | "CLAUDE.local.md" | "CLAUDE.md" | "README.md"
-            )
-        })
-        .map(ignore::DirEntry::into_path)
-        .collect();
-
-    files.sort();
+    let files = walk_md_files(dir);
 
     let pat_lower = pattern.map(|p| clean_toc_pattern(p).to_lowercase());
     let mut dir_entries: Vec<TocDirEntry> = Vec::new();
